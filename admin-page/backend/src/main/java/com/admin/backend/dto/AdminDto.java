@@ -5,6 +5,9 @@ import lombok.Setter;
 
 import java.sql.Timestamp;
 
+/**
+ * Admin Dto
+ */
 @Setter
 @Getter
 public class AdminDto {
