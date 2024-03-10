@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.admin.backend.mapper.NoticeBoardMapper">
+    <sql id="boardSelectWhereQuery">
+        WHERE
+            fixed = 0 AND nb.created_at BETWEEN #{startDateTimestamp} AND #{endDateTimestamp}
+        <if test="searchText != null and searchText != ''">
+            AND (title LIKE CONCAT('%',#{searchText},'%')
+            OR content LIKE CONCAT('%',#{searchText},'%'))
+        </if>
+        <if test = "categoryId > 0">
+            AND nb.category_id = #{categoryId}
+        </if>
+    </sql>
+
+    <sql id="selectBoardWithJoin">
+        SELECT
+            nb.board_id,
+            nb.title,
+            nb.views,
+            nb.created_at,
+            ad.admin_name,
+            ctg.category_name
+        FROM
+            tb_notice_board nb
+                LEFT JOIN
+            tb_category ctg ON nb.category_id = ctg.category_id
+                LEFT JOIN
+            tb_admin ad ON nb.author_id = ad.admin_id
+    </sql>
+
+    <select id="selectBoardListByCondition" parameterType="com.admin.backend.dto.SearchConditionDto" resultType="com.admin.backend.dto.NoticeBoardDto">
+        <include refid="selectBoardWithJoin"></include>
+        <include refid="boardSelectWhereQuery"></include>
+        ORDER BY
+        <choose>
+            <when test="orderValue == 'createdAt'">
+                nb.created_at
+            </when>
+            <when test="orderValue == 'category'">
+                nb.category_id
+            </when>
+            <when test="orderValue == 'title'">
+                nb.title
+            </when>
+            <when test="orderValue == 'views'">
+                nb.views
+            </when>
+        </choose>
+        <choose>
+            <when test="orderDirection == 'desc'">
+                DESC
+            </when>
+            <when test="orderDirection == 'asc'">
+                ASC
+            </when>
+        </choose>
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <select id="selectFixedBoardList" resultType="com.admin.backend.dto.NoticeBoardDto">
+        <include refid="selectBoardWithJoin"></include>
+        WHERE
+            fixed = 0
+    </select>
+
+    <select id="selectTotalRowCountByCondition" parameterType="com.admin.backend.dto.SearchConditionDto" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM
+            tb_notice_board nb
+        <include refid="boardSelectWhereQuery"></include>
+    </select>
+</mapper>
