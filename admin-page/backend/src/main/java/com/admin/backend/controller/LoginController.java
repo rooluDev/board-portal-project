@@ -11,12 +11,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * Login Controller
  */
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/admin")
 @Slf4j
 public class LoginController {
 
@@ -27,8 +29,8 @@ public class LoginController {
      * 로그인 페이지
      * @return
      */
-    @GetMapping("/admin/login")
-    public String getLogin(){
+    @GetMapping("/login")
+    public String getLoginPage(){
         return "login";
     }
 
@@ -38,7 +40,7 @@ public class LoginController {
      * @param httpServletRequest
      * @return
      */
-    @PostMapping("/admin/login")
+    @PostMapping("/login")
     public String loginProc(@ModelAttribute AdminDto adminDto, HttpServletRequest httpServletRequest){
         // 로그인 검증
         // method가 객체를 매개변수로 받아 명확하지 않음. 파라매터로 ID, PW 보내는게 좀 더 명확해 보임
