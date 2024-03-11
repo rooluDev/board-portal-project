@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+<h1>공지사항 관리</h1>
+<h3 th:if="${errorMessage}" th:text="${errorMessage}"></h3>
+<form th:action="@{/admin/board/notice/modify/{boardId}(boardId = ${boardId})}" method="post" onsubmit="return validator()">
+    <label>분류*</label>
+    <select name="categoryId">
+        <option th:each="category : ${categoryList}"
+                th:value="${category.categoryId}"
+                th:text="${category.categoryName}"
+                th:selected="${category.categoryId == board.categoryId}">
+        </option>
+    </select>
+    <br/>
+    <label>제목*</label>
+    <input id="title" type="text" name="title" th:value="${board.title}" required>
+    <br/>
+    <label>내용*</label>
+    <textarea id="content" name="content" th:text="${board.content}" required></textarea>
+    <br/>
+    <label>상단 고정</label>
+    <input type="checkbox" name="fixed" th:checked="${board.fixed == '1'}">
+    <br/>
+    <button type="submit">수정</button>
+    <button type="button" th:onclick="goToList([[${searchCondition}]])">목록</button>
+    <button type="button" th:onclick="deleteBoard([[${board.boardId}]])">삭제</button>
+</form>
+</body>
+<script>
+    const validator = () => {
+        const title = $("#title").val();
+        const content = $("#content").val();
+        if (title.length > 99){
+            alert("제목이 100자 미만이여야 합니다");
+            return false;
+        }
+        if (content.length > 3999){
+            alert("내용이 4000자 미만이여야 합니다.");
+            return false;
+        }
+        return confirm('정말로 등록 하시겠습니까?');
+    }
+
+    const parseObjectToParam = (searchCondition) => {
+        return `?startDate=${searchCondition.startDate}&endDate=${searchCondition.endDate}&categoryId=${searchCondition.categoryId}` +
+            `&searchText=${searchCondition.searchText}&pageSize=${searchCondition.pageSize}&orderValue=${searchCondition.orderValue}` +
+            `&orderDirection=${searchCondition.orderDirection}&pageNum=${searchCondition.pageNum}`;
+    }
+
+    const goToList = (searchCondition) => {
+        location.href = `/admin/board/notice` + parseObjectToParam(searchCondition);
+    }
+
+    const deleteBoard = (boardId) => {
+        if (confirm('정말로 삭제 하시겠습니까?')){
+            location.href = `/admin/board/notice/delete/${boardId}`;
+        }
+    }
+
+</script>
+</html>
