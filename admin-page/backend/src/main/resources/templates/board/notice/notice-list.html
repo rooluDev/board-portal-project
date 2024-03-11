@@ -7,6 +7,7 @@
 </head>
 <body>
 <h1>공지 사항 관리</h1>
+<h3 th:if="${errorMessage}" th:text="${errorMessage}"></h3>
 <form action="/admin/board/notice" method="get">
     <label>등록일시</label>
     <input type="date" name="startDate" id="startDate" th:value="${searchCondition.startDate}">
@@ -49,12 +50,12 @@
 
 <table>
     <thead>
-        <th>번호</th>
-        <th>분류</th>
-        <th>제목</th>
-        <th>조회</th>
-        <th>등록일시</th>
-        <th>등록자</th>
+    <th>번호</th>
+    <th>분류</th>
+    <th>제목</th>
+    <th>조회</th>
+    <th>등록일시</th>
+    <th>등록자</th>
     </thead>
     <tbody>
     <tr th:each="fixedBoard : ${fixedBoardList}">
@@ -77,11 +78,9 @@
 </table>
 
 <nav th:if="${totalPageNum > 1}">
-    <ul>
-        <li th:each="pageNum : ${#numbers.sequence(1,totalPageNum)}">
-            <a th:onclick="goToPageNum([[pageNum]],[[${searchCondition}]])"></a>
-        </li>
-    </ul>
+    <li th:each="pageNum : ${#numbers.sequence(1,totalPageNum)}" style="display: inline-block">
+        <a th:text="${pageNum} " th:onclick="goToPageNum([[${pageNum}]],[[${searchCondition}]])"></a>
+    </li>
 </nav>
 
 </body>
@@ -120,7 +119,7 @@
         location.href = `/admin/board/notice/write` + parseObjectToParam(searchCondition);
     }
 
-    const goToBoard = (boardId,searchCondition) => {
+    const goToBoard = (boardId, searchCondition) => {
         location.href = `/admin/board/notice/${boardId}` + parseObjectToParam(searchCondition);
     }
 </script>
