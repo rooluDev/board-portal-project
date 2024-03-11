@@ -6,6 +6,7 @@ import com.admin.backend.dto.SearchConditionDto;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * tb_notice_board DB Mapper
@@ -44,4 +45,33 @@ public interface NoticeBoardMapper {
      * @return
      */
     int selectFixedBoardCount();
+
+    /**
+     * boardId(pk)로 board SELECT
+     *
+     * @param boardId
+     * @return
+     */
+    Optional<NoticeBoardDto> selectBoardByBoardId(Long boardId);
+
+    /**
+     * board UPDATE
+     *
+     * @param noticeBoardDto
+     */
+    void updateBoard(NoticeBoardDto noticeBoardDto);
+
+    /**
+     * board DELETE
+     *
+     * @param boardId
+     */
+    void deleteBoardByBoardId(Long boardId);
+
+    /**
+     * board view = view +1 UPDATE
+     *
+     * @param boardId
+     */
+    void updateView(Long boardId);
 }
