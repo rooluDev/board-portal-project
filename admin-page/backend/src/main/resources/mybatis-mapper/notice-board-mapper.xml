@@ -96,4 +96,11 @@
             </otherwise>
         </choose>
     </insert>
+
+    <delete id="deleteBoardByBoardId" parameterType="long">
+        DELETE FROM
+            tb_notice_board
+        WHERE
+            board_id = #{boardId}
+    </delete>
 </mapper>
