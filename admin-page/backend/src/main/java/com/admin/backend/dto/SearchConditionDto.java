@@ -39,7 +39,7 @@ public class SearchConditionDto {
         this.searchText = "";
         this.pageSize = 10;
         this.orderValue = "createdAt";
-        this.orderDirection = "asc";
+        this.orderDirection = "desc";
         this.pageNum = 1;
     }
 
