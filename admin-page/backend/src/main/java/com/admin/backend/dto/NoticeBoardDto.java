@@ -20,4 +20,6 @@ public class NoticeBoardDto {
     private String fixed;
     private Timestamp createdAt;
     private Timestamp editedAt;
+    private String authorName; // 리스트 페이지에 필요한 등록자 이름
+    private String categoryName; // 리스트 페이지에 필요한 카테고리 이름
 }
