@@ -83,6 +83,41 @@
             fixed = 1
     </select>
 
+    <select id="selectBoardByBoardId" parameterType="long" resultType="com.admin.backend.dto.NoticeBoardDto">
+        SELECT
+            *
+        FROM
+            tb_notice_board
+        WHERE
+            board_id = #{boardId}
+    </select>
+
+    <update id="updateBoard" parameterType="com.admin.backend.dto.NoticeBoardDto">
+        UPDATE
+            tb_notice_board
+        SET
+            category_id = #{categoryId}, title = #{title}, content = #{content},
+            <choose>
+                <when test="fixed != null">
+                    fixed = 1
+                </when>
+                <otherwise>
+                    fixed = 0
+                </otherwise>
+            </choose>
+        WHERE
+            board_id = #{boardId}
+    </update>
+
+    <update id="updateView" parameterType="long">
+        UPDATE
+            tb_notice_board
+        SET
+            views = views + 1
+        WHERE
+            board_id = #{boardId}
+    </update>
+
     <insert id="insertBoard" parameterType="com.admin.backend.dto.NoticeBoardDto">
         INSERT INTO
             tb_notice_board (category_id, author_id, title, content, fixed)
