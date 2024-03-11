@@ -63,7 +63,7 @@
     <select id="selectFixedBoardList" resultType="com.admin.backend.dto.NoticeBoardDto">
         <include refid="selectBoardWithJoin"></include>
         WHERE
-            fixed = 0
+            fixed = 1
     </select>
 
     <select id="selectTotalRowCountByCondition" parameterType="com.admin.backend.dto.SearchConditionDto" resultType="int">
