@@ -33,4 +33,15 @@ public interface NoticeBoardMapper {
      */
     int selectTotalRowCountByCondition(SearchConditionDto searchConditionDto);
 
+    /**
+     * 공지사항 DB INSERT
+     * @param noticeBoardDto
+     */
+    void insertBoard(NoticeBoardDto noticeBoardDto);
+
+    /**
+     * fixed = 1 인 board SELECT
+     * @return
+     */
+    int selectFixedBoardCount();
 }
