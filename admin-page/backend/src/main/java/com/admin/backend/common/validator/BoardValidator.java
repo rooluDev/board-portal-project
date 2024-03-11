@@ -27,8 +27,7 @@ public class BoardValidator {
         if (text == null) {
             throw new IllegalBoardDataException("입력칸이 비어있습니다.");
         } else if (text.length() < minLength || text.length() > maxLength) {
-            // TODO : errorMsg
-            throw new IllegalBoardDataException("데이터 입력 오류.");
+            throw new IllegalBoardDataException("입력값이 올바르지 않습니다.");
         }
     }
 }
