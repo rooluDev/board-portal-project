@@ -1,5 +1,6 @@
 package com.admin.backend.service;
 
+import com.admin.backend.common.exception.FixedBoardFullException;
 import com.admin.backend.dto.NoticeBoardDto;
 import com.admin.backend.dto.SearchConditionDto;
 import com.admin.backend.mapper.NoticeBoardMapper;
@@ -15,7 +16,7 @@ import java.util.List;
 @Service
 @Primary
 @RequiredArgsConstructor
-public class NoticeBoardServiceImpl implements NoticeBoardService{
+public class NoticeBoardServiceImpl implements NoticeBoardService {
 
     private final NoticeBoardMapper noticeBoardMapper;
 
@@ -32,5 +33,23 @@ public class NoticeBoardServiceImpl implements NoticeBoardService{
     @Override
     public int getTotalRowCountByCondition(SearchConditionDto searchConditionDto) {
         return noticeBoardMapper.selectTotalRowCountByCondition(searchConditionDto);
+    }
+
+    @Override
+    public void addBoard(NoticeBoardDto noticeBoardDto) throws FixedBoardFullException {
+        if (noticeBoardDto.getFixed() != null) {
+            checkFixedCount();
+        }
+        noticeBoardMapper.insertBoard(noticeBoardDto);
+    }
+
+    private int getFixedBoardCount() {
+        return noticeBoardMapper.selectFixedBoardCount();
+    }
+
+    private void checkFixedCount() {
+        if (this.getFixedBoardCount() > 4) {
+            throw new FixedBoardFullException("상단 고정글이 5개까지 가능합니다.");
+        }
     }
 }
