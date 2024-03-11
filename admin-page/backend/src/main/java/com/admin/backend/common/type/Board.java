@@ -1,8 +1,11 @@
 package com.admin.backend.common.type;
 
+import lombok.Getter;
+
 /**
  * Board Type Enum
  */
+@Getter
 public enum Board {
     FREE_BOARD("free"),
     NOTICE_BOARD("notice"),
@@ -14,4 +17,6 @@ public enum Board {
     Board(String boardType){
         this.boardType = boardType;
     }
+
+
 }
