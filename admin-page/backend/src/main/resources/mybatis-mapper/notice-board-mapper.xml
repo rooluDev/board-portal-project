@@ -73,4 +73,27 @@
             tb_notice_board nb
         <include refid="boardSelectWhereQuery"></include>
     </select>
+
+    <select id="selectFixedBoardCount" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM
+            tb_notice_board
+        WHERE
+            fixed = 1
+    </select>
+
+    <insert id="insertBoard" parameterType="com.admin.backend.dto.NoticeBoardDto">
+        INSERT INTO
+            tb_notice_board (category_id, author_id, title, content, fixed)
+        VALUES
+        <choose>
+            <when test="fixed != null">
+                (#{categoryId},#{authorId},#{title},#{content},1)
+            </when>
+            <otherwise>
+                (#{categoryId},#{authorId},#{title},#{content},0)
+            </otherwise>
+        </choose>
+    </insert>
 </mapper>
