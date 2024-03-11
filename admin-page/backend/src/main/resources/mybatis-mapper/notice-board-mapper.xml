@@ -21,7 +21,7 @@
             nb.title,
             nb.views,
             nb.created_at,
-            ad.admin_name,
+            ad.admin_name as authorName,
             ctg.category_name
         FROM
             tb_notice_board nb
