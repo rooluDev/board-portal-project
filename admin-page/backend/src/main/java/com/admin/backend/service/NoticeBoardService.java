@@ -1,5 +1,6 @@
 package com.admin.backend.service;
 
+import com.admin.backend.common.exception.FixedBoardFullException;
 import com.admin.backend.dto.NoticeBoardDto;
 import com.admin.backend.dto.SearchConditionDto;
 
@@ -30,4 +31,11 @@ public interface NoticeBoardService {
      * @return
      */
     int getTotalRowCountByCondition(SearchConditionDto searchConditionDto);
+
+    /**
+     * 공지사항 추가
+     * @param noticeBoardDto
+     */
+    void addBoard(NoticeBoardDto noticeBoardDto) throws FixedBoardFullException;
+
 }
