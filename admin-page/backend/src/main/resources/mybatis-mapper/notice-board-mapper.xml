@@ -7,8 +7,9 @@
         WHERE
             fixed = 0 AND nb.created_at BETWEEN #{startDateTimestamp} AND #{endDateTimestamp}
         <if test="searchText != null and searchText != ''">
-            AND (title LIKE CONCAT('%',#{searchText},'%')
-            OR content LIKE CONCAT('%',#{searchText},'%'))
+            AND (nb.title LIKE CONCAT('%',#{searchText},'%')
+            OR nb.content LIKE CONCAT('%',#{searchText},'%')
+            OR ad.admin_name LIKE CONCAT('%',#{searchText},'%'))
         </if>
         <if test = "categoryId > 0">
             AND nb.category_id = #{categoryId}
@@ -25,9 +26,9 @@
             ctg.category_name
         FROM
             tb_notice_board nb
-                LEFT JOIN
+        LEFT JOIN
             tb_category ctg ON nb.category_id = ctg.category_id
-                LEFT JOIN
+        LEFT JOIN
             tb_admin ad ON nb.author_id = ad.admin_id
     </sql>
 
@@ -71,6 +72,8 @@
             COUNT(*)
         FROM
             tb_notice_board nb
+        LEFT JOIN
+            tb_admin ad ON nb.author_id = ad.admin_id
         <include refid="boardSelectWhereQuery"></include>
     </select>
 
