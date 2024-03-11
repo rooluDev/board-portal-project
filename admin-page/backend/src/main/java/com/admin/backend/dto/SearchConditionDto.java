@@ -1,8 +1,8 @@
 package com.admin.backend.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -15,7 +15,7 @@ import java.time.format.DateTimeFormatter;
  */
 @Getter
 @Setter
-@AllArgsConstructor
+@Slf4j
 public class SearchConditionDto {
     private String startDate;
     private String endDate;
