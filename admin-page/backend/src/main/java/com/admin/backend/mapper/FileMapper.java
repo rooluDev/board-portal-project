@@ -1,5 +1,6 @@
 package com.admin.backend.mapper;
 
+import com.admin.backend.dto.FileDto;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -7,4 +8,11 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface FileMapper {
+
+    /**
+     * tb_file DB INSERT
+     *
+     * @param fileDto
+     */
+    void insertFile(FileDto fileDto);
 }
