@@ -81,17 +81,22 @@ public class GlobalControllerExceptionHandler {
     }
 
     private String getDirectionByUriCase(String uri, RedirectAttributes redirectAttributes, RuntimeException runtimeException) {
-        if (uri.contains("/write")) {
+        if (uri.contains("/notice/write")) {
             redirectAttributes.addFlashAttribute("errorMessage", runtimeException.getMessage());
 
             return "redirect:/admin/board/notice/write";
 
-        } else if (uri.contains("/modify")) {
+        } else if (uri.contains("/notice/modify")) {
             String boardId = StringUtils.extractNumberFromUri(uri).get(0);
             redirectAttributes.addFlashAttribute("errorMessage", runtimeException.getMessage());
 
             return "redirect:/admin/board/notice/" + boardId;
+        } else if (uri.contains("/free/write")) {
+            String boardId = StringUtils.extractNumberFromUri(uri).get(0);
+            redirectAttributes.addFlashAttribute("errorMessage", runtimeException.getMessage());
+
+            return "redirect:/admin/board/free/write";
         }
-        return "redirect:/admin/board/notice/write";
+        return "redirect:/error";
     }
 }
