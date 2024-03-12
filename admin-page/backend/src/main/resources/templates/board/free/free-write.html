@@ -3,8 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
-
+<form action="/admin/board/free/write" method="post" enctype="multipart/form-data" onsubmit="return validator()">
+    <label>분류*</label>
+    <select name="categoryId">
+        <option th:each="category : ${categoryList}"
+                th:value="${category.categoryId}"
+                th:text="${category.categoryName}">
+    </select>
+    <br/>
+    <label>제목*</label>
+    <input type="text" name="title" id="title">
+    <br/>
+    <label>내용*</label>
+    <textarea name="content" id="content">
+        </textarea>
+    <br/>
+    <label>첨부</label>
+    <div id="fileInputBox">
+    </div>
+    <button type="button" onclick="addFileInputTag()">추가</button>
+    <hr/>
+    <button type="submit">등록</button>
+    <button type="button" th:onclick="goToList([[${searchCondition}]])">목록</button>
+</form>
 </body>
+<script>
+    const fileInputBox = document.getElementById('fileInputBox');
+
+    const addFileInputTag = () => {
+        const currentFileInputTag = document.querySelectorAll('#fileInputBox input[type="file"]').length;
+        if (currentFileInputTag > 4){
+            alert("최대 5개의 파일을 업로드 할 수 있습니다.");
+            return;
+        }
+        const inputDivBox = document.createElement('div');
+
+        const fileInputTag = document.createElement('input');
+        fileInputTag.type = 'file';
+        fileInputTag.name = 'file';
+
+        const fileDeleteBtn = document.createElement('button');
+        fileDeleteBtn.type = 'button';
+        fileDeleteBtn.innerText = 'X';
+        fileDeleteBtn.onclick = function (){
+            deleteFileInputTag(fileDeleteBtn);
+        }
+
+        inputDivBox.appendChild(fileInputTag);
+        inputDivBox.appendChild(fileDeleteBtn)
+
+        fileInputBox.appendChild(inputDivBox);
+    }
+
+    const deleteFileInputTag = (deleteBtn) => {
+        const inputDivBox = deleteBtn.parentNode;
+        inputDivBox.parentNode.removeChild(inputDivBox);
+    }
+
+    const validator = () => {
+        const title = $("#title").val();
+        const content = $("#content").val();
+        if (title.length > 99){
+            alert("제목이 100자 미만이여야 합니다");
+            return false;
+        }
+        if (content.length > 3999){
+            alert("내용이 4000자 미만이여야 합니다.");
+            return false;
+        }
+
+        return confirm("정말로 등록 하시겠습니까?");
+    }
+
+    const parseObjectToParam = (searchCondition) => {
+        return `?startDate=${searchCondition.startDate}&endDate=${searchCondition.endDate}&categoryId=${searchCondition.categoryId}` +
+            `&searchText=${searchCondition.searchText}&pageSize=${searchCondition.pageSize}&orderValue=${searchCondition.orderValue}` +
+            `&orderDirection=${searchCondition.orderDirection}&pageNum=${searchCondition.pageNum}`;
+    }
+
+    const goToList = (searchCondition) => {
+        location.href = `/admin/board/free` + parseObjectToParam(searchCondition);
+    }
+</script>
 </html>
