@@ -28,4 +28,10 @@ public class FreeBoardServiceImpl implements FreeBoardService{
     public List<FreeBoardDto> getBoardListByCondition(SearchConditionDto searchConditionDto) {
         return freeBoardMapper.selectBoardListByCondition(searchConditionDto);
     }
+
+    @Override
+    public Long addBoard(FreeBoardDto freeBoardDto) {
+        freeBoardMapper.insertBoard(freeBoardDto);
+        return freeBoardDto.getBoardId();
+    }
 }
