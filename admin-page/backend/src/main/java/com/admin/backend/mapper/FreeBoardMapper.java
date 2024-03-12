@@ -28,4 +28,10 @@ public interface FreeBoardMapper {
      */
     List<FreeBoardDto> selectBoardListByCondition(SearchConditionDto searchConditionDto);
 
+    /**
+     * 자유 게시물 추가
+     *
+     * @param freeBoardDto
+     */
+    void insertBoard(FreeBoardDto freeBoardDto);
 }
