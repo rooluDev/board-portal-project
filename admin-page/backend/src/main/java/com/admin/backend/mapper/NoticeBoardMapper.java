@@ -16,6 +16,7 @@ public interface NoticeBoardMapper {
 
     /**
      * 검색조건과 페이지네이션에 맞는 공지사항 리스트 SELECT
+     *
      * @param searchConditionDto
      * @return
      */
@@ -23,12 +24,14 @@ public interface NoticeBoardMapper {
 
     /**
      * 상단 고정인 공지사항 리스트 SELECT
+     *
      * @return
      */
     List<NoticeBoardDto> selectFixedBoardList();
 
     /**
      * 검색조건에 맞는 공지사항의 총 개수 SELECT
+     *
      * @param searchConditionDto
      * @return
      */
@@ -36,12 +39,14 @@ public interface NoticeBoardMapper {
 
     /**
      * 공지사항 DB INSERT
+     *
      * @param noticeBoardDto
      */
     void insertBoard(NoticeBoardDto noticeBoardDto);
 
     /**
      * fixed = 1 인 board SELECT
+     *
      * @return
      */
     int selectFixedBoardCount();
