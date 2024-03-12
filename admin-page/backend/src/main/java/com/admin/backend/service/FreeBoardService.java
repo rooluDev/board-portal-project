@@ -25,4 +25,11 @@ public interface FreeBoardService {
      * @return
      */
     List<FreeBoardDto> getBoardListByCondition(SearchConditionDto searchConditionDto);
+
+    /**
+     * 자유게시물 추가
+     *
+     * @param freeBoardDto
+     */
+    Long addBoard(FreeBoardDto freeBoardDto);
 }
