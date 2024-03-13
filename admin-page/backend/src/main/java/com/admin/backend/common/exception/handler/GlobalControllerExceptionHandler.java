@@ -1,9 +1,6 @@
 package com.admin.backend.common.exception.handler;
 
-import com.admin.backend.common.exception.BoardNotFoundException;
-import com.admin.backend.common.exception.FixedBoardFullException;
-import com.admin.backend.common.exception.IllegalBoardDataException;
-import com.admin.backend.common.exception.LoginFailException;
+import com.admin.backend.common.exception.*;
 import com.admin.backend.common.utils.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -80,21 +77,29 @@ public class GlobalControllerExceptionHandler {
 
     }
 
+    /**
+     * CommentNotFoundException Handler
+     *
+     * @param commentNotFoundException
+     * @param redirectAttributes
+     * @return
+     */
+    @ExceptionHandler(CommentNotFoundException.class)
+    public String handleCommentNotFoundException(CommentNotFoundException commentNotFoundException, RedirectAttributes redirectAttributes){
+        redirectAttributes.addFlashAttribute("errorMessage", commentNotFoundException.getMessage());
+        return "redirect:/admin/board/free";
+    }
+
     private String getDirectionByUriCase(String uri, RedirectAttributes redirectAttributes, RuntimeException runtimeException) {
         if (uri.contains("/notice/write")) {
             redirectAttributes.addFlashAttribute("errorMessage", runtimeException.getMessage());
-
             return "redirect:/admin/board/notice/write";
-
         } else if (uri.contains("/notice/modify")) {
             String boardId = StringUtils.extractNumberFromUri(uri).get(0);
             redirectAttributes.addFlashAttribute("errorMessage", runtimeException.getMessage());
-
             return "redirect:/admin/board/notice/" + boardId;
         } else if (uri.contains("/free/write")) {
-            String boardId = StringUtils.extractNumberFromUri(uri).get(0);
             redirectAttributes.addFlashAttribute("errorMessage", runtimeException.getMessage());
-
             return "redirect:/admin/board/free/write";
         }
         return "redirect:/error";
