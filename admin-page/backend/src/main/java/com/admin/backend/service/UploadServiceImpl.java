@@ -19,6 +19,7 @@ public class UploadServiceImpl implements UploadService{
 
     @Override
     public void uploadFile(List<FileDto> fileDtoList, MultipartFile[] fileList) throws IOException {
+        // TODO : index 무결성
         for(int i = 0; i<fileList.length;i++){
             if(!fileList[i].isEmpty()){
                 FileDto fileDto = fileDtoList.get(i);
