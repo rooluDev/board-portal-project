@@ -5,6 +5,7 @@ import com.admin.backend.dto.SearchConditionDto;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * tb_free_board DB mapper
@@ -29,9 +30,31 @@ public interface FreeBoardMapper {
     List<FreeBoardDto> selectBoardListByCondition(SearchConditionDto searchConditionDto);
 
     /**
-     * 자유 게시물 추가
+     * 자유 게시물 추가 INSERT
      *
      * @param freeBoardDto
      */
     void insertBoard(FreeBoardDto freeBoardDto);
+
+    /**
+     * 단일 자유 게시물 찾기 SELECT
+     *
+     * @param boardId
+     * @return
+     */
+    Optional<FreeBoardDto> selectBoardById(Long boardId);
+
+    /**
+     * content = 삭제된 게시판입니다.
+     *
+     * @param boardId
+     */
+    void updateBoardById(Long boardId);
+
+    /**
+     * view + 1
+     *
+     * @param boardId
+     */
+    void updateView(Long boardId);
 }
