@@ -6,13 +6,13 @@
     <sql id="boardSelectWhereQuery">
         WHERE
             fb.created_at BETWEEN #{startDateTimestamp} AND #{endDateTimestamp}
-            <if test="searchText != null and searchText != ''">
+            <if test='searchText != null and searchText != ""'>
                 AND (fb.title LIKE CONCAT('%',#{searchText},'%')
                 OR fb.content LIKE CONCAT('%',#{searchText},'%')
                 OR a.admin_name LIKE CONCAT('%',#{searchText},'%')
                 OR m.member_name LIKE CONCAT('%',#{searchText},'%'))
             </if>
-            <if test = "categoryId > 0">
+            <if test = 'categoryId > 0'>
                 AND fb.category_id = #{categoryId}
             </if>
     </sql>
@@ -51,29 +51,64 @@
         LEFT JOIN
             tb_member m on m.member_id = fb.author_id and fb.author_type = 'member'
         <include refid="boardSelectWhereQuery"></include>
+        GROUP BY fb.board_id
         ORDER BY
         <choose>
-            <when test="orderValue == 'createdAt'">
+            <when test='orderValue == "createdAt"'>
                 fb.created_at
             </when>
-            <when test="orderValue == 'category'">
+            <when test='orderValue == "category"'>
                 fb.category_id
             </when>
-            <when test="orderValue == 'title'">
+            <when test='orderValue == "title"'>
                 fb.title
             </when>
-            <when test="orderValue == 'views'">
+            <when test='orderValue == "views"'>
                 fb.views
             </when>
         </choose>
         <choose>
-            <when test="orderDirection == 'desc'">
+            <when test='orderDirection == "desc"'>
                 DESC
             </when>
-            <when test="orderDirection == 'asc'">
+            <when test='orderDirection == "asc"'>
                 ASC
             </when>
         </choose>
         LIMIT #{pageSize} OFFSET #{offset}
     </select>
+
+    <select id="selectBoardById" parameterType="long" resultType="com.admin.backend.dto.FreeBoardDto">
+        SELECT
+            *
+        FROM
+            tb_free_board
+        WHERE
+            board_id = #{boardId}
+    </select>
+
+    <insert id="insertBoard" parameterType="com.admin.backend.dto.FreeBoardDto" useGeneratedKeys="true" keyProperty="boardId">
+        INSERT INTO
+            tb_free_board (category_id, author_type, author_id, title, content)
+        VALUES
+            (#{categoryId},#{authorType},#{authorId},#{title},#{content})
+    </insert>
+
+    <update id="updateBoardById" parameterType="long">
+        UPDATE
+            tb_free_board
+        SET
+            comment = '삭제된 게시물입니다.'
+        WHERE
+            board_id = #{boardId}
+    </update>
+
+    <update id="updateView" parameterType="long">
+        UPDATE
+            tb_free_board
+        SET
+            views = views + 1
+        WHERE
+            board_id = #{boardId}
+    </update>
 </mapper>
