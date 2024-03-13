@@ -3,8 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
+<h1>자유게시판</h1>
+<h3 th:if="${errorMessage}" th:text="${errorMessage}"></h3>
+<form th:action="@{/admin/board/free/modify/{boardId}(boardId = ${boardId})}" method="post" enctype="multipart/form-data" onsubmit="return validator()">
+    <label>분류*</label>
+    <select name="categoryId">
+        <option th:each="category : ${categoryList}"
+                th:value="${category.categoryId}"
+                th:text="${category.categoryName}"
+                th:selected="${category.categoryId == board.categoryId}">
+        </option>
+    </select>
+    <br/>
+    <label>제목*</label>
+    <input type="text" name="title" th:value="${board.title}">
+    <br/>
+    <label>내용*</label>
+    <textarea name="content" th:text="${board.content}">
+    </textarea>
+    <br/>
 
+    <label>첨부</label>
+    <div id="fileInputBox">
+        <div th:each="file : ${fileList}">
+            <span th:text="${file.filePath}+${file.originalName}" th:onclick="downloadFile([[${file.fileId}]])"></span>
+            <input type="file" name="file">
+            <button type="button" id="deleteBtn" onclick="deleteFileInputTag(this)" th:data="${file.fileId}">X</button>
+        </div>
+    </div>
+    <button type="button" onclick="addFileInputTag()">추가</button>
+    <br/>
+
+    <textarea placeholder="댓글을 입력해 주세요." id="comment"></textarea>
+    <button type="button" th:onclick="addComment([[${board.boardId}]])">등록</button>
+    <div id="commentInputBox">
+        <div th:each="comment : ${commentList}" th:id="'comment-'+${comment.commentId}">
+            <span th:if="${comment.authorType} == 'admin'" th:text="${comment.adminName}"></span>
+            <span th:if="${comment.authorType} == 'member'" th:text="${comment.memberName}"></span>
+            <span th:text="${#dates.format(comment.createdAt,'yyyy.MM.dd hh:mm')}"></span>
+            <br/>
+            <span th:text="${comment.content}"></span>
+            <button type="button" th:onclick="deleteComment([[${comment.commentId}]])">삭제</button>
+        </div>
+    </div>
+    <br/>
+
+    <button type="submit">수정</button>
+    <button type="button" th:onclick="goToList([[${searchCondition}]])">목록</button>
+    <button type="button" th:onclick="deleteBoard([[${boardId}]])">삭제</button>
+</form>
 </body>
+<script>
+    const fileInputBox = document.getElementById('fileInputBox');
+    const commentInputBox = document.getElementById('commentInputBox');
+
+    const addFileInputTag = () => {
+        const currentFileInputTag = document.querySelectorAll('#fileInputBox input[type="file"]').length;
+        if (currentFileInputTag > 4) {
+            alert("최대 5개의 파일을 업로드 할 수 있습니다.");
+            return;
+        }
+        const inputDivBox = document.createElement('div');
+
+        const fileInputTag = document.createElement('input');
+        fileInputTag.type = 'file';
+        fileInputTag.name = 'file';
+
+        const fileDeleteBtn = document.createElement('button');
+        fileDeleteBtn.type = 'button';
+        fileDeleteBtn.innerText = 'X';
+        fileDeleteBtn.onclick = function () {
+            deleteFileInputTag(fileDeleteBtn);
+        }
+
+        inputDivBox.appendChild(fileInputTag);
+        inputDivBox.appendChild(fileDeleteBtn)
+
+        fileInputBox.appendChild(inputDivBox);
+    }
+
+    const deleteFileInputTag = (deleteBtn) => {
+        const inputDivBox = deleteBtn.parentNode;
+        inputDivBox.parentNode.removeChild(inputDivBox);
+    }
+
+    const validator = () => {
+        const title = $("#title").val();
+        const content = $("#content").val();
+        console.log(content);
+        if (title.length > 99) {
+            alert("제목이 100자 미만이여야 합니다");
+            return false;
+        }
+        if (content.length > 3999) {
+            alert("내용이 4000자 미만이여야 합니다.");
+            return false;
+        }
+
+        return confirm("정말로 수정 하시겠습니까?");
+    }
+
+
+    const parseObjectToParam = (searchCondition) => {
+        return `?startDate=${searchCondition.startDate}&endDate=${searchCondition.endDate}&categoryId=${searchCondition.categoryId}` +
+            `&searchText=${searchCondition.searchText}&pageSize=${searchCondition.pageSize}&orderValue=${searchCondition.orderValue}` +
+            `&orderDirection=${searchCondition.orderDirection}&pageNum=${searchCondition.pageNum}`;
+    }
+
+    const goToList = (searchCondition) => {
+        location.href = `/admin/board/free` + parseObjectToParam(searchCondition);
+    }
+
+    const deleteBoard = (boardId) => {
+        if (confirm('정말로 삭제 하시겠습니까?')) {
+            location.href = `/admin/board/free/delete/${boardId}`;
+        }
+    }
+
+    const deleteComment = (commentId) => {
+        $.ajax({
+            url: `/admin/comment/${commentId}`,
+            type: 'DELETE',
+            success: (response) => {
+                $(`#comment-` + commentId).remove();
+            },
+            error: (error) => {
+                alert(error);
+            }
+        })
+    }
+
+    const downloadFile = (fileId) => {
+        location.href = `/admin/file/download/${fileId}`;
+    }
+
+    const addComment = (boardId) => {
+        console.log($("#comment").val());
+        $.ajax({
+            url: `/admin/comment`,
+            type: 'POST',
+            contentType: "application/json",
+            data: JSON.stringify({
+                boardId: boardId,
+                content: $("#comment").val(),
+                boardType: 'free'
+            }),
+            success: (response) => {
+                console.log(response);
+                const inputDivBox = document.createElement('div');
+                inputDivBox.id = `comment-`+response.commentId;
+
+                const authorName = document.createElement('span');
+                authorName.textContent = response.adminName;
+
+                const createdAt = document.createElement('span');
+                const mysqlTimestamp = response.createdAt;
+                const date = new Date(mysqlTimestamp);
+                const formattedDate = `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+                createdAt.textContent = formattedDate;
+
+                const br = document.createElement('br');
+
+                const content = document.createElement('span');
+                content.textContent = response.content;
+
+                const deleteButton = document.createElement('button');
+                deleteButton.type = 'button';
+                deleteButton.innerText = '삭제';
+                deleteButton.onclick = () => {
+                    deleteComment(response.commentId);
+                }
+
+                inputDivBox.appendChild(authorName);
+                inputDivBox.appendChild(createdAt);
+                inputDivBox.appendChild(br);
+                inputDivBox.appendChild(content);
+                inputDivBox.appendChild(deleteButton);
+                commentInputBox.appendChild(inputDivBox);
+            }
+        })
+    }
+
+</script>
 </html>
