@@ -6,6 +6,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
+<h1>자유게시판 관리</h1>
+<h3 th:if="${errorMessage}" th:text="${errorMessage}"></h3>
 <form action="/admin/board/free/write" method="post" enctype="multipart/form-data" onsubmit="return validator()">
     <label>분류*</label>
     <select name="categoryId">
