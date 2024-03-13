@@ -10,4 +10,22 @@
         VALUES
             (#{boardType},#{boardId},#{originalName},#{physicalName},#{filePath},#{extension},#{size})
     </insert>
+
+    <select id="selectFileListByBoardId" parameterType="map" resultType="com.admin.backend.dto.FileDto">
+        SELECT
+            *
+        FROM
+            tb_file
+        WHERE
+            board_id = #{boardId} AND board_type = #{boardType}
+    </select>
+
+    <select id="selectFileById" parameterType="long" resultType="com.admin.backend.dto.FileDto">
+        SELECT
+            *
+        FROM
+            tb_file
+        WHERE
+            file_id = #{fileId}
+    </select>
 </mapper>
