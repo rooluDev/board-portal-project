@@ -60,7 +60,8 @@
     <tr th:each="board : ${boardList}">
         <td th:text="${board.boardId}"></td>
         <td th:text="${board.categoryName}"></td>
-        <td th:text="${board.title}" th:onclick="goToBoard([[${board.boardId}]],[[${searchCondition}]])"><span th:if="${board.fileId != null}">$</span></td>
+        <td th:if="${board.fileId == null}" th:text="${board.title}" th:onclick="goToBoard([[${board.boardId}]],[[${searchCondition}]])"></td>
+        <td th:if="${board.fileId != null}" th:text="${board.title} + '$'" th:onclick="goToBoard([[${board.boardId}]],[[${searchCondition}]])"></td>
         <td th:text="${board.views}"></td>
         <td th:text="${#dates.format(board.createdAt,'yyyy.MM.dd hh:mm')}"></td>
         <td th:if="${board.authorType} == 'member'" th:text="${board.memberName}"></td>
