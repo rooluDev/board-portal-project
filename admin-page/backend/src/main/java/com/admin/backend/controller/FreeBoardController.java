@@ -1,5 +1,6 @@
 package com.admin.backend.controller;
 
+import com.admin.backend.common.exception.BoardNotFoundException;
 import com.admin.backend.common.type.Author;
 import com.admin.backend.common.type.Board;
 import com.admin.backend.common.utils.PaginationUtils;
@@ -63,11 +64,11 @@ public class FreeBoardController {
      * @return
      */
     @GetMapping("/board/free/write")
-    public String getWritePage(Model model) {
-
+    public String getWritePage(Model model, @ModelAttribute SearchConditionDto searchConditionDto) {
         List<CategoryDto> categoryDtoList = categoryService.getCategoryListByBoardType(Board.FREE_BOARD.getBoardType());
 
         model.addAttribute("categoryList", categoryDtoList);
+        model.addAttribute("searchCondition", searchConditionDto);
 
         return "/board/free/free-write";
     }
@@ -100,6 +101,63 @@ public class FreeBoardController {
             List<FileDto> addedFileList = fileService.addFile(freeBoardAddDto.getFile(), Board.FREE_BOARD.getBoardType(), boardId);
             uploadService.uploadFile(addedFileList, freeBoardAddDto.getFile());
         }
+
+        return "redirect:/admin/board/free";
+    }
+
+    /**
+     * 자유 게시판 보기 페이지
+     *
+     * @param boardId
+     * @param model
+     * @param searchConditionDto
+     * @return
+     */
+    @GetMapping("/board/free/{boardId}")
+    public String getBoardPage(@PathVariable(name = "boardId") Long boardId, Model model, @ModelAttribute SearchConditionDto searchConditionDto) {
+        // 조회수 증가
+        freeBoardService.increaseView(boardId);
+
+        // 데이터 가져오기
+        List<CategoryDto> categoryDtoList = categoryService.getCategoryListByBoardType(Board.FREE_BOARD.getBoardType());
+        FreeBoardDto freeBoardDto = freeBoardService.getBoardById(boardId).orElseThrow(() -> new BoardNotFoundException("잘못된 요청입니다."));
+        List<FileDto> fileDtoList = fileService.getFileListByBoardId(boardId, Board.FREE_BOARD.getBoardType());
+        List<CommentDto> commentDtoList = commentService.getCommentListByBoardId(boardId, Board.FREE_BOARD.getBoardType());
+
+        model.addAttribute("categoryList", categoryDtoList);
+        model.addAttribute("searchCondition", searchConditionDto);
+        model.addAttribute("board", freeBoardDto);
+        model.addAttribute("fileList", fileDtoList);
+        model.addAttribute("commentList", commentDtoList);
+
+        return "/board/free/free-view";
+    }
+
+    /**
+     * 게시물 수정
+     *
+     * @param boardId
+     * @param freeBoardAddDto
+     * @return
+     */
+    @PostMapping("/board/free/modify/{boardId}")
+    public String modifyBoard(@PathVariable(name = "boardId") Long boardId, @ModelAttribute FreeBoardAddDto freeBoardAddDto) {
+        // TODO : MODIFY
+
+        return "redirect:/admin/board/free";
+    }
+
+    /**
+     * 게시물 삭제
+     *
+     * @param boardId
+     * @return
+     */
+    @GetMapping("/board/free/delete/{boardId}")
+    public String deleteBoard(@PathVariable(name = "boardId") Long boardId) {
+        // TODO : DELETE, isDeleted 필요?
+        freeBoardService.deleteBoard(boardId);
+
 
         return "redirect:/admin/board/free";
     }
