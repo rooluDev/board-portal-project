@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Free Board Service 구현체
@@ -33,5 +34,20 @@ public class FreeBoardServiceImpl implements FreeBoardService{
     public Long addBoard(FreeBoardDto freeBoardDto) {
         freeBoardMapper.insertBoard(freeBoardDto);
         return freeBoardDto.getBoardId();
+    }
+
+    @Override
+    public Optional<FreeBoardDto> getBoardById(Long boardId) {
+        return freeBoardMapper.selectBoardById(boardId);
+    }
+
+    @Override
+    public void deleteBoard(Long boardId) {
+        freeBoardMapper.updateBoardById(boardId);
+    }
+
+    @Override
+    public void increaseView(Long boardId) {
+        freeBoardMapper.updateView(boardId);
     }
 }
