@@ -1,8 +1,10 @@
 package com.admin.backend.common.validator;
 
 import com.admin.backend.common.exception.IllegalBoardDataException;
+import com.admin.backend.common.exception.IllegalFileDataException;
 import com.admin.backend.dto.FreeBoardAddDto;
 import com.admin.backend.dto.NoticeBoardDto;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Board input data validator
@@ -18,6 +20,7 @@ public class BoardValidator {
     private static final int FREE_CONTENT_MIN = 1;
     private static final int FREE_CONTENT_MAX = 3999;
     private static final int FREE_FILE_LENGTH = 5;
+    private static final int FILE_MAX_SIZE = 2 * 1024 * 1024;
 
     /**
      * Notice Board Validator
@@ -40,6 +43,7 @@ public class BoardValidator {
         if(freeBoardAddDto.getFile() != null) {
             validateFileLength(freeBoardAddDto.getFile().length, FREE_FILE_LENGTH);
         }
+        validateFileSize(freeBoardAddDto.getFile(), FILE_MAX_SIZE);
     }
 
     private static void validateText(String text, int minLength, int maxLength) {
@@ -52,7 +56,15 @@ public class BoardValidator {
 
     private static void validateFileLength(int fileLength, int maxLength){
         if(fileLength > maxLength){
-            throw new IllegalBoardDataException("업로드 파일은 5개까지 가능합니다.");
+            throw new IllegalFileDataException("업로드 파일은 5개까지 가능합니다.");
+        }
+    }
+
+    private static void validateFileSize(MultipartFile[] fileList, int maxSize){
+        for(MultipartFile file : fileList){
+            if(file.getSize() > maxSize){
+                throw new IllegalFileDataException("파일 사이즈가 " + maxSize + "보다 크면 안됩니다.");
+            }
         }
     }
 }
