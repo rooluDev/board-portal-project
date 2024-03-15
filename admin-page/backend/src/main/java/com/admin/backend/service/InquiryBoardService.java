@@ -41,4 +41,11 @@ public interface InquiryBoardService {
      * @param boardId
      */
     void deleteBoardById(Long boardId);
+
+    /**
+     * 게시물 조회수 증가
+     *
+     * @param boardId
+     */
+    void increaseViewById(Long boardId);
 }
