@@ -17,7 +17,7 @@ public interface AnswerMapper {
      * @param boardId
      * @return
      */
-    AnswerDto selectByBoardId(Long boardId);
+    Optional<AnswerDto> selectByBoardId(Long boardId);
 
     /**
      * INSERT tb_answer
