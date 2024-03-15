@@ -32,4 +32,9 @@ public class AnswerServiceImpl implements AnswerService{
     public void deleteAnswer(Long boardId) {
         answerMapper.deleteByBoardId(boardId);
     }
+
+    @Override
+    public void modifyAnswer(AnswerDto answerDto) {
+        answerMapper.updateAnswer(answerDto);
+    }
 }
