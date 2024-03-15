@@ -2,6 +2,8 @@ package com.admin.backend.service;
 
 import com.admin.backend.dto.AnswerDto;
 
+import java.util.Optional;
+
 
 /**
  * Answer Service Interface
@@ -14,7 +16,7 @@ public interface AnswerService {
      * @param boardId
      * @return
      */
-    AnswerDto getAnswerByBoardId(Long boardId);
+    Optional<AnswerDto> getAnswerByBoardId(Long boardId);
 
     /**
      * 답변 추가
