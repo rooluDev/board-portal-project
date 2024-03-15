@@ -90,17 +90,54 @@ public class GlobalControllerExceptionHandler {
         return "redirect:/admin/board/free";
     }
 
+    /**
+     * IllegalAnswerDataException Handler
+     *
+     * @param illegalAnswerDataException
+     * @param redirectAttributes
+     * @param request
+     * @return
+     */
+    @ExceptionHandler(IllegalAnswerDataException.class)
+    public String handleIllegalAnswerDataException(IllegalAnswerDataException illegalAnswerDataException, RedirectAttributes redirectAttributes, HttpServletRequest request){
+        String uri = request.getRequestURI();
+        return getDirectionByUriCase(uri, redirectAttributes, illegalAnswerDataException);
+    }
+
+    /**
+     * IllegalFileDataException Handler
+     *
+     * @param illegalFileDataException
+     * @param redirectAttributes
+     * @param request
+     * @return
+     */
+    @ExceptionHandler(IllegalFileDataException.class)
+    public String handleIllegalFileDataException(IllegalFileDataException illegalFileDataException, RedirectAttributes redirectAttributes, HttpServletRequest request){
+        String uri = request.getRequestURI();
+        return getDirectionByUriCase(uri, redirectAttributes, illegalFileDataException);
+    }
+
     private String getDirectionByUriCase(String uri, RedirectAttributes redirectAttributes, RuntimeException runtimeException) {
         if (uri.contains("/notice/write")) {
             redirectAttributes.addFlashAttribute("errorMessage", runtimeException.getMessage());
             return "redirect:/admin/board/notice/write";
         } else if (uri.contains("/notice/modify")) {
+
             String boardId = StringUtils.extractNumberFromUri(uri).get(0);
             redirectAttributes.addFlashAttribute("errorMessage", runtimeException.getMessage());
+
             return "redirect:/admin/board/notice/" + boardId;
         } else if (uri.contains("/free/write")) {
+
             redirectAttributes.addFlashAttribute("errorMessage", runtimeException.getMessage());
+
             return "redirect:/admin/board/free/write";
+        } else if(uri.contains("/inquiry")){
+            String boardId = StringUtils.extractNumberFromUri(uri).get(0);
+            redirectAttributes.addFlashAttribute("errorMessage", runtimeException.getMessage());
+
+            return "redirect:/admin/board/inquiry/" + boardId;
         }
         return "redirect:/error";
     }
