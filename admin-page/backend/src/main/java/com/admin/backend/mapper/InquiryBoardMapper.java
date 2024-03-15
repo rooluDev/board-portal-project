@@ -43,4 +43,11 @@ public interface InquiryBoardMapper {
      * @param boardId
      */
     void deleteBoardById(Long boardId);
+
+    /**
+     * UPDATE views + 1
+     *
+     * @param boardId
+     */
+    void updateViewById(Long boardId);
 }
