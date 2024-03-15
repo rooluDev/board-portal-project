@@ -74,4 +74,13 @@
             board_id = #{boardId}
     </delete>
 
+    <update id="updateViewById" parameterType="long">
+        UPDATE
+            tb_inquiry_board
+        SET
+            views = views + 1
+        WHERE
+            board_id = #{boardId}
+    </update>
+
 </mapper>
