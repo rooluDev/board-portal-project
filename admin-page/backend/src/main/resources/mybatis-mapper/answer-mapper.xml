@@ -4,4 +4,27 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.admin.backend.mapper.AnswerMapper">
 
+    <select id="selectByBoardId" parameterType="long" resultType="com.admin.backend.dto.AnswerDto">
+        SELECT
+            *
+        FROM
+            tb_answer
+        WHERE
+            board_id = #{boardId}
+    </select>
+
+    <insert id="insertAnswer" parameterType="com.admin.backend.dto.AnswerDto">
+        INSERT INTO
+            tb_answer (board_id, author_id, content)
+        VALUES
+            (#{boardId}, #{authorId}, #{content})
+    </insert>
+
+    <delete id="deleteByBoardId" parameterType="long">
+        DELETE FROM
+            tb_answer
+        WHERE
+            board_id = #{boardId}
+    </delete>
+
 </mapper>
