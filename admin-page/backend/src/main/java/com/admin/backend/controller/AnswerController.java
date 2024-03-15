@@ -38,6 +38,10 @@ public class AnswerController {
                 .build();
 
         // 답변 추가
+        if(answerService.getAnswerByBoardId(boardId).isPresent()){
+            answerService.modifyAnswer(answerDto);
+            return "redirect:/admin/board/inquiry";
+        }
         answerService.addAnswer(answerDto);
 
         return "redirect:/admin/board/inquiry";
