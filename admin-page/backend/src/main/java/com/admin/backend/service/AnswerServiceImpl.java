@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 /**
  * Answer Service 구현체
  */
@@ -17,7 +19,7 @@ public class AnswerServiceImpl implements AnswerService{
     private final AnswerMapper answerMapper;
 
     @Override
-    public AnswerDto getAnswerByBoardId(Long boardId) {
+    public Optional<AnswerDto> getAnswerByBoardId(Long boardId) {
         return answerMapper.selectByBoardId(boardId);
     }
 
