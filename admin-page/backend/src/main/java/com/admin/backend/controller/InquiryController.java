@@ -59,7 +59,9 @@ public class InquiryController {
     public String getViewPage(@PathVariable(name = "boardId")Long boardId, @ModelAttribute SearchConditionDto searchConditionDto, Model model){
 
         InquiryDto inquiryDto = inquiryBoardService.getBoardById(boardId).orElseThrow(()-> new BoardNotFoundException("잘못된 요청입니다."));
-        AnswerDto answerDto = answerService.getAnswerByBoardId(boardId);
+        AnswerDto answerDto = answerService.getAnswerByBoardId(boardId).orElseGet(AnswerDto::new);
+
+        inquiryBoardService.increaseViewById(boardId);
 
         model.addAttribute("board", inquiryDto);
         model.addAttribute("answer", answerDto);
