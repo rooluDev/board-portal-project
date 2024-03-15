@@ -8,7 +8,7 @@
 <body>
 <h1>자유게시판</h1>
 <h3 th:if="${errorMessage}" th:text="${errorMessage}"></h3>
-<form th:action="@{/admin/board/free/modify/{boardId}(boardId = ${boardId})}" method="post" enctype="multipart/form-data" onsubmit="return validator()">
+<form th:action="@{/admin/board/free/modify/{boardId}(boardId = ${board.boardId})}" method="post" enctype="multipart/form-data" onsubmit="return validator()">
     <label>분류*</label>
     <select name="categoryId">
         <option th:each="category : ${categoryList}"
@@ -53,7 +53,7 @@
 
     <button type="submit">수정</button>
     <button type="button" th:onclick="goToList([[${searchCondition}]])">목록</button>
-    <button type="button" th:onclick="deleteBoard([[${boardId}]])">삭제</button>
+    <button type="button" th:onclick="deleteBoard([[${board.boardId}]])">삭제</button>
 </form>
 </body>
 <script>
@@ -93,7 +93,7 @@
     const validator = () => {
         const title = $("#title").val();
         const content = $("#content").val();
-        console.log(content);
+
         if (title.length > 99) {
             alert("제목이 100자 미만이여야 합니다");
             return false;
