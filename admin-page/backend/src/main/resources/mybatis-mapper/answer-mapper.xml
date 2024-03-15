@@ -27,4 +27,14 @@
             board_id = #{boardId}
     </delete>
 
+    <update id="updateAnswer" parameterType="com.admin.backend.dto.AnswerDto">
+        UPDATE
+            tb_answer
+        SET
+            author_id = #{authorId},
+            content = #{content}
+        WHERE
+            board_id = #{boardId}
+    </update>
+
 </mapper>
