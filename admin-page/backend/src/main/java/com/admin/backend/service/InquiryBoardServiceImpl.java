@@ -39,4 +39,9 @@ public class InquiryBoardServiceImpl implements InquiryBoardService{
     public void deleteBoardById(Long boardId) {
         inquiryBoardMapper.deleteBoardById(boardId);
     }
+
+    @Override
+    public void increaseViewById(Long boardId) {
+        inquiryBoardMapper.updateViewById(boardId);
+    }
 }
