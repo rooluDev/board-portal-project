@@ -29,4 +29,11 @@ public interface AnswerService {
      * @param boardId
      */
     void deleteAnswer(Long boardId);
+
+    /**
+     * 답변 수정
+     *
+     * @param answerDto
+     */
+    void modifyAnswer(AnswerDto answerDto);
 }
