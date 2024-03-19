@@ -14,45 +14,45 @@ public interface FreeBoardService {
     /**
      * 검색조건에 맞는 자유게시물의 총 개수 가져오기
      *
-     * @param searchConditionDto
-     * @return
+     * @param searchConditionDto 검색조건
+     * @return 검색조건에 맞는 자유게시물의 총 개수
      */
     int getTotalRowCountByCondition(SearchConditionDto searchConditionDto);
 
     /**
      * 검색조건과 페이지네이션에 맞는 자유게시물 리스트 가져오기
      *
-     * @param searchConditionDto
-     * @return
+     * @param searchConditionDto 검색조건
+     * @return 검색조건과 페이지네이션에 맞는 자유게시물 리스트
      */
     List<FreeBoardDto> getBoardListByCondition(SearchConditionDto searchConditionDto);
 
     /**
      * 자유게시물 추가
      *
-     * @param freeBoardDto
+     * @param freeBoardDto ( category_id, author_type, author_id, title, content )
      */
     Long addBoard(FreeBoardDto freeBoardDto);
 
     /**
-     * 자유게시물 찾기
+     * 자유 게시물 찾기
      *
-     * @param boardId
-     * @return
+     * @param boardId ( pk )
+     * @return boarId와 일치하는 자유 게시물
      */
     Optional<FreeBoardDto> getBoardById(Long boardId);
 
     /**
      * 자유게시물 삭제
      *
-     * @param boardId
+     * @param boardId ( pk )
      */
     void deleteBoard(Long boardId);
 
     /**
      * 조회수 증가
      *
-     * @param boardId
+     * @param boardId ( pk )
      */
     void increaseView(Long boardId);
 
