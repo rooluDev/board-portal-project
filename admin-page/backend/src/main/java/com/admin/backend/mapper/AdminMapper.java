@@ -7,15 +7,17 @@ import org.apache.ibatis.annotations.Param;
 import java.util.Optional;
 
 /**
- * tb_Admin DB Mapper
+ * tb_admin Mapper
  */
 @Mapper
 public interface AdminMapper {
+
     /**
-     * ID와 password가 일치하는 tb_admin SELECT
-     * @param adminId
-     * @param password
-     * @return
+     * SELECT tb_admin By ID and password
+     *
+     * @param adminId  ID
+     * @param password PW
+     * @return ID와 PW가 일치하는 admin data
      */
     Optional<AdminDto> selectAdminDtoByIdAndPassword(@Param("adminId") String adminId, @Param("password") String password);
 }

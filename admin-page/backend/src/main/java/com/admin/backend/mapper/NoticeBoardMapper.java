@@ -9,74 +9,75 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * tb_notice_board DB Mapper
+ * tb_notice_board Mapper
  */
 @Mapper
 public interface NoticeBoardMapper {
 
     /**
-     * 검색조건과 페이지네이션에 맞는 공지사항 리스트 SELECT
+     * SELECT tb_notice_board By searchCondition
      *
-     * @param searchConditionDto
-     * @return
+     * @param searchConditionDto 검색조건
+     * @return 검색조건과 페이지네이션에 맞는 공지 게시물 리스트
      */
     List<NoticeBoardDto> selectBoardListByCondition(SearchConditionDto searchConditionDto);
 
     /**
-     * 상단 고정인 공지사항 리스트 SELECT
+     * SELECT tb_inquiry_board By fixed = 1
      *
-     * @return
+     * @return 상단 고정인 공지 게시물 리스트
      */
     List<NoticeBoardDto> selectFixedBoardList();
 
     /**
-     * 검색조건에 맞는 공지사항의 총 개수 SELECT
+     * SELECT totalRowCount By searchCondition
      *
-     * @param searchConditionDto
-     * @return
+     * @param searchConditionDto 검색조건
+     * @return 검색조건 맞는 공지 게시물 리스트 의 수
      */
     int selectTotalRowCountByCondition(SearchConditionDto searchConditionDto);
 
     /**
-     * 공지사항 DB INSERT
+     * INSERT tb_notice_board
      *
-     * @param noticeBoardDto
+     * @param noticeBoardDto ( category_id, author_id, title, content, fixed )
      */
     void insertBoard(NoticeBoardDto noticeBoardDto);
 
     /**
-     * fixed = 1 인 board SELECT
+     * SELECT rowCount By fixed = 1
      *
-     * @return
+     * @return 상단 고정인 공지사항 게시물의 수
      */
     int selectFixedBoardCount();
 
     /**
-     * boardId(pk)로 board SELECT
+     * SELECT tb_notice_board By id
      *
-     * @param boardId
-     * @return
+     * @param boardId ( pk )
+     * @return boardId와 일치하는 공지 게시물
      */
     Optional<NoticeBoardDto> selectBoardByBoardId(Long boardId);
 
     /**
-     * board UPDATE
+     * UPDATE tb_notice_board
      *
-     * @param noticeBoardDto
+     * @param noticeBoardDto ( categoryId, title, content, fixed )
      */
     void updateBoard(NoticeBoardDto noticeBoardDto);
 
     /**
-     * board DELETE
+     * DELETE tb_notice_board By id
      *
-     * @param boardId
+     * @param boardId ( pk )
      */
     void deleteBoardByBoardId(Long boardId);
 
     /**
-     * board view = view +1 UPDATE
+     * UPDATE tb_notice_board
+     * SET views = views + 1
      *
-     * @param boardId
+     * @param boardId ( pk )
      */
     void updateView(Long boardId);
 }

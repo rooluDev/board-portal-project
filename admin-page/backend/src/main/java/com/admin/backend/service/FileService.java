@@ -12,29 +12,29 @@ import java.util.Optional;
 public interface FileService {
 
     /**
-     * boardType에 boardId에 파일 추가
+     * file 등록
      *
-     * @param fileList
-     * @param boardType
-     * @param boardId
-     * @return
+     * @param fileList 추가 될 파일 리스트
+     * @param boardType boardType
+     * @param boardId boardId
+     * @return 추가한 File 리스트
      */
     List<FileDto> addFile(MultipartFile[] fileList, String boardType, Long boardId);
 
     /**
-     * boardType에 등록된 board 내 파일 가져오기
+     * 특정 게시물에 있는 file 리스트 가져오기
      *
-     * @param boardId
-     * @param boardType
-     * @return
+     * @param boardId boardId
+     * @param boardType boardType
+     * @return boardType boardId에 있는 파일 리스트
      */
     List<FileDto> getFileListByBoardId(Long boardId, String boardType);
 
     /**
-     * fileId로 File 가져오기
+     * file 가져오기
      *
-     * @param fileId
-     * @return
+     * @param fileId ( pk )
+     * @return fileId와 일치하는 File
      */
     Optional<FileDto> getFileById(Long fileId);
 

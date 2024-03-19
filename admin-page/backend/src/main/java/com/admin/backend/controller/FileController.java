@@ -3,6 +3,7 @@ package com.admin.backend.controller;
 
 import com.admin.backend.dto.FileDto;
 import com.admin.backend.service.FileService;
+import com.admin.backend.service.UploadServiceImpl;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -12,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.*;
 
+/**
+ * File Controller
+ */
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/admin")
@@ -19,33 +23,39 @@ public class FileController {
     private final FileService fileService;
 
     /**
-     * file download
+     * 파일 다운로드
      *
-     * @param filId
-     * @param response
-     * @throws IOException
+     * @param filId    PathVariable
+     * @param response HttpServletResponse
+     * @throws IOException IOException
      */
     @GetMapping("/file/download/{fileId}")
-    public void downloadFile(@PathVariable(name = "fileId")Long filId, HttpServletResponse response) throws IOException {
-        FileDto fileDto = fileService.getFileById(filId).orElseThrow(()-> new FileNotFoundException());
+    public void downloadFile(@PathVariable(name = "fileId") Long filId, HttpServletResponse response) throws IOException {
 
+        // 파일 데이터 가져오기
+        FileDto fileDto = fileService.getFileById(filId).orElseThrow(() -> new FileNotFoundException());
+
+        // 파일 객체 생성
         String fileName = fileDto.getPhysicalName() + "." + fileDto.getExtension();
-        String filePath = fileDto.getFilePath() + fileName;
+        String filePath = UploadServiceImpl.PATH + fileDto.getFilePath() + "/" + fileName;
         File file = new File(filePath);
 
-        response.setContentType("application/octet-stream");
+        // response 설정
         response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+        response.setContentType("application/octet-stream");
 
-        download(file,response.getOutputStream());
+        // 다운로드
+        download(file, response.getOutputStream());
     }
 
     /**
      * 파일 다운로드
+     *
      * @param file
      * @param outputStream
      * @throws IOException
      */
-    private void download(File file, OutputStream outputStream) throws IOException{
+    private void download(File file, OutputStream outputStream) throws IOException {
         // try-with-resource 파일 다운로드
         try (FileInputStream fis = new FileInputStream(file);
              BufferedInputStream bis = new BufferedInputStream(fis);

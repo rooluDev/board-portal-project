@@ -7,15 +7,16 @@ import org.apache.ibatis.annotations.Mapper;
 import java.util.List;
 
 /**
- * tb_category DB Mapper
+ * tb_category Mapper
  */
 @Mapper
 public interface CategoryMapper {
 
     /**
-     * boardType에 맞는 카테고리 리스트 SELECT
-     * @param boardType
-     * @return
+     * SELECT tb_category By boardType
+     *
+     * @param boardType boardType
+     * @return boardType에 맞는 카테고리 리스트
      */
     List<CategoryDto> selectCategoryByBoardType(String boardType);
 }

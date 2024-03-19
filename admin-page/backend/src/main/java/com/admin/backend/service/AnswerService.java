@@ -11,31 +11,31 @@ import java.util.Optional;
 public interface AnswerService {
 
     /**
-     * boardId에 등록된 answer 가져오기
+     * boardId와 일치하는 문의 게시물에 있는 답변 가져오기
      *
-     * @param boardId
-     * @return
+     * @param boardId boardId
+     * @return 문의 게시물에 등록된 답변
      */
     Optional<AnswerDto> getAnswerByBoardId(Long boardId);
 
     /**
-     * 답변 추가
+     * 문의 게시물에 답변 추가
      *
-     * @param answerDto
+     * @param answerDto ( boardId, authorId, content )
      */
     void addAnswer(AnswerDto answerDto);
 
     /**
-     * 답변 삭제
+     * 문의 게시물에 등록된 답변 삭제
      *
-     * @param boardId
+     * @param boardId 문의 게시물의 pk
      */
     void deleteAnswer(Long boardId);
 
     /**
-     * 답변 수정
+     * 문의 게시물에 등록된 답변 수정
      *
-     * @param answerDto
+     * @param answerDto ( authorId, content , boardId )
      */
     void modifyAnswer(AnswerDto answerDto);
 }

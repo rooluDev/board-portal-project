@@ -1,7 +1,7 @@
 package com.admin.backend.common.exception;
 
 /**
- * Comment가 없을 때 발생하는 Exception
+ * 댓글이 없을 때 발생하는 Exception
  */
 public class CommentNotFoundException extends RuntimeException{
 

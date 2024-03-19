@@ -10,10 +10,10 @@ public class MultipartFileUtils {
     /**
      * original name에서 확장자 추출
      *
-     * @param file
-     * @return
+     * @param file 저장 할 MultipartFile
+     * @return 파일의 확장자
      */
-    public static String extractExtension(MultipartFile file){
+    public static String extractExtension(MultipartFile file) {
         String fileName = file.getOriginalFilename();
         if (fileName != null) {
             int lastDotIndex = fileName.lastIndexOf('.');

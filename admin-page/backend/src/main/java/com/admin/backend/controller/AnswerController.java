@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Answer Controller
+ */
 @Controller
 @RequestMapping("/admin")
 @RequiredArgsConstructor
@@ -18,15 +21,15 @@ public class AnswerController {
     /**
      * 답변 등록
      *
-     * @param boardId
-     * @param content
-     * @param adminDto
-     * @return
+     * @param boardId  PathVariable
+     * @param adminDto 저장된 세션 정보 ( table column에 저장될 데이터 )
+     * @param content  답변 내용
+     * @return redirect:/admin/board/inquiry
      */
     @PostMapping("/answer/{boardId}")
     public String addAnswer(@PathVariable(name = "boardId") Long boardId,
-                            @RequestParam(name = "content") String content,
-                            @SessionAttribute(name = LoginController.ADMIN_SESSION_ID) AdminDto adminDto) {
+                            @SessionAttribute(name = LoginController.ADMIN_SESSION_ID) AdminDto adminDto,
+                            @RequestParam(name = "content") String content) {
 
         // 유효성 검증
         AnswerValidator.validateAnswer(content);
@@ -37,12 +40,12 @@ public class AnswerController {
                 .content(content)
                 .build();
 
-        // 답변 추가
-        if(answerService.getAnswerByBoardId(boardId).isPresent()){
+        // 답변이 이미 존재 할시 수정 그 외 추가
+        if (answerService.getAnswerByBoardId(boardId).isPresent()) {
             answerService.modifyAnswer(answerDto);
-            return "redirect:/admin/board/inquiry";
+        } else {
+            answerService.addAnswer(answerDto);
         }
-        answerService.addAnswer(answerDto);
 
         return "redirect:/admin/board/inquiry";
     }
