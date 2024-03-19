@@ -18,12 +18,13 @@ public class GlobalControllerExceptionHandler {
     /**
      * LoginFailException Handler
      *
-     * @param loginFailException
-     * @param redirectAttributes
-     * @return
+     * @param loginFailException LoginFailException
+     * @param redirectAttributes RedirectAttributes
+     * @return redirect:/admin/login
      */
     @ExceptionHandler(LoginFailException.class)
-    public String handleLoginFailException(LoginFailException loginFailException, RedirectAttributes redirectAttributes) {
+    public String handleLoginFailException(LoginFailException loginFailException,
+                                           RedirectAttributes redirectAttributes) {
 
         redirectAttributes.addFlashAttribute("errorMessage", loginFailException.getMessage());
 
@@ -33,14 +34,16 @@ public class GlobalControllerExceptionHandler {
     /**
      * FixedBoardFullException Handler
      *
-     * @param fixedBoardFullException
-     * @param redirectAttributes
-     * @return
+     * @param fixedBoardFullException FixedBoardFullException
+     * @param redirectAttributes      RedirectAttributes
+     * @param request                 HttpServletRequest
+     * @return redirect:/admin/board/notice or /write
      */
     @ExceptionHandler(FixedBoardFullException.class)
-    public String handleFixedBoardFullException(FixedBoardFullException fixedBoardFullException, RedirectAttributes redirectAttributes, HttpServletRequest request) {
+    public String handleFixedBoardFullException(FixedBoardFullException fixedBoardFullException,
+                                                RedirectAttributes redirectAttributes,
+                                                HttpServletRequest request) {
 
-        // TODO : 검색조건 잃어버림
         String uri = request.getRequestURI();
 
         return getDirectionByUriCase(uri, redirectAttributes, fixedBoardFullException);
@@ -49,12 +52,16 @@ public class GlobalControllerExceptionHandler {
     /**
      * IllegalBoardDataException Handler
      *
-     * @param illegalBoardDataException
-     * @param redirectAttributes
-     * @return
+     * @param illegalBoardDataException IllegalBoardDataException
+     * @param redirectAttributes        RedirectAttributes
+     * @param request                   HttpServletRequest
+     * @return redirect getDirectionByUriCase()
      */
     @ExceptionHandler(IllegalBoardDataException.class)
-    public String handleIllegalBoardDataException(IllegalBoardDataException illegalBoardDataException, RedirectAttributes redirectAttributes, HttpServletRequest request) {
+    public String handleIllegalBoardDataException(IllegalBoardDataException illegalBoardDataException,
+                                                  RedirectAttributes redirectAttributes,
+                                                  HttpServletRequest request) {
+
         String uri = request.getRequestURI();
 
         return getDirectionByUriCase(uri, redirectAttributes, illegalBoardDataException);
@@ -64,16 +71,30 @@ public class GlobalControllerExceptionHandler {
     /**
      * BoardNotFoundException Handler
      *
-     * @param boardNotFoundException
-     * @param redirectAttributes
-     * @return
+     * @param boardNotFoundException BoardNotFoundException
+     * @param redirectAttributes     RedirectAttributes
+     * @param request                HttpServletRequest
+     * @return redirect getDirectionByUriCase()
      */
     @ExceptionHandler(BoardNotFoundException.class)
-    public String handleBoardNotFoundException(BoardNotFoundException boardNotFoundException, RedirectAttributes redirectAttributes) {
+    public String handleBoardNotFoundException(BoardNotFoundException boardNotFoundException,
+                                               RedirectAttributes redirectAttributes,
+                                               HttpServletRequest request) {
 
         redirectAttributes.addFlashAttribute("errorMessage", boardNotFoundException.getMessage());
 
-        return "redirect:/admin/board/notice";
+        String uri = request.getRequestURI();
+
+        if (uri.contains("notice")) {
+            return "redirect:/admin/board/notice";
+        } else if (uri.contains("inquiry")) {
+            return "redirect:/admin/board/inquiry";
+        } else if (uri.contains("free")) {
+            return "redirect:/admin/board/free";
+        } else if (uri.contains("gallery")) {
+            return "redirect:/admin/board/gallery";
+        }
+        return "redirect:/error";
 
     }
 
@@ -82,12 +103,14 @@ public class GlobalControllerExceptionHandler {
      *
      * @param commentNotFoundException
      * @param redirectAttributes
-     * @return
+     * @return redirect:/error
      */
     @ExceptionHandler(CommentNotFoundException.class)
-    public String handleCommentNotFoundException(CommentNotFoundException commentNotFoundException, RedirectAttributes redirectAttributes){
+    public String handleCommentNotFoundException(CommentNotFoundException commentNotFoundException,
+                                                 RedirectAttributes redirectAttributes) {
+
         redirectAttributes.addFlashAttribute("errorMessage", commentNotFoundException.getMessage());
-        return "redirect:/admin/board/free";
+        return "redirect:/error";
     }
 
     /**
@@ -96,10 +119,13 @@ public class GlobalControllerExceptionHandler {
      * @param illegalAnswerDataException
      * @param redirectAttributes
      * @param request
-     * @return
+     * @return redirect getDirectionByUriCase()
      */
     @ExceptionHandler(IllegalAnswerDataException.class)
-    public String handleIllegalAnswerDataException(IllegalAnswerDataException illegalAnswerDataException, RedirectAttributes redirectAttributes, HttpServletRequest request){
+    public String handleIllegalAnswerDataException(IllegalAnswerDataException illegalAnswerDataException,
+                                                   RedirectAttributes redirectAttributes,
+                                                   HttpServletRequest request) {
+
         String uri = request.getRequestURI();
         return getDirectionByUriCase(uri, redirectAttributes, illegalAnswerDataException);
     }
@@ -107,38 +133,97 @@ public class GlobalControllerExceptionHandler {
     /**
      * IllegalFileDataException Handler
      *
-     * @param illegalFileDataException
-     * @param redirectAttributes
-     * @param request
-     * @return
+     * @param illegalFileDataException IllegalFileDataException
+     * @param redirectAttributes       RedirectAttributes
+     * @param request                  HttpServletRequest
+     * @return redirect getDirectionByUriCase()
      */
     @ExceptionHandler(IllegalFileDataException.class)
-    public String handleIllegalFileDataException(IllegalFileDataException illegalFileDataException, RedirectAttributes redirectAttributes, HttpServletRequest request){
+    public String handleIllegalFileDataException(IllegalFileDataException illegalFileDataException,
+                                                 RedirectAttributes redirectAttributes,
+                                                 HttpServletRequest request) {
+
         String uri = request.getRequestURI();
         return getDirectionByUriCase(uri, redirectAttributes, illegalFileDataException);
     }
 
+    /**
+     * IllegalSearchConditionDataException Handler
+     *
+     * @param illegalSearchConditionDataException
+     * @param redirectAttributes
+     * @param request
+     * @return
+     */
+    @ExceptionHandler(IllegalSearchConditionDataException.class)
+    public String handleIllegalSearchConditionDataException(IllegalSearchConditionDataException illegalSearchConditionDataException,
+                                                            RedirectAttributes redirectAttributes,
+                                                            HttpServletRequest request) {
+
+        redirectAttributes.addFlashAttribute("errorMessage", illegalSearchConditionDataException.getMessage());
+
+        String uri = request.getRequestURI();
+
+        return "redirect:" + uri;
+    }
+
     private String getDirectionByUriCase(String uri, RedirectAttributes redirectAttributes, RuntimeException runtimeException) {
+
         if (uri.contains("/notice/write")) {
+
             redirectAttributes.addFlashAttribute("errorMessage", runtimeException.getMessage());
+
             return "redirect:/admin/board/notice/write";
+
         } else if (uri.contains("/notice/modify")) {
 
             String boardId = StringUtils.extractNumberFromUri(uri).get(0);
             redirectAttributes.addFlashAttribute("errorMessage", runtimeException.getMessage());
 
             return "redirect:/admin/board/notice/" + boardId;
+
+        } else if (uri.contains("/inquiry")) {
+
+            String boardId = StringUtils.extractNumberFromUri(uri).get(0);
+            redirectAttributes.addFlashAttribute("errorMessage", runtimeException.getMessage());
+
+            return "redirect:/admin/board/inquiry/" + boardId;
+
+        } else if (uri.contains("/answer")) {
+
+            redirectAttributes.addFlashAttribute("errorMessage", runtimeException.getMessage());
+            String boardId = StringUtils.extractNumberFromUri(uri).get(0);
+
+            return "redirect:/admin/board/inquiry/" + boardId;
+
         } else if (uri.contains("/free/write")) {
 
             redirectAttributes.addFlashAttribute("errorMessage", runtimeException.getMessage());
 
             return "redirect:/admin/board/free/write";
-        } else if(uri.contains("/inquiry")){
+
+        } else if (uri.contains("/free/modify")) {
+
+            redirectAttributes.addFlashAttribute("errorMessage", runtimeException.getMessage());
             String boardId = StringUtils.extractNumberFromUri(uri).get(0);
+
+            return "redirect:/admin/board/free/" + boardId;
+
+        } else if (uri.contains("/gallery/write")) {
+
             redirectAttributes.addFlashAttribute("errorMessage", runtimeException.getMessage());
 
-            return "redirect:/admin/board/inquiry/" + boardId;
+            return "redirect:/admin/board/free/write";
+
+        } else if (uri.contains("/gallery/modify")) {
+
+            redirectAttributes.addFlashAttribute("errorMessage", runtimeException.getMessage());
+            String boardId = StringUtils.extractNumberFromUri(uri).get(0);
+
+            return "redirect:/admin/board/gallery/" + boardId;
+
         }
+
         return "redirect:/error";
     }
 }
