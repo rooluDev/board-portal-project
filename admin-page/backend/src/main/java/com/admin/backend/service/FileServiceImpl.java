@@ -19,29 +19,33 @@ import java.util.UUID;
 @Primary
 @Service
 @RequiredArgsConstructor
-public class FileServiceImpl implements FileService{
+public class FileServiceImpl implements FileService {
 
-    public static final String PATH = "/Users/user/upload/";
     private final FileMapper fileMapper;
 
     @Override
     public List<FileDto> addFile(MultipartFile[] fileList, String boardType, Long boardId) {
+
         List<FileDto> addedFileList = new ArrayList<>();
-        for(MultipartFile file : fileList){
-            if(!file.isEmpty()){
+        for (MultipartFile file : fileList) {
+            if (!file.isEmpty()) {
+                // 객체 생성
                 FileDto fileDto = FileDto.builder()
                         .boardType(boardType)
                         .boardId(boardId)
                         .originalName(file.getOriginalFilename())
                         .physicalName(UUID.randomUUID().toString())
-                        .filePath(PATH)
+                        .filePath("/" + boardType)
                         .extension(MultipartFileUtils.extractExtension(file))
                         .size(file.getSize())
                         .build();
+
+                // db 저장
                 fileMapper.insertFile(fileDto);
                 addedFileList.add(fileDto);
             }
         }
+
         return addedFileList;
     }
 
@@ -53,5 +57,17 @@ public class FileServiceImpl implements FileService{
     @Override
     public Optional<FileDto> getFileById(Long fileId) {
         return fileMapper.selectFileById(fileId);
+    }
+
+    @Override
+    public void deleteFileList(List<Long> deleteFileIdList) {
+        for(Long fileId : deleteFileIdList){
+            fileMapper.deleteFileById(fileId);
+        }
+    }
+
+    @Override
+    public int getRowCountByBoardId(Long boardId, String boardType) {
+        return fileMapper.selectRowCountByBoardId(boardId, boardType);
     }
 }
