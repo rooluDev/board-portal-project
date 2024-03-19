@@ -43,11 +43,16 @@ public class FreeBoardServiceImpl implements FreeBoardService{
 
     @Override
     public void deleteBoard(Long boardId) {
-        freeBoardMapper.updateBoardById(boardId);
+        freeBoardMapper.updateBoardByIdForDelete(boardId);
     }
 
     @Override
     public void increaseView(Long boardId) {
         freeBoardMapper.updateView(boardId);
+    }
+
+    @Override
+    public void modifyBoard(FreeBoardDto freeBoardDto) {
+        freeBoardMapper.updateBoard(freeBoardDto);
     }
 }
