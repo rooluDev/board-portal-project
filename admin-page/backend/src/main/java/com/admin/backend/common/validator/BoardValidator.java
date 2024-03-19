@@ -153,4 +153,12 @@ public class BoardValidator {
             }
         }
     }
+
+    private static void validateFileExtension(MultipartFile[] fileList, List<String> allowedExtension) {
+        for (MultipartFile file : fileList) {
+            if (!allowedExtension.contains(MultipartFileUtils.extractExtension(file))) {
+                throw new IllegalFileDataException("jpg, gif, png, zip 파일만 가능합니다.");
+            }
+        }
+    }
 }
