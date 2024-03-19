@@ -7,15 +7,16 @@ import com.admin.backend.common.exception.IllegalAnswerDataException;
  */
 public class AnswerValidator {
 
+    private static final int ANSWER_CONTENT_MIN = 0;
     private static final int ANSWER_CONTENT_MAX = 3999;
 
     /**
-     * validate Answer
+     * Answer Add Validator
      *
-     * @param content
+     * @param content 추가한 답변 데이터
      */
     public static void validateAnswer(String content) {
-        validateText(content, 0, ANSWER_CONTENT_MAX);
+        validateText(content, ANSWER_CONTENT_MIN, ANSWER_CONTENT_MAX);
     }
 
     private static void validateText(String text, int minLength, int maxLength) {
