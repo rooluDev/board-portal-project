@@ -57,4 +57,11 @@ public interface FreeBoardMapper {
      * @param boardId
      */
     void updateView(Long boardId);
+
+    /**
+     * UPDATE tb_free_board
+     *
+     * @param freeBoardDto ( categoryId, title, content, boardId )
+     */
+    void updateBoard(FreeBoardDto freeBoardDto);
 }
