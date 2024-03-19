@@ -41,7 +41,12 @@ public class NoticeBoardController {
      * @return /board/notice/notice-list.html
      */
     @GetMapping("/board/notice")
-    public String getListPage(Model model, @ModelAttribute SearchConditionDto searchConditionDto) {
+    public String getListPage(Model model,
+                              @SessionAttribute(name = LoginController.ADMIN_SESSION_ID) AdminDto adminDto,
+                              @ModelAttribute SearchConditionDto searchConditionDto) {
+
+        // 검색조건 유효성 검증
+        SearchConditionValidator.validateSearchCondition(searchConditionDto);
 
         // 페이지네이션 설정
         int totalRowCount = noticeBoardService.getTotalRowCountByCondition(searchConditionDto);
