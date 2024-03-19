@@ -14,16 +14,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 @Primary
-public class AdminServiceImpl implements AdminService{
+public class AdminServiceImpl implements AdminService {
 
     private final AdminMapper adminMapper;
 
-    /**
-     * adminId와 password가 일치하는 adminDto 반환하는 메소드
-     * @param adminId
-     * @param password
-     * @return
-     */
     @Override
     public Optional<AdminDto> findAdmin(String adminId, String password) {
         return adminMapper.selectAdminDtoByIdAndPassword(adminId, password);
