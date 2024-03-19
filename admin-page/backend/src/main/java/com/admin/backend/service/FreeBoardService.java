@@ -56,4 +56,10 @@ public interface FreeBoardService {
      */
     void increaseView(Long boardId);
 
+    /**
+     * 게시물 수정
+     *
+     * @param freeBoardDto ( categoryId, title, content, boardId )
+     */
+    void modifyBoard(FreeBoardDto freeBoardDto);
 }
