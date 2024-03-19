@@ -28,4 +28,20 @@
         WHERE
             file_id = #{fileId}
     </select>
+
+    <select id="selectRowCountByBoardId" parameterType="map" resultType="java.lang.Integer">
+        SELECT
+            COUNT(*)
+        FROM
+            tb_file
+        WHERE
+            board_id = #{boardId} AND board_type = #{boardType}
+    </select>
+
+    <delete id="deleteFileById" parameterType="long">
+        DELETE FROM
+            tb_file
+        WHERE
+            file_id = #{fileId}
+    </delete>
 </mapper>
