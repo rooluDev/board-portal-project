@@ -15,17 +15,20 @@ import java.util.List;
  */
 @Service
 @Primary
-public class UploadServiceImpl implements UploadService{
+public class UploadServiceImpl implements UploadService {
+
+    public static final String PATH = "/Users/user/workspace/eBrain-study/board-protal/admin-page/backend/src/main/resources/static/upload/";
 
     @Override
-    public void uploadFile(List<FileDto> fileDtoList, MultipartFile[] fileList) throws IOException {
+    public void uploadFile(List<FileDto> fileDtoList, MultipartFile[] fileList, String boardType) throws IOException {
         // TODO : index 무결성
-        for(int i = 0; i<fileList.length;i++){
-            if(!fileList[i].isEmpty()){
+        for (int i = 0; i < fileList.length; i++) {
+            if (!fileList[i].isEmpty()) {
                 FileDto fileDto = fileDtoList.get(i);
-                String filePath = FileServiceImpl.PATH + fileDto.getPhysicalName() + "." + fileDto.getExtension();
+                String filePath = PATH + boardType + "/" + fileDto.getPhysicalName() + "." + fileDto.getExtension();
+
                 File uploadFile = new File(filePath);
-                FileUtils.copyInputStreamToFile(fileList[i].getInputStream(),uploadFile);
+                FileUtils.copyInputStreamToFile(fileList[i].getInputStream(), uploadFile);
             }
         }
     }
