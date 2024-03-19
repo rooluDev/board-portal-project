@@ -8,6 +8,10 @@
 <body>
 <h1>문의 게시판 관리</h1>
 <h3 th:if="${errorMessage}" th:text="${errorMessage}"></h3>
+<header th:replace="~{components/header :: header(${admin.adminName})}"></header>
+<hr/>
+<nav th:replace="~{components/nav :: nav}"></nav>
+<hr/>
 <form action="/admin/board/inquiry" method="get">
     <label>등록일시</label>
     <input type="date" name="startDate" id="startDate" th:value="${searchCondition.startDate}">

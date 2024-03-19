@@ -6,35 +6,40 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
-<h1>문의 게시판</h1>
-<h3 th:if="${errorMessage}" th:text="${errorMessage}"></h3>
-<span>제목*</span>
-<span th:if="${answer != null}" th:text="${board.title} + ' (답변완료)'"></span>
-<span th:unless="${answer != null}" th:text="${board.title} + ' (미답변)'"></span>
-<hr/>
-<span>질문*</span>
-<span th:text="${board.content}"></span>
-<hr/>
+    <h1>문의 게시판</h1>
+    <h3 th:if="${errorMessage}" th:text="${errorMessage}"></h3>
+    <header th:replace="~{components/header :: header(${admin.adminName})}"></header>
+    <hr/>
+    <nav th:replace="~{components/nav :: nav}"></nav>
+    <hr/>
+    <span>제목*</span>
+    <span th:if="${answer.answerId != null}" th:text="${board.title} + ' (답변완료)'"></span>
+    <span th:unless="${answer.answerId != null}" th:text="${board.title} + ' (미답변)'"></span>
+    <hr/>
+    <span>질문*</span>
+    <span th:text="${board.content}"></span>
+    <hr/>
     <form th:action="@{/admin/answer/{boardId}(boardId = ${board.boardId})}" method="post" onsubmit="return validator()">
         <label>답변</label>
-        <textarea th:if="${answer != null}" name="content" th:text="${answer.content}" required></textarea>
-        <textarea th:unless="${answer != null}"  name="content" rows="6" cols="33" required></textarea>
+        <textarea th:if="${answer.content != null}" name="content" id="content" th:text="${answer.content}" rows="6" cols="33" required></textarea>
+        <textarea th:unless="${answer.content != null}"  name="content" id="content" rows="6" cols="33" required></textarea>
         <br/>
-        <button type="submit">답변완료</button>
+        <input type="submit" value="답변완료">
         <button type="button" th:onclick="goToList([[${searchCondition}]])">목록</button>
         <button type="button" th:onclick="deleteBoard([[${board.boardId}]])">삭제</button>
     </form>
 </body>
 <script>
-
     const validator = () => {
         const content = $("#content").val();
 
         if (content.length > 3999){
             alert("답변은 4000자 미만이여야 합니다.");
             return false;
+        } else if (content.length < 1){
+            alert("입력칸이 비어있습니다.");
+            return false;
         }
-
         return confirm("정말로 등록 하시겠습니까?");
     }
 

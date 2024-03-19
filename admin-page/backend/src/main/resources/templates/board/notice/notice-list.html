@@ -8,6 +8,10 @@
 <body>
 <h1>공지 사항 관리</h1>
 <h3 th:if="${errorMessage}" th:text="${errorMessage}"></h3>
+<header th:replace="~{components/header :: header(${admin.adminName})}"></header>
+<hr/>
+<nav th:replace="~{components/nav :: nav}"></nav>
+<hr/>
 <form action="/admin/board/notice" method="get">
     <label>등록일시</label>
     <input type="date" name="startDate" id="startDate" th:value="${searchCondition.startDate}">
@@ -107,8 +111,6 @@
             `&searchText=${searchCondition.searchText}&pageSize=${searchCondition.pageSize}&orderValue=${searchCondition.orderValue}` +
             `&orderDirection=${searchCondition.orderDirection}&pageNum=${searchCondition.pageNum}`;
     }
-
-    // import {parseObjectToParam} from "/static/js/searchCondition.js";
 
     const goToPageNum = (pageNum, searchCondition) => {
         searchCondition.pageNum = pageNum;

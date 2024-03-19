@@ -8,6 +8,10 @@
 <body>
 <h1>공지사항 관리</h1>
 <h3 th:if="${errorMessage}" th:text="${errorMessage}"></h3>
+<header th:replace="~{components/header :: header(${admin.adminName})}"></header>
+<hr/>
+<nav th:replace="~{components/nav :: nav}"></nav>
+<hr/>
 <form action="/admin/board/notice/write" method="post" onsubmit="return validator()">
     <label>분류*</label>
     <select name="categoryId">
@@ -34,12 +38,17 @@
     const validator = () => {
         const title = $("#title").val();
         const content = $("#content").val();
-        if (title.length > 99){
+        if (title.length > 99) {
             alert("제목이 100자 미만이여야 합니다");
             return false;
-        }
-        if (content.length > 3999){
+        } else if (title.length < 1) {
+            alert("입력칸이 비어있습니다.");
+            return false;
+        } else if (content.length > 3999) {
             alert("내용이 4000자 미만이여야 합니다.");
+            return false;
+        } else if (content.length < 1) {
+            alert("입력칸이 비어있습니다.");
             return false;
         }
         return confirm('정말로 등록 하시겠습니까?');

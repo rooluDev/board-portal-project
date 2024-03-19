@@ -8,7 +8,12 @@
 <body>
 <h1>자유게시판</h1>
 <h3 th:if="${errorMessage}" th:text="${errorMessage}"></h3>
-<form th:action="@{/admin/board/free/modify/{boardId}(boardId = ${board.boardId})}" method="post" enctype="multipart/form-data" onsubmit="return validator()">
+<header th:replace="~{components/header :: header(${admin.adminName})}"></header>
+<hr/>
+<nav th:replace="~{components/nav :: nav}"></nav>
+<hr/>
+<form th:action="@{/admin/board/free/modify/{boardId}(boardId = ${board.boardId})}" method="post"
+      enctype="multipart/form-data" onsubmit="return validator()">
     <label>분류*</label>
     <select name="categoryId">
         <option th:each="category : ${categoryList}"
@@ -19,22 +24,22 @@
     </select>
     <br/>
     <label>제목*</label>
-    <input type="text" name="title" th:value="${board.title}">
+    <input type="text" name="title" id="title" th:value="${board.title}">
     <br/>
     <label>내용*</label>
-    <textarea name="content" th:text="${board.content}">
+    <textarea name="content" id="content" th:text="${board.content}">
     </textarea>
     <br/>
 
     <label>첨부</label>
     <div id="fileInputBox">
         <div th:each="file : ${fileList}">
-            <span th:text="${file.filePath}+${file.originalName}" th:onclick="downloadFile([[${file.fileId}]])"></span>
-            <input type="file" name="file">
-            <button type="button" id="deleteBtn" onclick="deleteFileInputTag(this)" th:data="${file.fileId}">X</button>
+            <span th:text="${file.filePath} + '/' + ${file.originalName}" th:onclick="downloadFile([[${file.fileId}]])"></span>
+            <button th:if="${board.deleted != 1}" type="button" id="deleteBtn" onclick="deleteFileInputTag(this)" th:data="${file.fileId}">X</button>
         </div>
     </div>
-    <button type="button" onclick="addFileInputTag()">추가</button>
+    <button type="button" th:if="${board.deleted != 1}" th:onclick="addFileInputTag([[${fileCountInBoard}]])">추가</button>
+    <input type="hidden" id="deleteFileIdList" name="deleteFileIdList">
     <br/>
 
     <textarea placeholder="댓글을 입력해 주세요." id="comment"></textarea>
@@ -51,18 +56,19 @@
     </div>
     <br/>
 
-    <button type="submit">수정</button>
+    <button type="submit" th:if="${board.deleted != 1}">수정</button>
     <button type="button" th:onclick="goToList([[${searchCondition}]])">목록</button>
-    <button type="button" th:onclick="deleteBoard([[${board.boardId}]])">삭제</button>
+    <button type="button" th:if="${board.deleted != 1}" th:onclick="deleteBoard([[${board.boardId}]])">삭제</button>
 </form>
 </body>
 <script>
     const fileInputBox = document.getElementById('fileInputBox');
     const commentInputBox = document.getElementById('commentInputBox');
+    let deletedFileId = [];
 
-    const addFileInputTag = () => {
+    const addFileInputTag = (fileCountInBoard) => {
         const currentFileInputTag = document.querySelectorAll('#fileInputBox input[type="file"]').length;
-        if (currentFileInputTag > 4) {
+        if (currentFileInputTag > (4 - fileCountInBoard)) {
             alert("최대 5개의 파일을 업로드 할 수 있습니다.");
             return;
         }
@@ -71,6 +77,7 @@
         const fileInputTag = document.createElement('input');
         fileInputTag.type = 'file';
         fileInputTag.name = 'file';
+        fileInputTag.accept = '.jpg, .gif, .png, .zip';
 
         const fileDeleteBtn = document.createElement('button');
         fileDeleteBtn.type = 'button';
@@ -88,9 +95,11 @@
     const deleteFileInputTag = (deleteBtn) => {
         const inputDivBox = deleteBtn.parentNode;
         inputDivBox.parentNode.removeChild(inputDivBox);
+        deletedFileId.push(deleteBtn.getAttribute("data"));
     }
 
     const validator = () => {
+        $("#deleteFileIdList").val(deletedFileId);
         const title = $("#title").val();
         const content = $("#content").val();
 
@@ -141,7 +150,6 @@
     }
 
     const addComment = (boardId) => {
-        console.log($("#comment").val());
         $.ajax({
             url: `/admin/comment`,
             type: 'POST',
@@ -152,9 +160,9 @@
                 boardType: 'free'
             }),
             success: (response) => {
-                console.log(response);
+                $("#comment").val('');
                 const inputDivBox = document.createElement('div');
-                inputDivBox.id = `comment-`+response.commentId;
+                inputDivBox.id = `comment-` + response.commentId;
 
                 const authorName = document.createElement('span');
                 authorName.textContent = response.adminName;

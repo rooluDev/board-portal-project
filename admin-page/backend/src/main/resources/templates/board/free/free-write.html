@@ -8,6 +8,10 @@
 <body>
 <h1>자유게시판 관리</h1>
 <h3 th:if="${errorMessage}" th:text="${errorMessage}"></h3>
+<header th:replace="~{components/header :: header(${admin.adminName})}"></header>
+<hr/>
+<nav th:replace="~{components/nav :: nav}"></nav>
+<hr/>
 <form action="/admin/board/free/write" method="post" enctype="multipart/form-data" onsubmit="return validator()">
     <label>분류*</label>
     <select name="categoryId">
@@ -20,8 +24,7 @@
     <input type="text" name="title" id="title">
     <br/>
     <label>내용*</label>
-    <textarea name="content" id="content">
-        </textarea>
+    <textarea name="content" id="content"></textarea>
     <br/>
     <label>첨부</label>
     <div id="fileInputBox">
@@ -46,6 +49,7 @@
         const fileInputTag = document.createElement('input');
         fileInputTag.type = 'file';
         fileInputTag.name = 'file';
+        fileInputTag.accept = '.jpg, .gif, .png, .zip';
 
         const fileDeleteBtn = document.createElement('button');
         fileDeleteBtn.type = 'button';

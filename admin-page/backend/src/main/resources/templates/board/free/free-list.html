@@ -8,6 +8,10 @@
 <body>
 <h1>자유 게시판 관리</h1>
 <h3 th:if="${errorMessage}" th:text="${errorMessage}"></h3>
+<header th:replace="~{components/header :: header(${admin.adminName})}"></header>
+<hr/>
+<nav th:replace="~{components/nav :: nav}"></nav>
+<hr/>
 <form action="/admin/board/free" method="get">
     <label>등록일시</label>
     <input type="date" name="startDate" id="startDate" th:value="${searchCondition.startDate}">
@@ -20,7 +24,7 @@
                 th:selected="${searchCondition.categoryId == category.categoryId}">
         </option>
     </select>
-    <input type="text" name="searchText" id="searchText" placeholder="제목 or 내용"
+    <input type="text" name="searchText" id="searchText" placeholder="제목 or 내용 or 등록자"
            th:value="${searchCondition.searchText}">
     <input type="submit" value="검색">
     <br/>
@@ -60,8 +64,8 @@
     <tr th:each="board : ${boardList}">
         <td th:text="${board.boardId}"></td>
         <td th:text="${board.categoryName}"></td>
-        <td th:if="${board.fileId == null}" th:text="${board.title}" th:onclick="goToBoard([[${board.boardId}]],[[${searchCondition}]])"></td>
-        <td th:if="${board.fileId != null}" th:text="${board.title} + '$'" th:onclick="goToBoard([[${board.boardId}]],[[${searchCondition}]])"></td>
+        <td th:if="${board.fileId == null}" th:text="${board.title} + '(' + ${board.commentCount} + ')'" th:onclick="goToBoard([[${board.boardId}]],[[${searchCondition}]])"></td>
+        <td th:if="${board.fileId != null}" th:text="${board.title} + '(' + ${board.commentCount} + ')' + '$'" th:onclick="goToBoard([[${board.boardId}]],[[${searchCondition}]])"></td>
         <td th:text="${board.views}"></td>
         <td th:text="${#dates.format(board.createdAt,'yyyy.MM.dd hh:mm')}"></td>
         <td th:if="${board.authorType} == 'member'" th:text="${board.memberName}"></td>
