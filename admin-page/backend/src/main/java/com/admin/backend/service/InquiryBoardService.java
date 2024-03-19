@@ -14,8 +14,8 @@ public interface InquiryBoardService {
     /**
      * 검색조건에 맞는 문의 게시물 총 개수 가져오기
      *
-     * @param searchConditionDto
-     * @return
+     * @param searchConditionDto 검색조건
+     * @return 검색조건에 맞는 문의 게시물 총 개수
      */
     int getTotalRowCountByCondition(SearchConditionDto searchConditionDto);
 
@@ -23,29 +23,29 @@ public interface InquiryBoardService {
      * 검색조건과 페이지네이션에 맞는 문의 게시물 리스트 가져오기
      *
      * @param searchConditionDto
-     * @return
+     * @return 검색조건과 페이지네이션에 맞는 문의 게시물 리스트
      */
     List<InquiryDto> getBoardListByCondition(SearchConditionDto searchConditionDto);
 
     /**
-     * 단일 문의 게시물 찾기
+     * 문의 게시물 찾기
      *
-     * @param boardId
-     * @return
+     * @param boardId ( pk )
+     * @return boardId와 일치하는 문의 게시물
      */
     Optional<InquiryDto> getBoardById(Long boardId);
 
     /**
-     * 게시물 삭제
+     * 문의 게시물 삭제
      *
-     * @param boardId
+     * @param boardId ( pk )
      */
     void deleteBoardById(Long boardId);
 
     /**
-     * 게시물 조회수 증가
+     * 조회수 증가
      *
-     * @param boardId
+     * @param boardId ( pk )
      */
     void increaseViewById(Long boardId);
 }
