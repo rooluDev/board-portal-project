@@ -1,7 +1,7 @@
 package com.admin.backend.common.exception;
 
 /**
- * Answer 4000자 넘어갈시 발생하는 Exception
+ * 답변 등록 시 데이터 검증이 실패 할 시 발생하는 Exception
  */
 public class IllegalAnswerDataException extends RuntimeException{
     public IllegalAnswerDataException(String message) {
