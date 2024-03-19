@@ -8,46 +8,47 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * tb_inquiry board mapper
+ * tb_inquiry_board mapper
  */
 @Mapper
 public interface InquiryBoardMapper {
 
     /**
-     * 검색조건과 페이지네이션에 맞는 문의 게시물 리스트 SELECT
+     * SELECT tb_inquiry_board By searchCondition
      *
-     * @param searchConditionDto
-     * @return
+     * @param searchConditionDto 검색조건
+     * @return 검색조건과 페이지네이션에 맞는 문의 게시물 리스트
      */
     List<InquiryDto> selectBoardListByCondition(SearchConditionDto searchConditionDto);
 
     /**
-     * 검색조건에 맞는 문의 게시물 총 개수 SELECT
+     * SELECT totalRowCount By searchCondition
      *
-     * @param searchConditionDto
-     * @return
+     * @param searchConditionDto 검색조건
+     * @return 검색조건 맞는 문의 게시물 리스트 의 수
      */
     int selectTotalRowCountByCondition(SearchConditionDto searchConditionDto);
 
     /**
-     * boardId(pk)로 board SELECT
+     * SELECT tb_inquiry_board By boardId
      *
-     * @param boardId
-     * @return
+     * @param boardId ( pk )
+     * @return boardId와 일치하는 tb_inquiry_board
      */
     Optional<InquiryDto> selectBoardById(Long boardId);
 
     /**
-     * DELETE Board By Id
+     * DELETE tb_inquiry_board By Id
      *
-     * @param boardId
+     * @param boardId ( pk )
      */
     void deleteBoardById(Long boardId);
 
     /**
-     * UPDATE views + 1
+     * UPDATE tb_inquiry_board
+     * SET views = views + 1
      *
-     * @param boardId
+     * @param boardId ( pk )
      */
     void updateViewById(Long boardId);
 }
