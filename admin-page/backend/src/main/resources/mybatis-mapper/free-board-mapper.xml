@@ -39,7 +39,13 @@
             ctg.category_name,
             f.file_id,
             a.admin_name,
-            m.member_name
+            m.member_name,
+            (SELECT
+                COUNT(*)
+            FROM
+                tb_comment
+            WHERE
+                board_type='free' AND board_id = fb.board_id) AS commentCount
         FROM
             tb_free_board fb
         LEFT JOIN
@@ -94,11 +100,13 @@
             (#{categoryId},#{authorType},#{authorId},#{title},#{content})
     </insert>
 
-    <update id="updateBoardById" parameterType="long">
+    <update id="updateBoardByIdForDelete" parameterType="long">
         UPDATE
             tb_free_board
         SET
-            comment = '삭제된 게시물입니다.'
+            content = '삭제된 게시물입니다.',
+            deleted = 1,
+            edited_at = current_timestamp
         WHERE
             board_id = #{boardId}
     </update>
@@ -108,6 +116,18 @@
             tb_free_board
         SET
             views = views + 1
+        WHERE
+            board_id = #{boardId}
+    </update>
+
+    <update id="updateBoard" parameterType="com.admin.backend.dto.FreeBoardDto">
+        UPDATE
+            tb_free_board
+        SET
+            category_id = #{categoryId},
+            title = #{title},
+            content = #{content},
+            edited_at = CURRENT_TIMESTAMP
         WHERE
             board_id = #{boardId}
     </update>
