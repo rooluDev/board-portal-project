@@ -38,4 +38,20 @@ public interface FileService {
      */
     Optional<FileDto> getFileById(Long fileId);
 
+    /**
+     * file 삭제
+     *
+     * @param deleteFileIdList pk list
+     */
+    void deleteFileList(List<Long> deleteFileIdList);
+
+    /**
+     * 게시물 내 존재하는 file의 수
+     *
+     * @param boardId boardId
+     * @param boardType boardType
+     * @return file의 수
+     */
+    int getRowCountByBoardId(Long boardId, String boardType);
+
 }
