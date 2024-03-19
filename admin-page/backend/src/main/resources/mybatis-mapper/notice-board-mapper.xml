@@ -8,8 +8,7 @@
             fixed = 0 AND nb.created_at BETWEEN #{startDateTimestamp} AND #{endDateTimestamp}
         <if test="searchText != null and searchText != ''">
             AND (nb.title LIKE CONCAT('%',#{searchText},'%')
-            OR nb.content LIKE CONCAT('%',#{searchText},'%')
-            OR ad.admin_name LIKE CONCAT('%',#{searchText},'%'))
+            OR nb.content LIKE CONCAT('%',#{searchText},'%'))
         </if>
         <if test = "categoryId > 0">
             AND nb.category_id = #{categoryId}
@@ -99,7 +98,7 @@
         UPDATE
             tb_notice_board
         SET
-            category_id = #{categoryId}, title = #{title}, content = #{content},
+            category_id = #{categoryId}, title = #{title}, content = #{content}, edited_at = CURRENT_TIMESTAMP
             <choose>
                 <when test="fixed != null">
                     fixed = 1
