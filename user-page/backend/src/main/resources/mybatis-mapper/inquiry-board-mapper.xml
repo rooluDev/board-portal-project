@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.user.backend.mapper.InquiryBoardMapper">
+    <sql id="boardSelectWhereQuery">
+        WHERE
+            ib.created_at BETWEEN #{startDateTimestamp} AND #{endDateTimestamp}
+        <if test="searchText != null and searchText != ''">
+            AND (ib.title LIKE CONCAT('%',#{searchText},'%')
+            OR ib.content LIKE CONCAT('%',#{searchText},'%')
+            OR m.member_name LIKE CONCAT('%',#{searchText},'%'))
+        </if>
+    </sql>
+
+    <select id="selectBoardListByCondition" parameterType="com.user.backend.dto.SearchConditionDto" resultType="com.user.backend.dto.InquiryDto">
+        SELECT
+            ib.*,
+            m.member_name,
+            a.answer_id
+        FROM
+            tb_inquiry_board ib
+        LEFT JOIN
+            tb_member m ON ib.author_id = m.member_id
+        LEFT JOIN
+            tb_answer a ON ib.board_id = a.board_id
+        <include refid="boardSelectWhereQuery"></include>
+        ORDER BY
+        <choose>
+            <when test="orderValue == 'createdAt'">
+                ib.created_at
+            </when>
+            <when test="orderValue == 'title'">
+                ib.title
+            </when>
+            <when test="orderValue == 'views'">
+                ib.views
+            </when>
+        </choose>
+        <choose>
+            <when test="orderDirection == 'desc'">
+                DESC
+            </when>
+            <when test="orderDirection == 'asc'">
+                ASC
+            </when>
+        </choose>
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <select id="selectTotalRowCountByCondition" parameterType="com.user.backend.dto.SearchConditionDto" resultType="java.lang.Integer">
+        SELECT
+            COUNT(*)
+        FROM
+            tb_inquiry_board ib
+        LEFT JOIN
+            tb_member m ON ib.author_id = m.member_id
+        <include refid="boardSelectWhereQuery"></include>
+    </select>
+
+    <select id="selectBoardById" parameterType="long" resultType="com.user.backend.dto.InquiryDto">
+        SELECT
+            *
+        FROM
+            tb_inquiry_board
+        WHERE
+            board_id = #{boardId}
+    </select>
+
+    <delete id="deleteBoardById" parameterType="long">
+        DELETE FROM
+            tb_inquiry_board
+        WHERE
+            board_id = #{boardId}
+    </delete>
+
+    <update id="updateViewById" parameterType="long">
+        UPDATE
+            tb_inquiry_board
+        SET
+            views = views + 1
+        WHERE
+            board_id = #{boardId}
+    </update>
+
+</mapper>

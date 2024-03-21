@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.user.backend.mapper.AnswerMapper">
+
+    <select id="selectByBoardId" parameterType="long" resultType="com.user.backend.dto.AnswerDto">
+        SELECT
+            *
+        FROM
+            tb_answer
+        WHERE
+            board_id = #{boardId}
+    </select>
+
+    <insert id="insertAnswer" parameterType="com.user.backend.dto.AnswerDto">
+        INSERT INTO
+            tb_answer (board_id, author_id, content)
+        VALUES
+            (#{boardId}, #{authorId}, #{content})
+    </insert>
+
+    <delete id="deleteByBoardId" parameterType="long">
+        DELETE FROM
+            tb_answer
+        WHERE
+            board_id = #{boardId}
+    </delete>
+
+    <update id="updateAnswer" parameterType="com.user.backend.dto.AnswerDto">
+        UPDATE
+            tb_answer
+        SET
+            author_id = #{authorId},
+            content = #{content}
+        WHERE
+            board_id = #{boardId}
+    </update>
+
+</mapper>

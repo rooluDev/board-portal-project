@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.user.backend.mapper.FileMapper">
+
+    <insert id="insertFile" parameterType="com.user.backend.dto.FileDto">
+        INSERT INTO
+            tb_file (board_type, board_id, original_name, physical_name, file_path, extension, size)
+        VALUES
+            (#{boardType},#{boardId},#{originalName},#{physicalName},#{filePath},#{extension},#{size})
+    </insert>
+
+    <select id="selectFileListByBoardId" parameterType="map" resultType="com.user.backend.dto.FileDto">
+        SELECT
+            *
+        FROM
+            tb_file
+        WHERE
+            board_id = #{boardId} AND board_type = #{boardType}
+    </select>
+
+    <select id="selectFileById" parameterType="long" resultType="com.user.backend.dto.FileDto">
+        SELECT
+            *
+        FROM
+            tb_file
+        WHERE
+            file_id = #{fileId}
+    </select>
+
+    <select id="selectRowCountByBoardId" parameterType="map" resultType="java.lang.Integer">
+        SELECT
+            COUNT(*)
+        FROM
+            tb_file
+        WHERE
+            board_id = #{boardId} AND board_type = #{boardType}
+    </select>
+
+    <delete id="deleteFileById" parameterType="long">
+        DELETE FROM
+            tb_file
+        WHERE
+            file_id = #{fileId}
+    </delete>
+</mapper>

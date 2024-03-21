@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.user.backend.mapper.CommentMapper">
+
+    <select id="selectCommentListByBoardId" parameterType="map" resultType="com.user.backend.dto.CommentDto">
+        SELECT
+            tb_comment.*,
+            tb_admin.admin_name,
+            tb_member.member_name
+        FROM
+            tb_comment
+        LEFT JOIN
+            tb_admin on tb_admin.admin_id = tb_comment.author_id
+        LEFT JOIN
+            tb_member on tb_member.member_id = tb_comment.author_id
+        WHERE
+            board_id = #{boardId} AND board_type = #{boardType}
+    </select>
+
+    <select id="selectCommentById" parameterType="long" resultType="com.user.backend.dto.CommentDto">
+        SELECT
+            tb_comment.*,
+            tb_admin.admin_name
+        FROM
+            tb_comment
+        LEFT JOIN
+            tb_admin on tb_admin.admin_id = tb_comment.author_id
+        WHERE
+            comment_id = #{commentId}
+    </select>
+
+    <delete id="deleteCommentById" parameterType="long">
+        DELETE FROM
+            tb_comment
+        WHERE
+            comment_id = #{commentId}
+    </delete>
+
+    <insert id="insertComment" parameterType="com.user.backend.dto.CommentDto" useGeneratedKeys="true" keyProperty="commentId">
+        INSERT INTO
+            tb_comment (content, board_type, board_id, author_type, author_id)
+        VALUES
+            (#{content},#{boardType},#{boardId},#{authorType},#{authorId})
+    </insert>
+
+</mapper>

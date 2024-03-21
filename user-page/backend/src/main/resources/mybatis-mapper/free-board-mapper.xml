@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.user.backend.mapper.FreeBoardMapper">
+    <sql id="boardSelectWhereQuery">
+        WHERE
+            fb.created_at BETWEEN #{startDateTimestamp} AND #{endDateTimestamp}
+            <if test='searchText != null and searchText != ""'>
+                AND (fb.title LIKE CONCAT('%',#{searchText},'%')
+                OR fb.content LIKE CONCAT('%',#{searchText},'%')
+                OR a.admin_name LIKE CONCAT('%',#{searchText},'%')
+                OR m.member_name LIKE CONCAT('%',#{searchText},'%'))
+            </if>
+            <if test = 'categoryId > 0'>
+                AND fb.category_id = #{categoryId}
+            </if>
+    </sql>
+
+    <select id="selectTotalRowCountByCondition" parameterType="com.user.backend.dto.SearchConditionDto" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM
+            tb_free_board fb
+        LEFT JOIN
+            tb_admin a on a.admin_id = fb.author_id and fb.author_type = 'admin'
+        LEFT JOIN
+            tb_member m on m.member_id = fb.author_id and fb.author_type = 'member'
+        <include refid="boardSelectWhereQuery"></include>
+    </select>
+
+    <select id="selectBoardListByCondition" parameterType="com.user.backend.dto.SearchConditionDto" resultType="com.user.backend.dto.FreeBoardDto">
+        SELECT
+            fb.board_id,
+            fb.title,
+            fb.views,
+            fb.created_at,
+            fb.author_type,
+            ctg.category_name,
+            f.file_id,
+            a.admin_name,
+            m.member_name,
+            (SELECT
+                COUNT(*)
+            FROM
+                tb_comment
+            WHERE
+                board_type='free' AND board_id = fb.board_id) AS commentCount
+        FROM
+            tb_free_board fb
+        LEFT JOIN
+            tb_category ctg on fb.category_id = ctg.category_id
+        LEFT JOIN
+            tb_file f on f.board_id = fb.board_id
+        LEFT JOIN
+            tb_admin a on a.admin_id = fb.author_id and fb.author_type = 'admin'
+        LEFT JOIN
+            tb_member m on m.member_id = fb.author_id and fb.author_type = 'member'
+        <include refid="boardSelectWhereQuery"></include>
+        GROUP BY fb.board_id
+        ORDER BY
+        <choose>
+            <when test='orderValue == "createdAt"'>
+                fb.created_at
+            </when>
+            <when test='orderValue == "category"'>
+                fb.category_id
+            </when>
+            <when test='orderValue == "title"'>
+                fb.title
+            </when>
+            <when test='orderValue == "views"'>
+                fb.views
+            </when>
+        </choose>
+        <choose>
+            <when test='orderDirection == "desc"'>
+                DESC
+            </when>
+            <when test='orderDirection == "asc"'>
+                ASC
+            </when>
+        </choose>
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <select id="selectBoardById" parameterType="long" resultType="com.user.backend.dto.FreeBoardDto">
+        SELECT
+            *
+        FROM
+            tb_free_board
+        WHERE
+            board_id = #{boardId}
+    </select>
+
+    <insert id="insertBoard" parameterType="com.user.backend.dto.FreeBoardDto" useGeneratedKeys="true" keyProperty="boardId">
+        INSERT INTO
+            tb_free_board (category_id, author_type, author_id, title, content)
+        VALUES
+            (#{categoryId},#{authorType},#{authorId},#{title},#{content})
+    </insert>
+
+    <update id="updateBoardByIdForDelete" parameterType="long">
+        UPDATE
+            tb_free_board
+        SET
+            content = '삭제된 게시물입니다.',
+            deleted = 1,
+            edited_at = current_timestamp
+        WHERE
+            board_id = #{boardId}
+    </update>
+
+    <update id="updateView" parameterType="long">
+        UPDATE
+            tb_free_board
+        SET
+            views = views + 1
+        WHERE
+            board_id = #{boardId}
+    </update>
+
+    <update id="updateBoard" parameterType="com.user.backend.dto.FreeBoardDto">
+        UPDATE
+            tb_free_board
+        SET
+            category_id = #{categoryId},
+            title = #{title},
+            content = #{content},
+            edited_at = CURRENT_TIMESTAMP
+        WHERE
+            board_id = #{boardId}
+    </update>
+</mapper>
