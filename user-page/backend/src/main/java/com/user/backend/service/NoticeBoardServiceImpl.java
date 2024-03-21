@@ -1,10 +1,10 @@
 package com.user.backend.service;
 
-import com.admin.backend.common.exception.BoardNotFoundException;
-import com.admin.backend.common.exception.FixedBoardFullException;
+import com.user.backend.common.exception.BoardNotFoundException;
+import com.user.backend.common.exception.FixedBoardFullException;
 import com.user.backend.dto.NoticeBoardDto;
 import com.user.backend.dto.SearchConditionDto;
-import com.admin.backend.mapper.NoticeBoardMapper;
+import com.user.backend.mapper.NoticeBoardMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;

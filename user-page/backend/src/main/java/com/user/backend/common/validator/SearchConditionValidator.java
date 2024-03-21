@@ -1,6 +1,6 @@
 package com.user.backend.common.validator;
 
-import com.admin.backend.common.exception.IllegalSearchConditionDataException;
+import com.user.backend.common.exception.IllegalSearchConditionDataException;
 import com.user.backend.dto.SearchConditionDto;
 import lombok.extern.slf4j.Slf4j;
 

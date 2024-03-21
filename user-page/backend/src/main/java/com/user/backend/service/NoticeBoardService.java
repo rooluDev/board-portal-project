@@ -1,6 +1,6 @@
 package com.user.backend.service;
 
-import com.admin.backend.common.exception.FixedBoardFullException;
+import com.user.backend.common.exception.FixedBoardFullException;
 import com.user.backend.dto.NoticeBoardDto;
 import com.user.backend.dto.SearchConditionDto;
 

@@ -1,6 +1,6 @@
 package com.user.backend.service;
 
-import com.admin.backend.common.utils.MultipartFileUtils;
+import com.user.backend.common.utils.MultipartFileUtils;
 import com.user.backend.dto.FileDto;
 import com.user.backend.mapper.FileMapper;
 import lombok.RequiredArgsConstructor;
