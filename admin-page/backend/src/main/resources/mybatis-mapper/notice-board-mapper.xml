@@ -10,17 +10,13 @@
             AND (nb.title LIKE CONCAT('%',#{searchText},'%')
             OR nb.content LIKE CONCAT('%',#{searchText},'%'))
         </if>
-        <if test = "categoryId > 0">
-            AND nb.category_id = #{categoryId}
-        </if>
+        <if test = "category > 0">
+            AND nb.category_id = #{category}</if>
     </sql>
 
     <sql id="selectBoardWithJoin">
         SELECT
-            nb.board_id,
-            nb.title,
-            nb.views,
-            nb.created_at,
+            nb.*,
             ad.admin_name as authorName,
             ctg.category_name
         FROM
@@ -98,7 +94,7 @@
         UPDATE
             tb_notice_board
         SET
-            category_id = #{categoryId}, title = #{title}, content = #{content}, edited_at = CURRENT_TIMESTAMP
+            category_id = #{categoryId}, title = #{title}, content = #{content}, edited_at = CURRENT_TIMESTAMP,
             <choose>
                 <when test="fixed != null">
                     fixed = 1
