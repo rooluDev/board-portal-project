@@ -12,7 +12,9 @@
 <hr/>
 <nav th:replace="~{components/nav :: nav}"></nav>
 <hr/>
-<form action="/admin/board/notice/write" method="post" onsubmit="return validator()">
+<form th:action="@{/board/notice/write(startDate=${searchCondition.startDate},endDate=${searchCondition.endDate},category=${searchCondition.category},
+    searchText=${searchCondition.searchText},pageSize=${searchCondition.pageSize},orderValue=${searchCondition.orderValue},
+    orderDirection=${searchCondition.orderDirection})}" method="post" onsubmit="return validator()">
     <label>분류*</label>
     <select name="categoryId">
         <option th:each="category : ${categoryList}"
@@ -56,13 +58,13 @@
 
 
     const parseObjectToParam = (searchCondition) => {
-        return `?startDate=${searchCondition.startDate}&endDate=${searchCondition.endDate}&categoryId=${searchCondition.categoryId}` +
+        return `?startDate=${searchCondition.startDate}&endDate=${searchCondition.endDate}&category=${searchCondition.category}` +
             `&searchText=${searchCondition.searchText}&pageSize=${searchCondition.pageSize}&orderValue=${searchCondition.orderValue}` +
             `&orderDirection=${searchCondition.orderDirection}&pageNum=${searchCondition.pageNum}`;
     }
 
     const goToList = (searchCondition) => {
-        location.href = `/admin/board/notice` + parseObjectToParam(searchCondition);
+        location.href = `/board/notice` + parseObjectToParam(searchCondition);
     }
 </script>
 </html>

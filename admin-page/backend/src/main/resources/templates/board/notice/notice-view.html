@@ -12,7 +12,10 @@
 <hr/>
 <nav th:replace="~{components/nav :: nav}"></nav>
 <hr/>
-<form th:action="@{/admin/board/notice/modify/{boardId}(boardId = ${boardId})}" method="post" onsubmit="return validator()">
+<form th:action="@{/board/notice/modify/{boardId}(boardId = ${boardId},
+    startDate=${searchCondition.startDate},endDate=${searchCondition.endDate},category=${searchCondition.category},
+    searchText=${searchCondition.searchText},pageSize=${searchCondition.pageSize},orderValue=${searchCondition.orderValue},
+    orderDirection=${searchCondition.orderDirection})}" method="post" onsubmit="return validator()">
     <label>분류*</label>
     <select name="categoryId">
         <option th:each="category : ${categoryList}"
@@ -36,7 +39,13 @@
     <button type="button" th:onclick="deleteBoard([[${board.boardId}]])">삭제</button>
 </form>
 </body>
-<script>
+<script th:inline="javascript">
+    const modifySuccess = [[${modify}]];
+
+    if (modifySuccess === 1) {
+        alert("수정 되었습니다.");
+    }
+
     const validator = () => {
         const title = $("#title").val();
         const content = $("#content").val();
@@ -57,18 +66,18 @@
     }
 
     const parseObjectToParam = (searchCondition) => {
-        return `?startDate=${searchCondition.startDate}&endDate=${searchCondition.endDate}&categoryId=${searchCondition.categoryId}` +
+        return `?startDate=${searchCondition.startDate}&endDate=${searchCondition.endDate}&category=${searchCondition.category}` +
             `&searchText=${searchCondition.searchText}&pageSize=${searchCondition.pageSize}&orderValue=${searchCondition.orderValue}` +
             `&orderDirection=${searchCondition.orderDirection}&pageNum=${searchCondition.pageNum}`;
     }
 
     const goToList = (searchCondition) => {
-        location.href = `/admin/board/notice` + parseObjectToParam(searchCondition);
+        location.href = `/board/notice` + parseObjectToParam(searchCondition);
     }
 
     const deleteBoard = (boardId) => {
-        if (confirm('정말로 삭제 하시겠습니까?')){
-            location.href = `/admin/board/notice/delete/${boardId}`;
+        if (confirm('정말로 삭제 하시겠습니까?')) {
+            location.href = `/board/notice/delete/${boardId}`;
         }
     }
 
