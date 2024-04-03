@@ -3,6 +3,7 @@ package com.admin.backend.controller;
 import com.admin.backend.common.exception.BoardNotFoundException;
 import com.admin.backend.common.type.Board;
 import com.admin.backend.common.utils.PaginationUtils;
+import com.admin.backend.common.utils.StringUtils;
 import com.admin.backend.common.validator.BoardValidator;
 import com.admin.backend.common.validator.SearchConditionValidator;
 import com.admin.backend.dto.AdminDto;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -24,7 +26,6 @@ import java.util.List;
  * Notice Board Controller
  */
 @Controller
-@RequestMapping("/admin")
 @RequiredArgsConstructor
 @Slf4j
 public class NoticeBoardController {
@@ -46,7 +47,8 @@ public class NoticeBoardController {
                               @ModelAttribute SearchConditionDto searchConditionDto) {
 
         // 검색조건 유효성 검증
-        SearchConditionValidator.validateSearchCondition(searchConditionDto);
+        // TODO : 검색조건 유효성 검증 및 검색조건 유지
+//        SearchConditionValidator.validateSearchCondition(searchConditionDto);
 
         // 페이지네이션 설정
         int totalRowCount = noticeBoardService.getTotalRowCountByCondition(searchConditionDto);
@@ -106,7 +108,8 @@ public class NoticeBoardController {
                            RedirectAttributes redirectAttributes) {
 
         // 유효성 검증
-        BoardValidator.validateNoticeBoard(noticeBoardDto);
+        // TODO : 검색조건 유효성 검증 및 검색조건 유지
+//        BoardValidator.validateNoticeBoard(noticeBoardDto);
 
         // author 세팅
         noticeBoardDto.setAuthorId(adminDto.getAdminId());
@@ -114,7 +117,10 @@ public class NoticeBoardController {
         // 저장
         noticeBoardService.addBoard(noticeBoardDto);
 
-        return "redirect:/admin/board/notice";
+        // 등록 완료 응답 값 설정
+        redirectAttributes.addFlashAttribute("write", 1);
+
+        return "redirect:/board/notice";
     }
 
     /**
@@ -132,9 +138,8 @@ public class NoticeBoardController {
                                @SessionAttribute(name = LoginController.ADMIN_SESSION_ID) AdminDto adminDto,
                                @ModelAttribute SearchConditionDto searchConditionDto) {
 
-
         // 데이터 가져오기
-        NoticeBoardDto noticeBoardDto = noticeBoardService.getBoardByBoardId(boardId).orElseThrow(() -> new BoardNotFoundException("잘못된 요청입니다."));
+        NoticeBoardDto noticeBoardDto = noticeBoardService.getBoardByBoardId(boardId).orElseThrow(() -> new BoardNotFoundException());
         List<CategoryDto> categoryDtoList = categoryService.getCategoryListByBoardType(Board.NOTICE_BOARD.getBoardType());
 
         // 조회수 증가
@@ -163,30 +168,39 @@ public class NoticeBoardController {
                               RedirectAttributes redirectAttributes) {
 
         // 유효성 검증
-        BoardValidator.validateNoticeBoard(noticeBoardDto);
+        // TODO : 검색조건 유효성 검증 및 검색조건 유지
+//        BoardValidator.validateNoticeBoard(noticeBoardDto);
 
         // 수정
         noticeBoardDto.setBoardId(boardId);
         noticeBoardService.modifyBoard(noticeBoardDto);
 
-        // TODO : 수정 후 어디로? 수정 후 동일한 페이지로 redirect 하고도 검색 조건 유지?
-        return "redirect:/admin/board/notice/" + boardId;
+        // 수정 완료 응답 값 설정
+        redirectAttributes.addFlashAttribute("modify", 1);
+
+        return "redirect:/board/notice/" + boardId + StringUtils.searchConditionToQueryStringWithCategory(searchConditionDto);
     }
 
     /**
      * 공지사항 게시판 삭제 GET
      *
-     * @param boardId PathVariable
-     * @return redirect:/admin/board/notice
+     * @param boardId            PathVariable
+     * @param redirectAttributes 삭제 완료 alert를 위한 redirectAttributes
+     * @return redirect:/board/notice
      */
     @GetMapping("/board/notice/delete/{boardId}")
-    public String deleteBoard(@PathVariable(name = "boardId") Long boardId) {
+    public String deleteBoard(@PathVariable(name = "boardId") Long boardId,
+                              RedirectAttributes redirectAttributes) {
 
-        // TODO : boardId와 일치하는 board가 있는지 확인 하는 로직이 필요할까
+        // boardId 유효성 검증
+        noticeBoardService.getBoardByBoardId(boardId).orElseThrow(() -> new BoardNotFoundException());
 
         // 삭제
         noticeBoardService.deleteBoardByBoardId(boardId);
 
-        return "redirect:/admin/board/notice";
+        // 삭제 완료 응답 값 설정
+        redirectAttributes.addFlashAttribute("delete", 1);
+
+        return "redirect:/board/notice";
     }
 }
