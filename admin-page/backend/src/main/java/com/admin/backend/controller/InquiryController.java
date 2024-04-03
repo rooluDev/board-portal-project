@@ -2,6 +2,7 @@ package com.admin.backend.controller;
 
 import com.admin.backend.common.exception.BoardNotFoundException;
 import com.admin.backend.common.utils.PaginationUtils;
+import com.admin.backend.common.utils.StringUtils;
 import com.admin.backend.common.validator.SearchConditionValidator;
 import com.admin.backend.dto.AdminDto;
 import com.admin.backend.dto.AnswerDto;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -21,7 +23,6 @@ import java.util.List;
  */
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/admin")
 public class InquiryController {
 
     private final InquiryBoardService inquiryBoardService;
@@ -41,7 +42,8 @@ public class InquiryController {
                               @ModelAttribute SearchConditionDto searchConditionDto) {
 
         // 검색조건 유효성 검증
-        SearchConditionValidator.validateSearchCondition(searchConditionDto);
+        // TODO : 검색조건 유효성 검증 및 검색조건 유지
+//        SearchConditionValidator.validateSearchCondition(searchConditionDto);
 
         // 페이지네이션 설정
         int totalRowCount = inquiryBoardService.getTotalRowCountByCondition(searchConditionDto);
@@ -74,7 +76,7 @@ public class InquiryController {
                               @ModelAttribute SearchConditionDto searchConditionDto) {
 
         // 데이터 가져오기
-        InquiryDto inquiryDto = inquiryBoardService.getBoardById(boardId).orElseThrow(() -> new BoardNotFoundException("잘못된 요청입니다."));
+        InquiryDto inquiryDto = inquiryBoardService.getBoardById(boardId).orElseThrow(() -> new BoardNotFoundException());
         AnswerDto answerDto = answerService.getAnswerByBoardId(boardId).orElseGet(AnswerDto::new);
 
         // 조회수 증가
@@ -91,17 +93,27 @@ public class InquiryController {
     /**
      * 문의 게시판 삭제
      *
-     * @param boardId PathVariable
-     * @return redirect:/admin/board/inquiry
+     * @param boardId            PathVariable
+     * @param redirectAttributes 삭제 완료 alert를 위한 redirectAttributes
+     * @param searchConditionDto 삭제 완료 후 검색 조건 유지를 위한 쿼리스트링
+     * @return redirect:/board/inquiry
      */
     @GetMapping("/board/inquiry/delete/{boardId}")
-    public String deleteBoard(@PathVariable(name = "boardId") Long boardId) {
+    public String deleteBoard(@PathVariable(name = "boardId") Long boardId,
+                              @ModelAttribute SearchConditionDto searchConditionDto,
+                              RedirectAttributes redirectAttributes) {
+
+        // boardId 유효성 검증
+        inquiryBoardService.getBoardById(boardId).orElseThrow(() -> new BoardNotFoundException());
 
         // 삭제
         answerService.deleteAnswer(boardId);
         inquiryBoardService.deleteBoardById(boardId);
 
-        return "redirect:/admin/board/inquiry";
+        // 삭제 완료 응답 값 설정
+        redirectAttributes.addFlashAttribute("delete", 1);
+
+        return "redirect:/board/inquiry" + StringUtils.searchConditionToQueryStringWithOutCategory(searchConditionDto);
     }
 
 }
