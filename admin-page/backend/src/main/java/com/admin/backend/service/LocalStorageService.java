@@ -18,7 +18,7 @@ import java.util.UUID;
 @Primary
 public class LocalStorageService implements StorageService {
 
-    @Value("#{file['file.path']}")
+    @Value("#{storage['path']}")
     private String path;
 
     @Override
