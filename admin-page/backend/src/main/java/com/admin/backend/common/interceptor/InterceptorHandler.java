@@ -22,7 +22,7 @@ public class InterceptorHandler implements HandlerInterceptor {
 
         // 세션 없을 시 로그인 페이지로
         if(user == null){
-            response.sendRedirect("/admin/login");
+            response.sendRedirect("/login");
             return false;
         }
         return true;
