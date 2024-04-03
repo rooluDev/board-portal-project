@@ -19,7 +19,7 @@ import java.time.format.DateTimeFormatter;
 public class SearchConditionDto {
     private String startDate;
     private String endDate;
-    private Long categoryId;
+    private Long category;
     private String searchText;
     private int pageSize;
     private String orderValue;
@@ -35,7 +35,7 @@ public class SearchConditionDto {
     public SearchConditionDto(){
         this.startDate = LocalDate.now().minusMonths(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         this.endDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        this.categoryId = -1L;
+        this.category = -1L;
         this.searchText = "";
         this.pageSize = 10;
         this.orderValue = "createdAt";
