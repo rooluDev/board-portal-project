@@ -36,7 +36,7 @@
     <br/>
     <button type="submit">수정</button>
     <button type="button" th:onclick="goToList([[${searchCondition}]])">목록</button>
-    <button type="button" th:onclick="deleteBoard([[${board.boardId}]])">삭제</button>
+    <button type="button" th:onclick="deleteBoard([[${board.boardId}]],[[${searchCondition}]])">삭제</button>
 </form>
 </body>
 <script th:inline="javascript">
@@ -75,9 +75,9 @@
         location.href = `/board/notice` + parseObjectToParam(searchCondition);
     }
 
-    const deleteBoard = (boardId) => {
+    const deleteBoard = (boardId, searchCondition) => {
         if (confirm('정말로 삭제 하시겠습니까?')) {
-            location.href = `/board/notice/delete/${boardId}`;
+            location.href = `/board/notice/delete/${boardId}` + parseObjectToParam(searchCondition);
         }
     }
 
