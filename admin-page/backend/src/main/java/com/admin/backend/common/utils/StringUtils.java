@@ -1,5 +1,7 @@
 package com.admin.backend.common.utils;
 
+import com.admin.backend.dto.SearchConditionDto;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -24,5 +26,23 @@ public class StringUtils {
             numberList.add(matcher.group());
         }
         return numberList;
+    }
+
+
+    public static String searchConditionToQueryStringWithCategory(SearchConditionDto searchConditionDto) {
+        String queryString = "?startDate=" + searchConditionDto.getStartDate() + "&endDate=" + searchConditionDto.getEndDate() +
+                "&category=" + searchConditionDto.getCategory() + "&searchText=" + searchConditionDto.getSearchText() +
+                "&pageSize=" + searchConditionDto.getPageSize() + "&orderValue=" + searchConditionDto.getOrderValue() +
+                "&orderDirection=" + searchConditionDto.getOrderDirection() + "&pageNum=" + searchConditionDto.getPageNum();
+        return queryString;
+    }
+
+    public static String searchConditionToQueryStringWithOutCategory(SearchConditionDto searchConditionDto){
+        String queryString = "?startDate=" + searchConditionDto.getStartDate() + "&endDate=" + searchConditionDto.getEndDate() +
+                "&searchText=" + searchConditionDto.getSearchText() + "&pageSize=" + searchConditionDto.getPageSize() +
+                "&orderValue=" + searchConditionDto.getOrderValue() + "&orderDirection=" + searchConditionDto.getOrderDirection() +
+                "&pageNum=" + searchConditionDto.getPageNum();
+
+        return queryString;
     }
 }
