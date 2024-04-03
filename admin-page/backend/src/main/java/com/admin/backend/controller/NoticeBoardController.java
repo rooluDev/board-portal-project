@@ -93,13 +93,17 @@ public class NoticeBoardController {
     /**
      * 공지사항 게시판 추가 POST
      *
-     * @param noticeBoardDto notice-write form data ( categoryId , title, content, fixed )
-     * @param adminDto       저장된 세션 정보 ( table column에 저장될 데이터 )
-     * @return redirect:/admin/board/notice
+     * @param noticeBoardDto     notice-write form data ( categoryId , title, content, fixed )
+     * @param adminDto           저장된 세션 정보 ( table column에 저장될 데이터 )
+     * @param searchConditionDto Exception 발생시 검색조건을 유지하기 위한 쿼리스트링
+     * @param redirectAttributes 등록 완료 alert를 위한 redirectAttributes
+     * @return redirect:/board/notice
      */
     @PostMapping("/board/notice/write")
     public String addBoard(@ModelAttribute NoticeBoardDto noticeBoardDto,
-                           @SessionAttribute(name = LoginController.ADMIN_SESSION_ID) AdminDto adminDto) {
+                           @SessionAttribute(name = LoginController.ADMIN_SESSION_ID) AdminDto adminDto,
+                           @ModelAttribute SearchConditionDto searchConditionDto,
+                           RedirectAttributes redirectAttributes) {
 
         // 유효성 검증
         BoardValidator.validateNoticeBoard(noticeBoardDto);
@@ -147,13 +151,16 @@ public class NoticeBoardController {
     /**
      * 공지사항 게시판 수정 POST
      *
-     * @param boardId        PathVariable
-     * @param noticeBoardDto notice-modify form data ( categoryId , title, content, fixed )
-     * @return redirect:/admin/board/notice/" + boardId
+     * @param boardId            PathVariable
+     * @param noticeBoardDto     notice-modify form data ( categoryId , title, content, fixed )
+     * @param redirectAttributes 수정 완료 alert를 위한 redirectAttributes
+     * @return redirect:/board/notice/" + boardId
      */
     @PostMapping("/board/notice/modify/{boardId}")
     public String modifyBoard(@PathVariable(name = "boardId") Long boardId,
-                              @ModelAttribute NoticeBoardDto noticeBoardDto) {
+                              @ModelAttribute NoticeBoardDto noticeBoardDto,
+                              @ModelAttribute SearchConditionDto searchConditionDto,
+                              RedirectAttributes redirectAttributes) {
 
         // 유효성 검증
         BoardValidator.validateNoticeBoard(noticeBoardDto);
