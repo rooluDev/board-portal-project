@@ -158,6 +158,7 @@ public class NoticeBoardController {
      *
      * @param boardId            PathVariable
      * @param noticeBoardDto     notice-modify form data ( categoryId , title, content, fixed )
+     * @param searchConditionDto 수정 후 검색조건을 유지하기 위한 쿼리스트링
      * @param redirectAttributes 수정 완료 alert를 위한 redirectAttributes
      * @return redirect:/board/notice/" + boardId
      */
@@ -186,10 +187,12 @@ public class NoticeBoardController {
      *
      * @param boardId            PathVariable
      * @param redirectAttributes 삭제 완료 alert를 위한 redirectAttributes
+     * @param searchConditionDto 삭제 완료 후 검색 조건 유지를 위한 쿼리스트링
      * @return redirect:/board/notice
      */
     @GetMapping("/board/notice/delete/{boardId}")
     public String deleteBoard(@PathVariable(name = "boardId") Long boardId,
+                              @ModelAttribute SearchConditionDto searchConditionDto,
                               RedirectAttributes redirectAttributes) {
 
         // boardId 유효성 검증
@@ -201,6 +204,6 @@ public class NoticeBoardController {
         // 삭제 완료 응답 값 설정
         redirectAttributes.addFlashAttribute("delete", 1);
 
-        return "redirect:/board/notice";
+        return "redirect:/board/notice" + StringUtils.searchConditionToQueryStringWithCategory(searchConditionDto);
     }
 }
