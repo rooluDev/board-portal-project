@@ -51,7 +51,7 @@ public class LoginController {
 
         // 세션 생성
         HttpSession session = httpServletRequest.getSession(true);
-        log.info("Admin Id : " + admin.getAdminId() + " Login");
+        log.info("Login / Id : " + admin.getAdminId());
         session.setAttribute(ADMIN_SESSION_ID, admin);
 
         // 시간 설정
@@ -77,7 +77,7 @@ public class LoginController {
         if (session != null) {
             // 세션 파기
             session.invalidate();
-            log.info("Admin Id : " + adminDto.getAdminId() + " Logout");
+            log.info("Logout / Id : " + adminDto.getAdminId());
         }
 
         return "redirect:/login";
