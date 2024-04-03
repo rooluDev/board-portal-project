@@ -8,10 +8,10 @@ import org.springframework.core.io.ClassPathResource;
 @Configuration
 public class PropertiesConfig {
 
-    @Bean(name = "file")
+    @Bean(name = "storage")
     public PropertiesFactoryBean filePropertiesBean() {
         PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
-        ClassPathResource classPathResource = new ClassPathResource("properties/file.properties");
+        ClassPathResource classPathResource = new ClassPathResource("properties/storage.properties");
 
         propertiesFactoryBean.setLocation(classPathResource);
 
