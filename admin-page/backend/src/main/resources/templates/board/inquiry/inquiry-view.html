@@ -6,37 +6,42 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
-    <h1>문의 게시판</h1>
-    <h3 th:if="${errorMessage}" th:text="${errorMessage}"></h3>
-    <header th:replace="~{components/header :: header(${admin.adminName})}"></header>
-    <hr/>
-    <nav th:replace="~{components/nav :: nav}"></nav>
-    <hr/>
-    <span>제목*</span>
-    <span th:if="${answer.answerId != null}" th:text="${board.title} + ' (답변완료)'"></span>
-    <span th:unless="${answer.answerId != null}" th:text="${board.title} + ' (미답변)'"></span>
-    <hr/>
-    <span>질문*</span>
-    <span th:text="${board.content}"></span>
-    <hr/>
-    <form th:action="@{/admin/answer/{boardId}(boardId = ${board.boardId})}" method="post" onsubmit="return validator()">
-        <label>답변</label>
-        <textarea th:if="${answer.content != null}" name="content" id="content" th:text="${answer.content}" rows="6" cols="33" required></textarea>
-        <textarea th:unless="${answer.content != null}"  name="content" id="content" rows="6" cols="33" required></textarea>
-        <br/>
-        <input type="submit" value="답변완료">
-        <button type="button" th:onclick="goToList([[${searchCondition}]])">목록</button>
-        <button type="button" th:onclick="deleteBoard([[${board.boardId}]])">삭제</button>
-    </form>
+<h1>문의 게시판</h1>
+<h3 th:if="${errorMessage}" th:text="${errorMessage}"></h3>
+<header th:replace="~{components/header :: header(${admin.adminName})}"></header>
+<hr/>
+<nav th:replace="~{components/nav :: nav}"></nav>
+<hr/>
+<span>제목*</span>
+<span th:if="${answer.answerId != null}" th:text="${board.title} + ' (답변완료)'"></span>
+<span th:unless="${answer.answerId != null}" th:text="${board.title} + ' (미답변)'"></span>
+<hr/>
+<span>질문*</span>
+<span th:text="${board.content}"></span>
+<hr/>
+<form th:action="@{/answer/{boardId}(boardId = ${board.boardId},startDate=${searchCondition.startDate},
+    endDate=${searchCondition.endDate},searchText=${searchCondition.searchText},pageSize=${searchCondition.pageSize},
+    orderValue=${searchCondition.orderValue},orderDirection=${searchCondition.orderDirection})}" method="post"
+      onsubmit="return validator()">
+    <label>답변</label>
+    <textarea th:if="${answer.content != null}" name="content" id="content" th:text="${answer.content}" rows="6"
+              cols="33" required></textarea>
+    <textarea th:unless="${answer.content != null}" name="content" id="content" rows="6" cols="33" required></textarea>
+    <br/>
+    <input type="submit" value="답변완료">
+    <button type="button" th:onclick="goToList([[${searchCondition}]])">목록</button>
+    <button type="button" th:onclick="deleteBoard([[${board.boardId}]],[[${searchCondition}]])">삭제</button>
+</form>
 </body>
-<script>
+<script th:inline="javascript">
+
     const validator = () => {
         const content = $("#content").val();
 
-        if (content.length > 3999){
+        if (content.length > 3999) {
             alert("답변은 4000자 미만이여야 합니다.");
             return false;
-        } else if (content.length < 1){
+        } else if (content.length < 1) {
             alert("입력칸이 비어있습니다.");
             return false;
         }
@@ -44,18 +49,18 @@
     }
 
     const parseObjectToParam = (searchCondition) => {
-        return `?startDate=${searchCondition.startDate}&endDate=${searchCondition.endDate}&categoryId=${searchCondition.categoryId}` +
-            `&searchText=${searchCondition.searchText}&pageSize=${searchCondition.pageSize}&orderValue=${searchCondition.orderValue}` +
+        return `?startDate=${searchCondition.startDate}&endDate=${searchCondition.endDate}&searchText=${searchCondition.searchText}` +
+            `&pageSize=${searchCondition.pageSize}&orderValue=${searchCondition.orderValue}` +
             `&orderDirection=${searchCondition.orderDirection}&pageNum=${searchCondition.pageNum}`;
     }
 
     const goToList = (searchCondition) => {
-        location.href = `/admin/board/inquiry` + parseObjectToParam(searchCondition);
+        location.href = `/board/inquiry` + parseObjectToParam(searchCondition);
     }
 
-    const deleteBoard = (boardId) => {
+    const deleteBoard = (boardId, searchCondition) => {
         if (confirm('정말로 삭제 하시겠습니까?')) {
-            location.href = `/admin/board/inquiry/delete/${boardId}`;
+            location.href = `/board/inquiry/delete/${boardId}` + parseObjectToParam(searchCondition);
         }
     }
 
