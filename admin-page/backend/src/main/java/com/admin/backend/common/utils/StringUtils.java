@@ -28,7 +28,12 @@ public class StringUtils {
         return numberList;
     }
 
-
+    /**
+     * SearchCondition 객체를 카테고리가 있는 쿼리 스트링으로 파싱
+     *
+     * @param searchConditionDto 검색조건
+     * @return 쿼리스트링
+     */
     public static String searchConditionToQueryStringWithCategory(SearchConditionDto searchConditionDto) {
         String queryString = "?startDate=" + searchConditionDto.getStartDate() + "&endDate=" + searchConditionDto.getEndDate() +
                 "&category=" + searchConditionDto.getCategory() + "&searchText=" + searchConditionDto.getSearchText() +
@@ -37,7 +42,13 @@ public class StringUtils {
         return queryString;
     }
 
-    public static String searchConditionToQueryStringWithOutCategory(SearchConditionDto searchConditionDto){
+    /**
+     * SearchCondition 객체를 카테고리가 없는 쿼리 스트링으로 파싱
+     *
+     * @param searchConditionDto 검색조건
+     * @return 쿼리스트링
+     */
+    public static String searchConditionToQueryStringWithOutCategory(SearchConditionDto searchConditionDto) {
         String queryString = "?startDate=" + searchConditionDto.getStartDate() + "&endDate=" + searchConditionDto.getEndDate() +
                 "&searchText=" + searchConditionDto.getSearchText() + "&pageSize=" + searchConditionDto.getPageSize() +
                 "&orderValue=" + searchConditionDto.getOrderValue() + "&orderDirection=" + searchConditionDto.getOrderDirection() +
