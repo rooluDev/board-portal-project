@@ -7,21 +7,21 @@
 </head>
 <body>
 <h1>공지 사항 관리</h1>
-<h3 th:if="${errorMessage}" th:text="${errorMessage}"></h3>
 <header th:replace="~{components/header :: header(${admin.adminName})}"></header>
 <hr/>
 <nav th:replace="~{components/nav :: nav}"></nav>
 <hr/>
-<form action="/admin/board/notice" method="get">
+<h3 th:if="${errorMessage}" th:text="${errorMessage}"></h3>
+<form action="/board/notice" method="get">
     <label>등록일시</label>
     <input type="date" name="startDate" id="startDate" th:value="${searchCondition.startDate}">
     <input type="date" name="endDate" id="endDate" th:value="${searchCondition.endDate}">
     <select name="categoryId" id="categoryId">
-        <option value="-1" th:selected="${searchCondition.categoryId == -1}">전체 분류</option>
+        <option value="-1" th:selected="${searchCondition.category == -1}">전체 분류</option>
         <option th:each="category : ${categoryList}"
                 th:value="${category.categoryId}"
                 th:text="${category.categoryName}"
-                th:selected="${searchCondition.categoryId == category.categoryId}">
+                th:selected="${searchCondition.category == category.categoryId}">
         </option>
     </select>
     <input type="text" name="searchText" id="searchText" placeholder="제목 or 내용"
@@ -89,7 +89,18 @@
 
 </body>
 
-<script>
+<script th:inline="javascript">
+    const writeSuccess = [[${write}]];
+    const deleteSuccess = [[${delete}]];
+
+    if (writeSuccess === 1) {
+        alert("등록 되었습니다.");
+    }
+
+    if (deleteSuccess === 1) {
+        alert("삭제 되었습니다.");
+    }
+
     const getNewBoardList = () => {
         const startDate = $("#startDate").val();
         const endDate = $("#endDate").val();
@@ -98,7 +109,7 @@
         const pageSize = $("#pageSize").val();
         const orderValue = $("#orderValue").val();
         const orderDirection = $("#orderDirection").val();
-        const url = `/admin/board/notice?startDate=${startDate}&endDate=${endDate}&categoryId=${categoryId}`
+        const url = `/board/notice?startDate=${startDate}&endDate=${endDate}&category=${categoryId}`
             + `&searchText=${searchText}&pageSize=${pageSize}&orderValue=${orderValue}&orderDirection=${orderDirection}`;
         window.location.href = url;
     }
@@ -107,22 +118,22 @@
 
 
     const parseObjectToParam = (searchCondition) => {
-        return `?startDate=${searchCondition.startDate}&endDate=${searchCondition.endDate}&categoryId=${searchCondition.categoryId}` +
+        return `?startDate=${searchCondition.startDate}&endDate=${searchCondition.endDate}&category=${searchCondition.category}` +
             `&searchText=${searchCondition.searchText}&pageSize=${searchCondition.pageSize}&orderValue=${searchCondition.orderValue}` +
             `&orderDirection=${searchCondition.orderDirection}&pageNum=${searchCondition.pageNum}`;
     }
 
     const goToPageNum = (pageNum, searchCondition) => {
         searchCondition.pageNum = pageNum;
-        location.href = `/admin/board/notice` + parseObjectToParam(searchCondition);
+        location.href = `/board/notice` + parseObjectToParam(searchCondition);
     }
 
     const goToWrite = (searchCondition) => {
-        location.href = `/admin/board/notice/write` + parseObjectToParam(searchCondition);
+        location.href = `/board/notice/write` + parseObjectToParam(searchCondition);
     }
 
     const goToBoard = (boardId, searchCondition) => {
-        location.href = `/admin/board/notice/${boardId}` + parseObjectToParam(searchCondition);
+        location.href = `/board/notice/${boardId}` + parseObjectToParam(searchCondition);
     }
 </script>
 </html>
