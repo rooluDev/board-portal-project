@@ -24,29 +24,12 @@ public class FileServiceImpl implements FileService {
     private final FileMapper fileMapper;
 
     @Override
-    public List<FileDto> addFile(MultipartFile[] fileList, String boardType, Long boardId) {
-
-        List<FileDto> addedFileList = new ArrayList<>();
-        for (MultipartFile file : fileList) {
-            if (!file.isEmpty()) {
-                // 객체 생성
-                FileDto fileDto = FileDto.builder()
-                        .boardType(boardType)
-                        .boardId(boardId)
-                        .originalName(file.getOriginalFilename())
-                        .physicalName(UUID.randomUUID().toString())
-                        .filePath("/" + boardType)
-                        .extension(MultipartFileUtils.extractExtension(file))
-                        .size(file.getSize())
-                        .build();
-
-                // db 저장
-                fileMapper.insertFile(fileDto);
-                addedFileList.add(fileDto);
-            }
+    public void addFile(List<FileDto> fileList, Long boardId) {
+        for (FileDto fileDto : fileList) {
+            fileDto.setBoardId(boardId);
+            fileMapper.insertFile(fileDto);
         }
 
-        return addedFileList;
     }
 
     @Override
