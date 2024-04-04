@@ -7,4 +7,8 @@ public class StorageFailException extends RuntimeException{
     public StorageFailException(String message) {
         super(message);
     }
+
+    public StorageFailException() {
+        super();
+    }
 }
