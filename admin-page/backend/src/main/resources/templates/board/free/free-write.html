@@ -12,7 +12,7 @@
 <hr/>
 <nav th:replace="~{components/nav :: nav}"></nav>
 <hr/>
-<form action="/admin/board/free/write" method="post" enctype="multipart/form-data" onsubmit="return validator()">
+<form action="/board/free/write" method="post" enctype="multipart/form-data" onsubmit="return validator()">
     <label>분류*</label>
     <select name="categoryId">
         <option th:each="category : ${categoryList}"
@@ -85,13 +85,13 @@
     }
 
     const parseObjectToParam = (searchCondition) => {
-        return `?startDate=${searchCondition.startDate}&endDate=${searchCondition.endDate}&categoryId=${searchCondition.categoryId}` +
+        return `?startDate=${searchCondition.startDate}&endDate=${searchCondition.endDate}&category=${searchCondition.category}` +
             `&searchText=${searchCondition.searchText}&pageSize=${searchCondition.pageSize}&orderValue=${searchCondition.orderValue}` +
             `&orderDirection=${searchCondition.orderDirection}&pageNum=${searchCondition.pageNum}`;
     }
 
     const goToList = (searchCondition) => {
-        location.href = `/admin/board/free` + parseObjectToParam(searchCondition);
+        location.href = `/board/free` + parseObjectToParam(searchCondition);
     }
 </script>
 </html>
