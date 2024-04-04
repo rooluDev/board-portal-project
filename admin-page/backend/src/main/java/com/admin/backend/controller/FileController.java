@@ -3,9 +3,9 @@ package com.admin.backend.controller;
 
 import com.admin.backend.dto.FileDto;
 import com.admin.backend.service.FileService;
-import com.admin.backend.service.UploadServiceImpl;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,9 +18,12 @@ import java.io.*;
  */
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/admin")
 public class FileController {
+
+    @Value("#{storage['path']}")
+    private String path;
     private final FileService fileService;
+
 
     /**
      * 파일 다운로드
@@ -37,7 +40,7 @@ public class FileController {
 
         // 파일 객체 생성
         String fileName = fileDto.getPhysicalName() + "." + fileDto.getExtension();
-        String filePath = UploadServiceImpl.PATH + fileDto.getFilePath() + "/" + fileName;
+        String filePath = path + fileDto.getFilePath() + "/" + fileName;
         File file = new File(filePath);
 
         // response 설정
@@ -48,13 +51,7 @@ public class FileController {
         download(file, response.getOutputStream());
     }
 
-    /**
-     * 파일 다운로드
-     *
-     * @param file
-     * @param outputStream
-     * @throws IOException
-     */
+
     private void download(File file, OutputStream outputStream) throws IOException {
         // try-with-resource 파일 다운로드
         try (FileInputStream fis = new FileInputStream(file);
