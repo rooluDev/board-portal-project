@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
  * Comment Controller
  */
 @Controller
-@RequestMapping("/admin")
 @RequiredArgsConstructor
 public class CommentController {
 
