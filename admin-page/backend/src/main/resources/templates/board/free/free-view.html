@@ -12,38 +12,78 @@
 <hr/>
 <nav th:replace="~{components/nav :: nav}"></nav>
 <hr/>
-<form th:action="@{/admin/board/free/modify/{boardId}(boardId = ${board.boardId})}" method="post"
-      enctype="multipart/form-data" onsubmit="return validator()">
-    <label>분류*</label>
-    <select name="categoryId">
-        <option th:each="category : ${categoryList}"
-                th:value="${category.categoryId}"
-                th:text="${category.categoryName}"
-                th:selected="${category.categoryId == board.categoryId}">
-        </option>
-    </select>
-    <br/>
-    <label>제목*</label>
-    <input type="text" name="title" id="title" th:value="${board.title}">
-    <br/>
-    <label>내용*</label>
-    <textarea name="content" id="content" th:text="${board.content}">
-    </textarea>
-    <br/>
+<div th:if="${board.deleted != 1}">
+    <form th:action="@{/board/free/modify/{boardId}(boardId = ${board.boardId},startDate=${searchCondition.startDate},endDate=${searchCondition.endDate},
+    category=${searchCondition.category},searchText=${searchCondition.searchText},pageSize=${searchCondition.pageSize},orderValue=${searchCondition.orderValue},
+    orderDirection=${searchCondition.orderDirection})}" method="post" enctype="multipart/form-data"
+          onsubmit="return validator()">
+        <label>분류*</label>
+        <select name="categoryId">
+            <option th:each="category : ${categoryList}"
+                    th:value="${category.categoryId}"
+                    th:text="${category.categoryName}"
+                    th:selected="${category.categoryId == board.categoryId}">
+            </option>
+        </select>
+        <br/>
+        <label>제목*</label>
+        <input type="text" name="title" id="title" th:value="${board.title}">
+        <br/>
+        <label>내용*</label>
+        <textarea name="content" id="content" th:text="${board.content}"></textarea>
+        <br/>
 
+        <label>첨부</label>
+        <div id="fileInputBox">
+            <div th:each="file : ${fileList}">
+                <input type="file" name="file" th:onchange="updateFileId([[${file.fileId}]])">
+                <span th:text="${file.filePath} + '/' + ${file.originalName}" th:id="${file.fileId} + 'span'"
+                      th:onclick="downloadFile([[${file.fileId}]])"></span>
+                <button type="button" id="deleteBtn" onclick="deleteFileInputTag(this)" th:data="${file.fileId}">X
+                </button>
+            </div>
+        </div>
+        <button type="button" onclick="addFileInputTag()">추가</button>
+        <input type="hidden" id="deleteFileIdList" name="deleteFileIdList">
+        <br/>
+
+        <textarea placeholder="댓글을 입력해 주세요." id="comment"></textarea>
+        <button type="button" th:onclick="addComment([[${board.boardId}]])">등록</button>
+        <div id="commentInputBox">
+            <div th:each="comment : ${commentList}" th:id="'comment-'+${comment.commentId}">
+                <span th:if="${comment.authorType} == 'admin'" th:text="${comment.adminName}"></span>
+                <span th:if="${comment.authorType} == 'member'" th:text="${comment.memberName}"></span>
+                <span th:text="${#dates.format(comment.createdAt,'yyyy.MM.dd hh:mm')}"></span>
+                <br/>
+                <span th:text="${comment.content}"></span>
+                <button type="button" th:onclick="deleteComment([[${comment.commentId}]])">삭제</button>
+            </div>
+        </div>
+        <br/>
+
+        <button type="submit">수정</button>
+        <button type="button" th:onclick="goToList([[${searchCondition}]])">목록</button>
+        <button type="button" th:onclick="deleteBoard([[${board.boardId}]],[[${searchCondition}]])">삭제</button>
+    </form>
+</div>
+<div th:unless="${board.deleted != 1}">
+    <label>분류</label>
+    <span th:text="${board.categoryName}"></span>
+    <br/>
+    <label>제목</label>
+    <span th:text="${board.title}"></span>
+    <br/>
+    <label>내용</label>
+    <span th:text="${board.content}"></span>
+    <br/>
     <label>첨부</label>
     <div id="fileInputBox">
         <div th:each="file : ${fileList}">
-            <span th:text="${file.filePath} + '/' + ${file.originalName}" th:onclick="downloadFile([[${file.fileId}]])"></span>
-            <button th:if="${board.deleted != 1}" type="button" id="deleteBtn" onclick="deleteFileInputTag(this)" th:data="${file.fileId}">X</button>
+            <span th:text="${file.filePath} + '/' + ${file.originalName}" th:id="${file.fileId} + 'span'"
+                  th:onclick="downloadFile([[${file.fileId}]])"></span>
         </div>
     </div>
-    <button type="button" th:if="${board.deleted != 1}" th:onclick="addFileInputTag([[${fileCountInBoard}]])">추가</button>
-    <input type="hidden" id="deleteFileIdList" name="deleteFileIdList">
     <br/>
-
-    <textarea placeholder="댓글을 입력해 주세요." id="comment"></textarea>
-    <button type="button" th:onclick="addComment([[${board.boardId}]])">등록</button>
     <div id="commentInputBox">
         <div th:each="comment : ${commentList}" th:id="'comment-'+${comment.commentId}">
             <span th:if="${comment.authorType} == 'admin'" th:text="${comment.adminName}"></span>
@@ -51,24 +91,29 @@
             <span th:text="${#dates.format(comment.createdAt,'yyyy.MM.dd hh:mm')}"></span>
             <br/>
             <span th:text="${comment.content}"></span>
-            <button type="button" th:onclick="deleteComment([[${comment.commentId}]])">삭제</button>
         </div>
     </div>
-    <br/>
-
-    <button type="submit" th:if="${board.deleted != 1}">수정</button>
     <button type="button" th:onclick="goToList([[${searchCondition}]])">목록</button>
-    <button type="button" th:if="${board.deleted != 1}" th:onclick="deleteBoard([[${board.boardId}]])">삭제</button>
-</form>
+</div>
 </body>
-<script>
+<script th:inline="javascript">
+    const modifySuccess = [[${modify}]];
+
+    if (modifySuccess === 1) {
+        alert("수정 되었습니다.");
+    }
+
     const fileInputBox = document.getElementById('fileInputBox');
     const commentInputBox = document.getElementById('commentInputBox');
     let deletedFileId = [];
 
-    const addFileInputTag = (fileCountInBoard) => {
+    const updateFileId = (fileId) => {
+        deletedFileId.push(fileId);
+    }
+
+    const addFileInputTag = () => {
         const currentFileInputTag = document.querySelectorAll('#fileInputBox input[type="file"]').length;
-        if (currentFileInputTag > (4 - fileCountInBoard)) {
+        if (currentFileInputTag > 4) {
             alert("최대 5개의 파일을 업로드 할 수 있습니다.");
             return;
         }
@@ -99,7 +144,8 @@
     }
 
     const validator = () => {
-        $("#deleteFileIdList").val(deletedFileId);
+        $("#deleteFileIdList").val([...new Set(deletedFileId)]);
+        console.log($("#deleteFileIdList").val());
         const title = $("#title").val();
         const content = $("#content").val();
 
@@ -117,41 +163,43 @@
 
 
     const parseObjectToParam = (searchCondition) => {
-        return `?startDate=${searchCondition.startDate}&endDate=${searchCondition.endDate}&categoryId=${searchCondition.categoryId}` +
+        return `?startDate=${searchCondition.startDate}&endDate=${searchCondition.endDate}&category=${searchCondition.category}` +
             `&searchText=${searchCondition.searchText}&pageSize=${searchCondition.pageSize}&orderValue=${searchCondition.orderValue}` +
             `&orderDirection=${searchCondition.orderDirection}&pageNum=${searchCondition.pageNum}`;
     }
 
     const goToList = (searchCondition) => {
-        location.href = `/admin/board/free` + parseObjectToParam(searchCondition);
+        location.href = `/board/free` + parseObjectToParam(searchCondition);
     }
 
-    const deleteBoard = (boardId) => {
+    const deleteBoard = (boardId, searchCondition) => {
         if (confirm('정말로 삭제 하시겠습니까?')) {
-            location.href = `/admin/board/free/delete/${boardId}`;
+            location.href = `/board/free/delete/${boardId}` + parseObjectToParam(searchCondition);
         }
     }
 
     const deleteComment = (commentId) => {
-        $.ajax({
-            url: `/admin/comment/${commentId}`,
-            type: 'DELETE',
-            success: (response) => {
-                $(`#comment-` + commentId).remove();
-            },
-            error: (error) => {
-                alert(error);
-            }
-        })
+        if (confirm('정말로 삭제 하시겠습니까?')) {
+            $.ajax({
+                url: `/comment/${commentId}`,
+                type: 'DELETE',
+                success: (response) => {
+                    $(`#comment-` + commentId).remove();
+                },
+                error: (error) => {
+                    alert(error);
+                }
+            })
+        }
     }
 
     const downloadFile = (fileId) => {
-        location.href = `/admin/file/download/${fileId}`;
+        location.href = `/file/download/${fileId}`;
     }
 
     const addComment = (boardId) => {
         $.ajax({
-            url: `/admin/comment`,
+            url: `/comment`,
             type: 'POST',
             contentType: "application/json",
             data: JSON.stringify({
