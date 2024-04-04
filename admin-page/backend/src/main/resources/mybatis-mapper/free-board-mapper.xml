@@ -12,8 +12,8 @@
                 OR a.admin_name LIKE CONCAT('%',#{searchText},'%')
                 OR m.member_name LIKE CONCAT('%',#{searchText},'%'))
             </if>
-            <if test = 'categoryId > 0'>
-                AND fb.category_id = #{categoryId}
+            <if test = 'category > 0'>
+                AND fb.category_id = #{category}
             </if>
     </sql>
 
@@ -31,15 +31,16 @@
 
     <select id="selectBoardListByCondition" parameterType="com.admin.backend.dto.SearchConditionDto" resultType="com.admin.backend.dto.FreeBoardDto">
         SELECT
-            fb.board_id,
-            fb.title,
-            fb.views,
-            fb.created_at,
-            fb.author_type,
+            fb.*,
             ctg.category_name,
-            f.file_id,
             a.admin_name,
             m.member_name,
+            (SELECT DISTINCT
+                 f.file_id
+            FROM
+                tb_file f
+            WHERE
+                fb.board_id = f.board_id AND f.board_type = 'free' LIMIT 1) AS fileId,
             (SELECT
                 COUNT(*)
             FROM
@@ -51,13 +52,10 @@
         LEFT JOIN
             tb_category ctg on fb.category_id = ctg.category_id
         LEFT JOIN
-            tb_file f on f.board_id = fb.board_id
-        LEFT JOIN
             tb_admin a on a.admin_id = fb.author_id and fb.author_type = 'admin'
         LEFT JOIN
             tb_member m on m.member_id = fb.author_id and fb.author_type = 'member'
         <include refid="boardSelectWhereQuery"></include>
-        GROUP BY fb.board_id
         ORDER BY
         <choose>
             <when test='orderValue == "createdAt"'>
@@ -86,9 +84,12 @@
 
     <select id="selectBoardById" parameterType="long" resultType="com.admin.backend.dto.FreeBoardDto">
         SELECT
-            *
+            fb.*,
+            ctg.category_name
         FROM
-            tb_free_board
+            tb_free_board fb
+        LEFT JOIN
+            tb_category ctg on fb.category_id = ctg.category_id
         WHERE
             board_id = #{boardId}
     </select>
