@@ -12,14 +12,12 @@ import java.util.Optional;
 public interface FileService {
 
     /**
-     * file 등록
+     * File 등록
      *
-     * @param fileList 추가 될 파일 리스트
-     * @param boardType boardType
-     * @param boardId boardId
-     * @return 추가한 File 리스트
+     * @param fileList DB에 저장할 File List
+     * @param boardId boardId ( pk )
      */
-    List<FileDto> addFile(MultipartFile[] fileList, String boardType, Long boardId);
+    void addFile(List<FileDto> fileList, Long boardId);
 
     /**
      * 특정 게시물에 있는 file 리스트 가져오기
