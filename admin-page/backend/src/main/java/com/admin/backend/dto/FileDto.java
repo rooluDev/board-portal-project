@@ -21,6 +21,7 @@ public class FileDto {
     private String filePath;
     private String extension;
     private Long size;
+    private int thumbnail;
     private Timestamp createdAt;
     private Timestamp editedAt;
 }
