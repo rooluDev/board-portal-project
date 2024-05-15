@@ -62,4 +62,20 @@ public interface FreeBoardService {
      * @param freeBoardDto ( categoryId, title, content, boardId )
      */
     void modifyBoard(FreeBoardDto freeBoardDto);
+
+    /**
+     * 메인 페이지에 필요한 자유 게시판 리스트 가져오기
+     *
+     * @return 메인 페이지에 필요한 자유 게시판 리스트
+     */
+    List<FreeBoardDto> getBoardListForMain();
+
+    /**
+     * boardId와 memberId가 일치하는 게시물 가져오기
+     *
+     * @param boardId ( pk )
+     * @param memberId memberId
+     * @return boardId와 memberId가 일치하는 게시물
+     */
+    Optional<FreeBoardDto> getBoardByIdAndMemberId(Long boardId, String memberId);
 }
