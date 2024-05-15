@@ -1,9 +1,7 @@
 package com.user.backend.common.utils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.user.backend.dto.FileDto;
+import com.user.backend.dto.ThumbnailDto;
 
 /**
  * Custom String Utils
@@ -11,18 +9,21 @@ import java.util.regex.Pattern;
 public class StringUtils {
 
     /**
-     * uri에 있는 숫자 덩어리를 추출하는 메소드
+     * ThumbnailDto를 매개변수로 받아 상대경로로 반환
      *
-     * @param uri uri
-     * @return 추출된 numberList
+     * @param thumbnailDto ThumbnailDto
+     * @return 상대경로 ex : /thumbnail/physicalName.png
      */
-    public static List<String> extractNumberFromUri(String uri) {
-        List<String> numberList = new ArrayList<>();
-        Pattern pattern = Pattern.compile("\\d+");
-        Matcher matcher = pattern.matcher(uri);
-        while (matcher.find()) {
-            numberList.add(matcher.group());
-        }
-        return numberList;
+    public static String parseToPath(ThumbnailDto thumbnailDto) {
+        return thumbnailDto.getFilePath() + "/" + thumbnailDto.getPhysicalName() + "." + thumbnailDto.getExtension();
+    }
+
+    /**
+     * FileDto를 매개변수로 받아 상대경로로 반환
+     * @param fileDto FileDto
+     * @return 상대경로 ex : /gallery/physicalName.png
+     */
+    public static String parseToPath(FileDto fileDto) {
+        return fileDto.getFilePath() + "/" + fileDto.getPhysicalName() + "." + fileDto.getExtension();
     }
 }
