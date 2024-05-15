@@ -20,20 +20,6 @@ public class CommentController {
     private final CommentService commentService;
 
     /**
-     * 댓글 삭제
-     *
-     * @param commentId PathVariable
-     * @return commentId ( pk )
-     */
-    @DeleteMapping("/comment/{commentId}")
-    public ResponseEntity<Long> deleteComment(@PathVariable(name = "commentId") Long commentId) {
-
-        commentService.deleteCommentById(commentId);
-
-        return ResponseEntity.ok().body(commentId);
-    }
-
-    /**
      * 댓글 등록
      *
      * @param commentDto comment form data ( boardId, content, boardType )
@@ -52,8 +38,24 @@ public class CommentController {
         Long commentId = commentService.addComment(commentDto);
 
         // dom 추가를 위한 추가 한 comment 가져오기
-        CommentDto comment = commentService.getCommentById(commentId).orElseThrow(() -> new CommentNotFoundException("잘못된 요청입니다."));
+        CommentDto comment = commentService.getCommentById(commentId).orElseGet(CommentDto::new);
 
         return ResponseEntity.ok().body(comment);
+    }
+
+    /**
+     * 댓글 삭제
+     *
+     * @param commentId PathVariable
+     * @return commentId ( pk )
+     */
+    @DeleteMapping("/comment/{commentId}")
+    public ResponseEntity<Long> deleteComment(@PathVariable(name = "commentId") Long commentId) {
+
+        commentService.getCommentById(commentId).orElseThrow(() -> new CommentNotFoundException("잘못된 요청입니다."));
+
+        commentService.deleteCommentById(commentId);
+
+        return ResponseEntity.ok().body(commentId);
     }
 }
