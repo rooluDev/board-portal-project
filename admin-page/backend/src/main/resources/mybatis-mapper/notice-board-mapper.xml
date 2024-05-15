@@ -5,7 +5,7 @@
 <mapper namespace="com.admin.backend.mapper.NoticeBoardMapper">
     <sql id="boardSelectWhereQuery">
         WHERE
-            fixed = 0 AND nb.created_at BETWEEN #{startDateTimestamp} AND #{endDateTimestamp}
+            is_fixed = 0 AND nb.created_at BETWEEN #{startDateTimestamp} AND #{endDateTimestamp}
         <if test="searchText != null and searchText != ''">
             AND (nb.title LIKE CONCAT('%',#{searchText},'%')
             OR nb.content LIKE CONCAT('%',#{searchText},'%'))
@@ -59,7 +59,7 @@
     <select id="selectFixedBoardList" resultType="com.admin.backend.dto.NoticeBoardDto">
         <include refid="selectBoardWithJoin"></include>
         WHERE
-            fixed = 1
+            is_fixed = 1
     </select>
 
     <select id="selectTotalRowCountByCondition" parameterType="com.admin.backend.dto.SearchConditionDto" resultType="int">
@@ -78,7 +78,7 @@
         FROM
             tb_notice_board
         WHERE
-            fixed = 1
+            is_fixed = 1
     </select>
 
     <select id="selectBoardByBoardId" parameterType="long" resultType="com.admin.backend.dto.NoticeBoardDto">
@@ -96,11 +96,11 @@
         SET
             category_id = #{categoryId}, title = #{title}, content = #{content}, edited_at = CURRENT_TIMESTAMP,
             <choose>
-                <when test="fixed != null">
-                    fixed = 1
+                <when test="isFixed == 'on'">
+                    is_fixed = 1
                 </when>
                 <otherwise>
-                    fixed = 0
+                    is_fixed = 0
                 </otherwise>
             </choose>
         WHERE
@@ -118,10 +118,10 @@
 
     <insert id="insertBoard" parameterType="com.admin.backend.dto.NoticeBoardDto">
         INSERT INTO
-            tb_notice_board (category_id, author_id, title, content, fixed)
+            tb_notice_board (category_id, author_id, title, content, is_fixed)
         VALUES
         <choose>
-            <when test="fixed != null">
+            <when test="isFixed == 'on'">
                 (#{categoryId},#{authorId},#{title},#{content},1)
             </when>
             <otherwise>
