@@ -1,6 +1,6 @@
 package com.admin.backend.service;
 
-import com.admin.backend.dto.InquiryDto;
+import com.admin.backend.dto.InquiryBoardDto;
 import com.admin.backend.dto.SearchConditionDto;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public interface InquiryBoardService {
      * @param searchConditionDto
      * @return 검색조건과 페이지네이션에 맞는 문의 게시물 리스트
      */
-    List<InquiryDto> getBoardListByCondition(SearchConditionDto searchConditionDto);
+    List<InquiryBoardDto> getBoardListByCondition(SearchConditionDto searchConditionDto);
 
     /**
      * 문의 게시물 찾기
@@ -33,7 +33,7 @@ public interface InquiryBoardService {
      * @param boardId ( pk )
      * @return boardId와 일치하는 문의 게시물
      */
-    Optional<InquiryDto> getBoardById(Long boardId);
+    Optional<InquiryBoardDto> getBoardById(Long boardId);
 
     /**
      * 문의 게시물 삭제

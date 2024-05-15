@@ -1,6 +1,6 @@
 package com.admin.backend.service;
 
-import com.admin.backend.dto.InquiryDto;
+import com.admin.backend.dto.InquiryBoardDto;
 import com.admin.backend.dto.SearchConditionDto;
 import com.admin.backend.mapper.InquiryBoardMapper;
 import lombok.RequiredArgsConstructor;
@@ -26,12 +26,12 @@ public class InquiryBoardServiceImpl implements InquiryBoardService{
     }
 
     @Override
-    public List<InquiryDto> getBoardListByCondition(SearchConditionDto searchConditionDto) {
+    public List<InquiryBoardDto> getBoardListByCondition(SearchConditionDto searchConditionDto) {
         return inquiryBoardMapper.selectBoardListByCondition(searchConditionDto);
     }
 
     @Override
-    public Optional<InquiryDto> getBoardById(Long boardId) {
+    public Optional<InquiryBoardDto> getBoardById(Long boardId) {
         return inquiryBoardMapper.selectBoardById(boardId);
     }
 

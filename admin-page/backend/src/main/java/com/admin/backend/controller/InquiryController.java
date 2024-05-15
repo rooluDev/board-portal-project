@@ -3,10 +3,9 @@ package com.admin.backend.controller;
 import com.admin.backend.common.exception.BoardNotFoundException;
 import com.admin.backend.common.utils.PaginationUtils;
 import com.admin.backend.common.utils.StringUtils;
-import com.admin.backend.common.validator.SearchConditionValidator;
 import com.admin.backend.dto.AdminDto;
 import com.admin.backend.dto.AnswerDto;
-import com.admin.backend.dto.InquiryDto;
+import com.admin.backend.dto.InquiryBoardDto;
 import com.admin.backend.dto.SearchConditionDto;
 import com.admin.backend.service.AnswerService;
 import com.admin.backend.service.InquiryBoardService;
@@ -41,18 +40,14 @@ public class InquiryController {
                               @SessionAttribute(name = LoginController.ADMIN_SESSION_ID) AdminDto adminDto,
                               @ModelAttribute SearchConditionDto searchConditionDto) {
 
-        // 검색조건 유효성 검증
-        // TODO : 검색조건 유효성 검증 및 검색조건 유지
-//        SearchConditionValidator.validateSearchCondition(searchConditionDto);
-
         // 페이지네이션 설정
         int totalRowCount = inquiryBoardService.getTotalRowCountByCondition(searchConditionDto);
         int totalPageNum = PaginationUtils.getTotalPageNum(totalRowCount, searchConditionDto.getPageSize());
 
         // 데이터 가져오기
-        List<InquiryDto> inquiryDtoList = inquiryBoardService.getBoardListByCondition(searchConditionDto);
+        List<InquiryBoardDto> inquiryBoardDtoList = inquiryBoardService.getBoardListByCondition(searchConditionDto);
 
-        model.addAttribute("boardList", inquiryDtoList);
+        model.addAttribute("boardList", inquiryBoardDtoList);
         model.addAttribute("searchCondition", searchConditionDto);
         model.addAttribute("totalPageNum", totalPageNum);
         model.addAttribute("admin", adminDto);
@@ -76,13 +71,13 @@ public class InquiryController {
                               @ModelAttribute SearchConditionDto searchConditionDto) {
 
         // 데이터 가져오기
-        InquiryDto inquiryDto = inquiryBoardService.getBoardById(boardId).orElseThrow(() -> new BoardNotFoundException());
+        InquiryBoardDto inquiryBoardDto = inquiryBoardService.getBoardById(boardId).orElseThrow(() -> new BoardNotFoundException());
         AnswerDto answerDto = answerService.getAnswerByBoardId(boardId).orElseGet(AnswerDto::new);
 
         // 조회수 증가
         inquiryBoardService.increaseViewById(boardId);
 
-        model.addAttribute("board", inquiryDto);
+        model.addAttribute("board", inquiryBoardDto);
         model.addAttribute("answer", answerDto);
         model.addAttribute("searchCondition", searchConditionDto);
         model.addAttribute("admin", adminDto);
@@ -104,7 +99,7 @@ public class InquiryController {
                               RedirectAttributes redirectAttributes) {
 
         // boardId 유효성 검증
-        inquiryBoardService.getBoardById(boardId).orElseThrow(() -> new BoardNotFoundException());
+        inquiryBoardService.getBoardById(boardId).orElseThrow(() -> new BoardNotFoundException("잘못된 요청입니다."));
 
         // 삭제
         answerService.deleteAnswer(boardId);
