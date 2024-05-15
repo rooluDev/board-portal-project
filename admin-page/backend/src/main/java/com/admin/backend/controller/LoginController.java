@@ -6,7 +6,6 @@ import com.admin.backend.service.AdminService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.SessionAttribute;
  */
 @Controller
 @RequiredArgsConstructor
-@Slf4j
 public class LoginController {
 
     public static final String ADMIN_SESSION_ID = "ADMIN_SESSION_ID";
@@ -51,7 +49,7 @@ public class LoginController {
 
         // 세션 생성
         HttpSession session = httpServletRequest.getSession(true);
-        log.info("Login / Id : " + admin.getAdminId());
+
         session.setAttribute(ADMIN_SESSION_ID, admin);
 
         // 시간 설정
@@ -77,7 +75,6 @@ public class LoginController {
         if (session != null) {
             // 세션 파기
             session.invalidate();
-            log.info("Logout / Id : " + adminDto.getAdminId());
         }
 
         return "redirect:/login";
