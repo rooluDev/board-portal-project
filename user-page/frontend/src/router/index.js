@@ -16,11 +16,11 @@ import InquiryList from '@/pages/inquiry/InquiryList.vue';
 import InquiryView from '@/pages/inquiry/InquiryView.vue';
 import InquiryWrite from '@/pages/inquiry/InquiryWrite.vue';
 import InquiryModify from '@/pages/inquiry/InquiryModify.vue';
-
+import Error from "@/pages/Error.vue";
 
 const router = createRouter({
     history: createWebHistory(),
-    routes:[
+    routes: [
         {
             path: '/',
             name: 'Main',
@@ -39,7 +39,7 @@ const router = createRouter({
         {
             path: '/boards/notice',
             name: 'Notice-List',
-            component: NoticeList ,
+            component: NoticeList,
         },
         {
             path: '/boards/notice/:id',
@@ -106,6 +106,11 @@ const router = createRouter({
             name: 'Inquiry-Modify',
             component: InquiryModify,
         },
+        {
+            path: '/error',
+            name: 'Error',
+            component: Error,
+        }
     ]
 })
 
