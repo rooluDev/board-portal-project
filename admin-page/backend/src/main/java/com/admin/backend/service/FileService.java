@@ -17,7 +17,7 @@ public interface FileService {
      * @param fileList DB에 저장할 File List
      * @param boardId boardId ( pk )
      */
-    void addFile(List<FileDto> fileList, Long boardId);
+    Long addFileList(List<FileDto> fileList, Long boardId);
 
     /**
      * 특정 게시물에 있는 file 리스트 가져오기
