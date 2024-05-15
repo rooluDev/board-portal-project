@@ -1,60 +1,96 @@
 <template>
   <Navbar/>
-  <h1>문의 게시판</h1>
-  <BoardInputForm :editing="true" :inputForm="board" @submit="submitBoard" @cancel="goToList">
-    <template v-slot:secret>
-      <label>비밀글</label>
-      <input type="checkbox" :checked="board.secret == 1">
-    </template>
-  </BoardInputForm>
+  <InquiryBoardForm :editing="true" :inputForm="inquiryBoard" @submit="modifyBoard" @cancel="goToList"/>
 </template>
 
 <script>
+import store from "@/store";
 import Navbar from "@/components/Navbar.vue";
-import BoardInputForm from "@/components/BoardInputForm.vue";
-import {fetchInquiryBoard} from "@/api/inquiryBoardService";
-import {ref} from "vue";
+import InquiryBoardForm from "@/components/InquiryBoardForm.vue";
+import {computed, onMounted, ref, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
+import {
+  fetchCheckInquiryAuthor,
+  fetchGetInquiryBoard,
+  fetchModifyInquiryBoard
+} from "@/api/inquiryBoardService";
+import {inquiryBoardValidator} from "@/validator/validator";
 
 export default {
-  components:{Navbar,BoardInputForm},
-  setup(){
-    const board = ref({});
+  components: {Navbar, InquiryBoardForm},
+  setup() {
+    const inquiryBoard = ref({});
     const route = useRoute();
     const router = useRouter();
     const boardId = route.params.id;
+    const accessToken = computed(() => store.getters.getAccessToken);
 
-    const searchCondition = {
-      startDate: route.query.startDate,
-      endDate: route.query.endDate,
-      searchText: route.query.searchText,
-      pageSize: route.query.pageSize,
-      orderValue: route.query.orderValue,
-      orderDirection: route.query.orderDirection,
-      pageNum: route.query.pageNum
-    }
-    
+
+    watch(accessToken, (newToken) => {
+      if (!newToken) {
+        alert("로그인이 필요합니다.");
+        goToList();
+      } else {
+        try {
+          fetchCheckInquiryAuthor(boardId);
+        } catch (error) {
+          alert("로그인이 필요합니다.");
+          goToList();
+        }
+      }
+    })
+
+    /**
+     * 게시판 데이터 가져오기
+     */
     const getBoard = async () => {
-      const res = await fetchInquiryBoard(boardId);
-      board.value = res.inquiryBoard;
+      try {
+        const res = await fetchGetInquiryBoard(boardId);
+        inquiryBoard.value = res.inquiryBoard;
+      } catch (error) {
+        await router.push({
+          name: 'Error'
+        })
+      }
     }
-    getBoard();
 
-    const submitBoard = () =>{
+    onMounted(() => {
+      getBoard();
+    })
 
+    /**
+     * 게시판 수정
+     */
+    const modifyBoard = async () => {
+      try {
+        inquiryBoardValidator(inquiryBoard.value);
+      } catch (error) {
+        alert(error.message);
+        return;
+      }
+
+      try {
+        await fetchModifyInquiryBoard(inquiryBoard.value);
+        alert("수정 되었습니다.");
+        goToList();
+      } catch (error) {
+        await router.push({
+          name: 'Error'
+        })
+      }
     }
 
     const goToList = () => {
       router.push({
         name: 'Inquiry-List',
-        query: searchCondition
+        query: route.query
       })
     }
-    
-    return{
-      board,
+
+    return {
+      inquiryBoard,
       goToList,
-      submitBoard
+      modifyBoard
     }
   }
 }

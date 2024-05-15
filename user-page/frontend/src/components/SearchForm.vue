@@ -1,34 +1,98 @@
 <template>
-  <form @submit.prevent="getNewBoardList">
-    <label>등록일시</label>
-    <input type="date" v-model="searchCondition.startDate">
-    <label>~</label>
-    <input type="date" v-model="searchCondition.endDate">
-    <slot name="category"></slot>
-    <slot name="searchBar"></slot>
-    <button type="submit">검색</button>
-    <br/>
-    <slot name="myInquiry"></slot>
-    <hr/>
-    <select v-model="searchCondition.pageSize">
-      <option value="10">10</option>
-      <option value="20">20</option>
-      <option value="30">30</option>
-      <option value="40">40</option>
-      <option value="50">50</option>
-    </select>
-    <span>개씩 보기</span>
-    <span>정렬</span>
-    <slot name="orderValue"></slot>
-    <select v-model="searchCondition.orderDirection">
-      <option value="desc">내림차순</option>
-      <option value="asc">오름차순</option>
-    </select>
-  </form>
+
+  <v-form @submit.prevent="getNewBoardList" class="box">
+    <v-card class="card">
+      <v-row>
+        <v-col cols="1"></v-col>
+        <v-col cols="2">
+          <v-text-field
+              type="date"
+              v-model="$props.searchCondition.startDate">
+          </v-text-field>
+        </v-col>
+        <v-col cols="2">
+          <v-text-field
+              type="date"
+              v-model="$props.searchCondition.endDate">
+          </v-text-field>
+        </v-col>
+        <v-col cols="2" v-if="$props.category">
+          <v-select
+              label="카테고리 선택"
+              :items="addedDefaultCategoryList"
+              item-title="categoryName"
+              item-value="categoryId"
+              v-model="$props.searchCondition.category"
+              solo>
+          </v-select>
+        </v-col>
+        <v-col cols="3" v-if="$props.category">
+          <v-text-field
+              type="text"
+              v-model="$props.searchCondition.searchText"
+              :placeholder="$props.placeholder">
+          </v-text-field>
+        </v-col>
+        <v-col v-else cols="5">
+          <v-text-field
+              type="text"
+              v-model="$props.searchCondition.searchText"
+              :placeholder="$props.placeholder">
+          </v-text-field>
+        </v-col>
+        <v-col cols="2">
+          <v-btn class="custom-btn" type="submit">검색</v-btn>
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col cols="1"></v-col>
+        <v-col cols="2">
+          <v-select
+              v-model="$props.searchCondition.pageSize"
+              :items="[10, 20, 30, 40, 50]"
+              label="개씩 보기"
+          ></v-select>
+        </v-col>
+        <v-col cols="4"></v-col>
+        <v-col cols="2">
+          <v-select
+              v-if="inquiry"
+              v-model="$props.searchCondition.orderValue"
+              :items="[
+                  { title: '등록 일시', value: 'createdAt' },
+                  { title: '제목', value: 'title' },
+                  { title: '조회수', value: 'views' }]"
+              label="정렬"
+          ></v-select>
+          <v-select
+              v-else
+              v-model="$props.searchCondition.orderValue"
+              :items="[
+                  { title: '등록 일시', value: 'createdAt' },
+                  { title: '분류', value: 'category'},
+                  { title: '제목', value: 'title' },
+                  { title: '조회수', value: 'views' }]"
+              label="정렬"
+          ></v-select>
+        </v-col>
+        <v-col cols="2">
+          <v-select
+              v-model="$props.searchCondition.orderDirection"
+              :items="[
+                  {title: '내림차순', value: 'desc'},
+                  {title: '오름차순', value: 'asc'}]"
+              label="정렬 방향"
+          ></v-select>
+        </v-col>
+      </v-row>
+    </v-card>
+  </v-form>
+
 </template>
 
 <script>
-import {getCurrentInstance, ref, watch} from 'vue';
+import {computed, getCurrentInstance, ref, watch} from 'vue';
 import {useStore} from "vuex";
 
 export default {
@@ -40,34 +104,60 @@ export default {
     searchCondition: {
       type: Object,
       required: true
+    },
+    placeholder: {
+      type: String,
+      required: true
+    },
+    category: {
+      type: Boolean,
+      required: true
+    },
+    inquiry: {
+      type: Boolean,
+      required: false
     }
   },
   emits: ['search'],
   setup(props) {
     const {emit} = getCurrentInstance();
     const store = useStore();
-    const accessToken = ref();
+    const accessToken = computed(() => store.getters.getAccessToken);
+    const addedDefaultCategoryList = ref([{categoryId: -1, categoryName: '전체 분류'}]);
 
-    accessToken.value = store.getters.getAccessToken;
+    const addDefaultCategory = () => {
+      props.categoryList.forEach((category) => {
+        addedDefaultCategoryList.value.push(category);
+      })
+    }
+
+    watch(() => props.categoryList, () => {
+      addDefaultCategory();
+    })
 
     watch(() => props.searchCondition.pageSize, () => {
-      emit('search', props.searchCondition.pageNum);
+      props.searchCondition.pageNum = 1;
+      emit('search', props.searchCondition);
     })
 
     watch(() => props.searchCondition.orderValue, () => {
-      emit('search', props.searchCondition.pageNum);
+      props.searchCondition.pageNum = 1;
+      emit('search', props.searchCondition);
     })
 
     watch(() => props.searchCondition.orderDirection, () => {
-      emit('search', props.searchCondition.pageNum);
+      props.searchCondition.pageNum = 1;
+      emit('search', props.searchCondition);
     })
 
     const getNewBoardList = () => {
-      emit('search', props.searchCondition.pageNum);
+      console.log(props.searchCondition);
+      emit('search', props.searchCondition);
     }
 
     return {
       accessToken,
+      addedDefaultCategoryList,
       getNewBoardList
     }
   }
@@ -75,5 +165,21 @@ export default {
 </script>
 
 <style scoped>
+.box {
+  justify-content: center;
+  margin: 50px 100px 10px;
+}
 
+.card {
+  padding-top: 20px;
+
+}
+
+.custom-btn {
+  width: 100px;
+  height: 55px;
+  font-size: 17px;
+  color: white;
+  background-color: black;
+}
 </style>

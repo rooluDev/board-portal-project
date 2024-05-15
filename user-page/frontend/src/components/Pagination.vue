@@ -1,7 +1,5 @@
 <template>
-  <li v-for="page in totalPageNum" :key="page" style="display: inline-flex">
-    <span @click="getBoardList(page)">{{ page }}</span>
-  </li>
+  <v-pagination :length="totalPageNum" @update:model-value="getBoardList"></v-pagination>
 </template>
 
 <script>
@@ -12,14 +10,19 @@ export default {
     totalPageNum: {
       type: Number,
       required: false
+    },
+    searchCondition: {
+      type: Object,
+      required: true
     }
   },
   emits: ['click'],
-  setup() {
+  setup(props) {
     const {emit} = getCurrentInstance();
 
     const getBoardList = (page) => {
-      emit('click', page);
+      props.searchCondition.pageNum = page;
+      emit('click', props.searchCondition);
     }
 
     return {

@@ -1,69 +1,69 @@
 <template>
   <Navbar/>
-  <h1>문의 게시판</h1>
-  <BoardInputForm :editing="false" :inputForm="inputForm" @submit="writeBoard" @cancel="goToList">
-    <template v-slot:secret>
-      <label>비밀글</label>
-      <input type="checkbox" v-model="inputForm.secret">
-    </template>
-  </BoardInputForm>
+  <InquiryBoardForm :editing="false" :inputForm="inquiryBoardForm" @submit="writeBoard" @cancel="goToList"/>
 </template>
 
 <script>
-import BoardInputForm from "@/components/BoardInputForm.vue";
+import InquiryBoardForm from "@/components/InquiryBoardForm.vue";
 import Navbar from "@/components/Navbar.vue";
-import {ref} from "vue";
+import {computed, ref, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {fetchAddInquiryBoard} from "@/api/inquiryBoardService";
+import {inquiryBoardValidator} from "@/validator/validator";
 
 export default {
-  components: {BoardInputForm, Navbar},
+  components: {InquiryBoardForm, Navbar},
   setup() {
     const store = useStore();
-    const accessToken = ref(null);
-    accessToken.value = store.getters.getAccessToken;
-
+    const accessToken = computed(() => store.getters.getAccessToken);
     const route = useRoute();
     const router = useRouter();
-    const inputForm = ref({
+    const inquiryBoardForm = ref({
       title: '',
       content: '',
-      secret: ''
+      isSecret: ''
     });
 
-    const searchCondition = {
-      startDate: route.query.startDate,
-      endDate: route.query.endDate,
-      searchText: route.query.searchText,
-      pageSize: route.query.pageSize,
-      orderValue: route.query.orderValue,
-      orderDirection: route.query.orderDirection,
-      pageNum: route.query.pageNum
-    }
+    /**
+     * 문의게시판 추가
+     */
+    watch(accessToken, (newToken) => {
+      if (!newToken) {
+        alert("로그인이 필요합니다.");
+        goToList();
+      }
+    })
 
-    //{title: 'asdfa', content: 'asdf', secret: true}
-
+    /**
+     * 문의 게시판 작성
+     */
     const writeBoard = async () => {
       try {
-        await fetchAddInquiryBoard(inputForm.value, accessToken.value);
+        inquiryBoardValidator(inquiryBoardForm.value);
+      } catch (error) {
+        alert(error.message);
+        return;
+      }
+      try {
+        await fetchAddInquiryBoard(inquiryBoardForm.value);
         await router.push({
           name: 'Inquiry-List'
         })
       } catch (error) {
-        alert("error");
+        alert("입력 데이터 오류가 났습니다.");
       }
     }
 
     const goToList = () => {
       router.push({
         name: 'Inquiry-List',
-        query: searchCondition
+        query: route.query
       })
     }
 
     return {
-      inputForm,
+      inquiryBoardForm,
       writeBoard,
       goToList
     }

@@ -1,114 +1,176 @@
 <template>
   <Navbar/>
-  <h1>갤러리</h1>
-  <BoardInputForm :inputForm="inputForm" :categoryList="categoryList" :editing="false" @submit="writeBoard"
-                  @cancel="goToList">
-    <template v-slot:category>
-      <label>분류*</label>
-      <select v-model="inputForm.categoryId">
-        <option value="-1">분류 선택</option>
-        <option v-for="category in categoryList" :key="category.categoryId" :value="category.categoryId">
-          {{ category.categoryName }}
-        </option>
-      </select>
-      <br/>
-    </template>
-    <template v-slot:file>
-      <label>첨부</label>
-      <div v-for="(index) in inputForm.fileList" :key="index">
-        <input type="file" @change="fileSelected($event, index)" ref="fileInputRef">
-        <button type="button" @click="removeFileInput(index)">X</button>
-      </div>
-      <button type="button" @click="addFileInput">추가</button>
-    </template>
-  </BoardInputForm>
+  <div class="box">
+    <v-row justify="center">
+      <v-col cols="1"></v-col>
+      <v-col cols="10">
+        <h1 class="mb-4">갤러리</h1>
+        <v-form @submit.prevent="writeBoard">
+          <v-select
+              :items="categoryList"
+              item-title="categoryName"
+              item-value="categoryId"
+              v-model="galleryBoardForm.categoryId"
+              solo>
+          </v-select>
+          <v-text-field
+              label="제목"
+              placeholder="제목을 입력하세요."
+              v-model="galleryBoardForm.title">
+          </v-text-field>
+          <v-textarea
+              placeholder="내용을 입력하세요."
+              rows="15"
+              v-model="galleryBoardForm.content">
+          </v-textarea>
+          <h3 class="mb-3">첨부 파일</h3>
+          <div class="d-flex" v-for="(fileInput, index) in galleryBoardForm.fileList" :key="index">
+              <v-img
+                  v-if="filePreviews[index]"
+                  :src="filePreviews[index]"
+                  :max-width="60"
+                  :height="60"
+                  :aspect-ratio="1"
+                  cover
+              ></v-img>
+              <v-file-input
+                  v-model="galleryBoardForm.fileList[index]"
+                  label="첨부"
+                  accept=".jpeg, .jpg, .gif, .png, .zip"
+                  prepend-icon="none"
+                  @change="fileSelected($event,index)"
+              ></v-file-input>
+              <v-btn class="ml-2" style="height: 55px" @click="removeFileInput(index)">삭제</v-btn>
+          </div>
+          <v-btn class="d-block mb-4" @click="addFileInput">추가</v-btn>
+          <div class=" d-flex justify-center align-center">
+            <v-btn class="custom-btn" type="button" @click="goToList">취소</v-btn>
+            <v-btn class="custom-btn" type="submit">등록</v-btn>
+          </div>
+        </v-form>
+      </v-col>
+    </v-row>
+  </div>
 </template>
 
 <script>
 import Navbar from "@/components/Navbar.vue";
-import BoardInputForm from "@/components/BoardInputForm.vue";
+import {Board} from "@/type/boardType";
+import {onMounted, ref} from "vue";
 import {useRoute, useRouter} from "vue-router";
-import {ref} from "vue";
 import {fetchCategoryListByBoardType} from "@/api/categoryService";
-import store from "@/store";
 import {fetchAddGalleryBoard} from "@/api/galleryBoardService";
+import {galleryBoardValidator, isValidFileSize} from "@/validator/validator";
 
 export default {
-  components: {BoardInputForm, Navbar},
+  components: {Navbar},
   setup() {
     const route = useRoute();
     const router = useRouter();
-    const inputForm = ref({
+
+    const categoryList = ref([{categoryId: -1, categoryName: '카테고리 선택'}]);
+    const filePreviews = ref([]);
+    const fileAcceptTypes = 'image/jpeg, image/jpg, image/gif, image/png';
+    const galleryBoardForm = ref({
       categoryId: -1,
       title: '',
       content: '',
       fileList: []
     })
 
-    const accessToken = ref();
-    accessToken.value = store.getters.getAccessToken;
-
-    const categoryList = ref([]);
-
-    const searchCondition = {
-      startDate: route.query.startDate,
-      endDate: route.query.endDate,
-      category: route.query.category,
-      searchText: route.query.searchText,
-      pageSize: route.query.pageSize,
-      orderValue: route.query.orderValue,
-      orderDirection: route.query.orderDirection,
-      pageNum: route.query.pageNum
-    }
-
+    /**
+     * 갤러리 게시판 카테고리 리스트 가져오기
+     */
     const getCategoryList = async () => {
-      const res = await fetchCategoryListByBoardType('gallery');
-      categoryList.value = res;
+      try {
+        const res = await fetchCategoryListByBoardType(Board.GALLERY_BOARD);
+        res.forEach((category) => {
+          categoryList.value.push(category);
+        })
+      } catch (error) {
+        await router.push({
+          name: 'Error'
+        })
+      }
     }
-    getCategoryList();
 
-    const writeBoard = async (board) => {
-      console.log(board);
+    onMounted(() => {
+      getCategoryList();
+    })
+
+    /**
+     * 게시물 추가
+     */
+    const writeBoard = async () => {
+      try {
+        galleryBoardValidator(galleryBoardForm.value);
+      } catch (error) {
+        alert(error.message);
+        return;
+      }
       const formData = new FormData();
-      inputForm.value.fileList.forEach((file) => {
-        formData.append('file', file[0]);
+      galleryBoardForm.value.fileList.forEach((file) => {
+        if (file instanceof File) {
+          formData.append('file', file);
+        }
       })
-      formData.append('categoryId', inputForm.value.categoryId);
-      formData.append('title', inputForm.value.title);
-      formData.append('content', inputForm.value.content);
+      formData.append('categoryId', galleryBoardForm.value.categoryId);
+      formData.append('title', galleryBoardForm.value.title);
+      formData.append('content', galleryBoardForm.value.content);
 
-      await fetchAddGalleryBoard(formData, accessToken.value);
-      await router.push({
-        name: 'Gallery-List'
-      })
-    }
-
-    const addFileInput = () => {
-      console.log(inputForm.value.fileList);
-      inputForm.value.fileList.push(null);
-      console.log(inputForm.value.fileList);
+      try {
+        await fetchAddGalleryBoard(formData);
+        await router.push({
+          name: 'Gallery-List'
+        })
+      } catch (error) {
+        alert("입력 데이터 오류가 났습니다.");
+      }
     }
 
     const fileSelected = (event, index) => {
-      // console.log(inputForm.value.fileList);
-      inputForm.value.fileList[index] = event.target.files;
-      // console.log(inputForm.value.fileList);
+      const file = event.target.files[0];
+      const isValidFile = file && isValidFileSize(file.size, 1 * 1024 * 1024);
+      if (isValidFile) {
+        // 리스트 추가
+        galleryBoardForm.value.fileList[index] = file;
+        // 미리보기 이미지 추가
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          filePreviews.value[index] = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        galleryBoardForm.value.fileList.splice(index, 1);
+        filePreviews.value.splice(index, 1);
+      }
+    }
+
+    const addFileInput = () => {
+      if (galleryBoardForm.value.fileList.length < 5) {
+        galleryBoardForm.value.fileList.push(null);
+      } else {
+        alert("파일은 최대 5개까지만 등록 가능합니다.");
+      }
     }
 
     const removeFileInput = (index) => {
-      inputForm.value.fileList.splice(index, 1);
+      galleryBoardForm.value.fileList.splice(index, 1);
+      filePreviews.value.splice(index, 1);
     }
 
     const goToList = () => {
       router.push({
         name: 'Gallery-List',
-        query: searchCondition
+        query: route.query
       })
     }
 
     return {
-      inputForm,
+      galleryBoardForm,
       categoryList,
+      filePreviews,
+      fileAcceptTypes,
       writeBoard,
       goToList,
       addFileInput,
@@ -120,5 +182,14 @@ export default {
 </script>
 
 <style scoped>
+.box {
+  margin: 50px 100px 10px;
+}
 
+.custom-btn {
+  margin: 30px 10px 20px;
+  background-color: black;
+  color: white;
+  width: 200px;
+}
 </style>

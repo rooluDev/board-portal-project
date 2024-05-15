@@ -1,47 +1,67 @@
 <template>
-  <h1>로그인</h1>
-  <form @submit.prevent="getLogin">
-    <input type="text" placeholder="아이디" v-model="memberId">
-    <input type="password" placeholder="비밀번호" v-model="password">
-    <button type="submit">로그인</button>
-    <button type="button" @click="goToJoin">회원가입</button>
-  </form>
-
-  <div v-if="errorMessage != ''">
-    {{ errorMessage }}
-  </div>
+  <v-container class="container">
+    <v-row justify="center">
+      <v-col cols="20" sm="18" md="6">
+        <v-card class="elevation-12">
+          <v-toolbar color="primary" dark>
+            <v-toolbar-title>로그인</v-toolbar-title>
+          </v-toolbar>
+          <v-card-text>
+            <v-form @submit.prevent="getLogin">
+              <v-text-field
+                  label="아이디"
+                  prepend-icon="mdi-account"
+                  v-model="loginForm.memberId"
+                  required
+              ></v-text-field>
+              <v-text-field
+                  label="비밀번호"
+                  prepend-icon="mdi-lock"
+                  v-model="loginForm.password"
+                  :type="'password'"
+                  required
+              ></v-text-field>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="primary" type="submit">로그인</v-btn>
+                <v-btn color="grey" @click="goToJoin">회원가입</v-btn>
+              </v-card-actions>
+            </v-form>
+          </v-card-text>
+          <v-card-text v-if="errorMessage">
+            <v-alert type="error" dismissible>{{ errorMessage }}</v-alert>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
+
 
 <script>
 import {ref} from "vue";
-import {useRouter} from 'vue-router';
-import {loginService} from '@/api/loginService';
+import {useRoute, useRouter} from 'vue-router';
+import {fetchLogin} from '@/api/loginService';
 import {useStore} from "vuex";
 
 export default {
   setup() {
+    const route = useRoute();
     const router = useRouter();
     const store = useStore();
-    const memberId = ref('');
-    const password = ref('');
     const errorMessage = ref('');
+    const loginForm = ref({
+      memberId: '',
+      password: ''
+    })
 
     const getLogin = async () => {
-      const accessToken = await loginService(memberId.value, password.value);
-      if (accessToken === null) {
+      const accessToken = await fetchLogin(loginForm.value);
+      if (accessToken) {
+        await store.dispatch('storeToken', accessToken);
+        await router.push(route.query.ret);
+      } else {
         errorMessage.value = '아이디(로그인 전용 아이디) 또는 비밀번호를 잘못 입력했습니다.입력하신 내용을 다시 확인해주세요.';
-        return;
-      }
-      // vuex에 저장
-      await store.dispatch('storeToken', accessToken);
-      // 그 이전 페이지
-      const nextRoute = store.getters.getNextRoute;
-
-      if (nextRoute){
-        await store.dispatch('deleteNextRoute');
-        await router.push(nextRoute);
-      }else {
-        goToMain();
       }
     }
 
@@ -51,15 +71,8 @@ export default {
       })
     }
 
-    const goToMain = () => {
-      router.push({
-        name:'Main'
-      })
-    }
-
     return {
-      memberId,
-      password,
+      loginForm,
       errorMessage,
       goToJoin,
       getLogin
@@ -70,5 +83,7 @@ export default {
 </script>
 
 <style scoped>
-
+.container{
+  margin-top: 50px;
+}
 </style>
