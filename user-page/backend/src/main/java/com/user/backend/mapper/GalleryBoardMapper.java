@@ -3,6 +3,7 @@ package com.user.backend.mapper;
 import com.user.backend.dto.GalleryBoardDto;
 import com.user.backend.dto.SearchConditionDto;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -66,4 +67,20 @@ public interface GalleryBoardMapper {
      * @param galleryBoardDto ( categoryId, title, content, boardId )
      */
     void updateBoard(GalleryBoardDto galleryBoardDto);
+
+    /**
+     * SELECT tb_gallery_board LIMIT 6
+     *
+     * @return 최신 게시물 6개
+     */
+    List<GalleryBoardDto> selectBoardListForMain();
+
+    /**
+     * SELECT tb_gallery_board By boardId And memberId
+     *
+     * @param boardId ( pk )
+     * @param memberId authorId
+     * @return boardId와 authorId가 일치하는 게시물
+     */
+    Optional<GalleryBoardDto> selectBoardByIdAndMemberId(@Param("boardId") Long boardId, @Param("memberId") String memberId);
 }
