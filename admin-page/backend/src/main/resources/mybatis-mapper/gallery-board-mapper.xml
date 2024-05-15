@@ -12,8 +12,8 @@
             OR a.admin_name LIKE CONCAT('%',#{searchText},'%')
             OR m.member_name LIKE CONCAT('%',#{searchText},'%'))
         </if>
-        <if test = 'categoryId > 0'>
-            AND gb.category_id = #{categoryId}
+        <if test = 'category > 0'>
+            AND gb.category_id = #{category}
         </if>
     </sql>
 
@@ -35,9 +35,9 @@
         SELECT
             gb.*,
             ctg.category_name,
-            f.file_path,
-            f.physical_name,
-            f.extension,
+            t.file_path,
+            t.physical_name,
+            t.extension,
             a.admin_name,
             m.member_name,
             (SELECT
@@ -56,8 +56,9 @@
             tb_member m on m.member_id = gb.author_id and gb.author_type = 'member'
         LEFT JOIN
             tb_file f on f.board_id = gb.board_id AND f.board_type = 'gallery'
+        JOIN
+            tb_thumbnail t on t.file_id = f.file_id
         <include refid="boardSelectWhereQuery"></include>
-        GROUP BY gb.board_id
         ORDER BY
         <choose>
             <when test='orderValue == "createdAt"'>
@@ -86,9 +87,12 @@
 
     <select id="selectBoardById" parameterType="long" resultType="com.admin.backend.dto.GalleryBoardDto">
         SELECT
-            *
+            gb.*,
+            ctg.category_name
         FROM
-            tb_gallery_board
+            tb_gallery_board gb
+        LEFT JOIN
+            tb_category ctg on gb.category_id = ctg.category_id
         WHERE
             board_id = #{boardId}
     </select>
@@ -105,7 +109,7 @@
             tb_gallery_board
         SET
             content = '삭제된 게시물입니다.',
-            deleted = 1,
+            is_deleted = 1,
             edited_at = current_timestamp
         WHERE
             board_id = #{boardId}
