@@ -4,58 +4,80 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
-<h1>갤러리 게시판 관리</h1>
-<h3 th:if="${errorMessage}" th:text="${errorMessage}"></h3>
-<header th:replace="~{components/header :: header(${admin.adminName})}"></header>
-<hr/>
-<nav th:replace="~{components/nav :: nav}"></nav>
-<hr/>
-<form action="/admin/board/gallery/write" method="post" enctype="multipart/form-data" onsubmit="return validator()">
-    <label>분류*</label>
-    <select name="categoryId">
-        <option th:each="category : ${categoryList}"
-                th:value="${category.categoryId}"
-                th:text="${category.categoryName}">
-    </select>
-    <br/>
-    <label>제목*</label>
-    <input type="text" name="title" id="title">
-    <br/>
-    <label>내용*</label>
-    <textarea name="content" id="content">
-        </textarea>
-    <br/>
-    <label>첨부</label>
-    <div id="fileInputBox">
-    </div>
-    <button type="button" onclick="addFileInputTag()">추가</button>
-    <hr/>
-    <button type="submit">등록</button>
-    <button type="button" th:onclick="goToList([[${searchCondition}]])">목록</button>
-</form>
+<nav th:replace="~{components/nav :: nav(${admin.adminName})}"></nav>
+<div class="container mt-3">
+    <h1 class="mb-3">갤러리 게시판 관리</h1>
+    <h3 th:if="${errorMessage}" th:text="${errorMessage}"></h3>
+    <form th:action="@{/board/gallery/write(startDate=${searchCondition.startDate},endDate=${searchCondition.endDate},category=${searchCondition.category},
+    searchText=${searchCondition.searchText},pageSize=${searchCondition.pageSize},orderValue=${searchCondition.orderValue},
+    orderDirection=${searchCondition.orderDirection})}" method="post" enctype="multipart/form-data"
+          onsubmit="return validator()"
+          class="needs-validation" novalidate>
+
+        <div class="mb-3">
+            <label for="categoryId" class="form-label">분류*</label>
+            <select name="categoryId" id="categoryId" class="form-select">
+                <option th:each="category : ${categoryList}"
+                        th:value="${category.categoryId}"
+                        th:text="${category.categoryName}">
+                </option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="title" class="form-label">제목*</label>
+            <input placeholder="제목을 입력하세요." type="text" name="title" id="title" class="form-control">
+        </div>
+
+
+        <div class="mb-3">
+            <label for="content" class="form-label">내용*</label>
+            <textarea placeholder="내용을 입력하세요." name="content" id="content" class="form-control"
+                      style="height: 300px"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">첨부</label>
+            <p class="small text-muted">jpg, jpeg, png, zip 파일만 파일사이즈 2MB까지 업로드 가능합니다.</p>
+            <div id="fileInputBox" class="mb-3">
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="addFileInputTag()">추가</button>
+        </div>
+        <hr/>
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">등록</button>
+            <button type="button" th:onclick="goToList([[${searchCondition}]])" class="btn btn-secondary">목록</button>
+        </div>
+    </form>
 </body>
-<script>
+<script th:inline="javascript">
     const fileInputBox = document.getElementById('fileInputBox');
 
     const addFileInputTag = () => {
         const currentFileInputTag = document.querySelectorAll('#fileInputBox input[type="file"]').length;
-        if (currentFileInputTag > 4){
+        if (currentFileInputTag > 4) {
             alert("최대 5개의 파일을 업로드 할 수 있습니다.");
             return;
         }
         const inputDivBox = document.createElement('div');
+        inputDivBox.className = 'd-flex align-items-center mb-2';
 
         const fileInputTag = document.createElement('input');
         fileInputTag.type = 'file';
         fileInputTag.name = 'file';
-        fileInputTag.accept = '.jpg, .gif, .png, .zip';
+        fileInputTag.accept = '.jpg, .jpeg,.gif, .png';
+        fileInputTag.className = 'form-control mb-2';
+        fileInputTag.onchange = previewImage;
 
         const fileDeleteBtn = document.createElement('button');
         fileDeleteBtn.type = 'button';
-        fileDeleteBtn.innerText = 'X';
-        fileDeleteBtn.onclick = function (){
+        fileDeleteBtn.className = 'delete-btn btn btn-danger btn-sm ms-2';
+        fileDeleteBtn.innerText = '삭제';
+        fileDeleteBtn.onclick = function () {
             deleteFileInputTag(fileDeleteBtn);
         }
 
@@ -70,18 +92,76 @@
         inputDivBox.parentNode.removeChild(inputDivBox);
     }
 
-    const validator = () => {
+    const previewImage = (event) => {
+        const reader = new FileReader();
+        reader.onload = function () {
+            const newImg = document.createElement('img');
+            newImg.src = reader.result;
+            newImg.style.width = '100px';  // Set the width of the preview image
+            newImg.style.height = 'auto';
+            const parentDiv = event.target.parentNode;
+
+            parentDiv.insertBefore(newImg, event.target);
+        }
+        reader.readAsDataURL(event.target.files[0]);
+    }
+
+    const validateFileSize = () => {
+        const maxFileSize = 2 * 1024 * 1024;
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+
+        for (let i = 0; i < fileInputs.length; i++) {
+            const files = fileInputs[i].files;
+            for (let j = 0; j < files.length; j++) {
+                if (files[j].size > maxFileSize) {
+                    alert(`${files[j].name}"의 크키가 너무 큽니다.`);
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    const validateFileLength = () => {
+        const files = document.querySelectorAll('input[type="file"]');
+        let fileCount = 0;
+        files.forEach(file => {
+            if (file.files.length > 0) {
+                fileCount++;
+            }
+        });
+
+        if (fileCount === 0) {
+            alert("최소 1개 이상의 파일을 업로드해야 합니다.");
+            return false;
+        }
+    }
+
+    const validateText = () => {
         const title = $("#title").val();
         const content = $("#content").val();
-        if (title.length > 99){
+        if (title.length < 1) {
+            alert("제목을 입력하세요");
+            return false;
+        }
+        if (title.length > 99) {
             alert("제목이 100자 미만이여야 합니다");
             return false;
         }
-        if (content.length > 3999){
+        if (content.length < 1) {
+            alert("내용을 입력하세요");
+            return false;
+        }
+        if (content.length > 3999) {
             alert("내용이 4000자 미만이여야 합니다.");
             return false;
         }
+    }
 
+    const validator = () => {
+        return validateText();
+        return validateFileLength();
+        return validateFileSize();
         return confirm("정말로 등록 하시겠습니까?");
     }
 
@@ -92,7 +172,13 @@
     }
 
     const goToList = (searchCondition) => {
-        location.href = `/admin/board/gallery` + parseObjectToParam(searchCondition);
+        location.href = `/board/gallery` + parseObjectToParam(searchCondition);
     }
 </script>
+<style>
+    .delete-btn {
+        width: 60px;
+        height: 40px;
+    }
+</style>
 </html>

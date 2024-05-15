@@ -4,69 +4,113 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
-<h1>문의 게시판 관리</h1>
-<h3 th:if="${errorMessage}" th:text="${errorMessage}"></h3>
-<header th:replace="~{components/header :: header(${admin.adminName})}"></header>
-<hr/>
-<nav th:replace="~{components/nav :: nav}"></nav>
-<hr/>
-<form action="/board/inquiry" method="get">
-    <label>등록일시</label>
-    <input type="date" name="startDate" id="startDate" th:value="${searchCondition.startDate}">
-    <input type="date" name="endDate" id="endDate" th:value="${searchCondition.endDate}">
-    <input type="text" name="searchText" id="searchText" placeholder="제목 or 내용 or 등록자"
-           th:value="${searchCondition.searchText}">
-    <input type="submit" value="검색">
-    <br/>
-    <select name="pageSize" id="pageSize">
-        <option value="10" th:selected="${searchCondition.pageSize == 10}">10</option>
-        <option value="20" th:selected="${searchCondition.pageSize == 20}">20</option>
-        <option value="30" th:selected="${searchCondition.pageSize == 30}">30</option>
-        <option value="40" th:selected="${searchCondition.pageSize == 40}">40</option>
-        <option value="50" th:selected="${searchCondition.pageSize == 50}">50</option>
-    </select>
-    <span>개씩 보기</span>
+<nav th:replace="~{components/nav :: nav(${admin.adminName})}"></nav>
+<div class="container mt-3">
+    <h1 class="mt-3 mb-3">문의 게시판 관리</h1>
+    <h3 th:if="${errorMessage}" th:text="${errorMessage}"></h3>
+    <form action="/board/inquiry" method="get">
+        <div class="d-flex align-items-center">
+            <div class="me-2">
+                <label for="startDate" class="form-label">등록일시</label>
+            </div>
+            <div class="me-2">
+                <input class="form-control" type="date" name="startDate" id="startDate"
+                       th:value="${searchCondition.startDate}">
+            </div>
+            <div class="me-2">
+                <label for="startDate" class="form-label">~</label>
+            </div>
+            <div class="me-2">
+                <input class="form-control" type="date" name="endDate" id="endDate"
+                       th:value="${searchCondition.endDate}">
+            </div>
+            <div class="me-2 flex-grow-1">
+                <input class="form-control" type="text" name="searchText" id="searchText" placeholder="제목 or 내용"
+                       th:value="${searchCondition.searchText}">
+            </div>
+            <div>
+                <input class="btn btn-primary" style="width: 100px" type="submit" value="검색">
+            </div>
+        </div>
+        <div class="d-flex align-items-center justify-content-between" style="margin-top: 3px">
+            <div class="me-2 d-flex align-items-center">
+                <select name="pageSize" id="pageSize" class="form-select">
+                    <option value="10" th:selected="${searchCondition.pageSize == 10}">10</option>
+                    <option value="20" th:selected="${searchCondition.pageSize == 20}">20</option>
+                    <option value="30" th:selected="${searchCondition.pageSize == 30}">30</option>
+                    <option value="40" th:selected="${searchCondition.pageSize == 40}">40</option>
+                    <option value="50" th:selected="${searchCondition.pageSize == 50}">50</option>
+                </select>
+                <span class="ms-2 form-text">개씩 보기</span>
+            </div>
 
-    <span>정렬</span>
-    <select name="orderValue" id="orderValue">
-        <option value="createdAt" th:selected="${searchCondition.orderValue == 'createdAt'}">등록 일시</option>
-        <option value="title" th:selected="${searchCondition.orderValue == 'title'}">제목</option>
-        <option value="views" th:selected="${searchCondition.orderValue == 'views'}">조회수</option>
-    </select>
-    <select name="orderDirection" id="orderDirection">
-        <option value="desc" th:selected="${searchCondition.orderDirection == 'desc'}">내림차순</option>
-        <option value="asc" th:selected="${searchCondition.orderDirection == 'asc'}">오름차순</option>
-    </select>
-</form>
-<hr/>
-<table>
-    <thead>
-    <th>번호</th>
-    <th>제목</th>
-    <th>조회</th>
-    <th>등록일시</th>
-    <th>등록자</th>
-    </thead>
-    <tbody>
-    <tr th:each="board : ${boardList}">
-        <td th:text="${board.boardId}"></td>
-        <td th:if="${board.answerId == null && board.secret == '0'}" th:text="${board.title} + '(미답변)'" th:onclick="goToBoard([[${board.boardId}]],[[${searchCondition}]])"></td>
-        <td th:if="${board.answerId == null && board.secret == '1'}" th:text="${board.title} + '(미답변)' + '$'" th:onclick="goToBoard([[${board.boardId}]],[[${searchCondition}]])"></td>
-        <td th:if="${board.answerId != null && board.secret == '0'}" th:text="${board.title} + '(답변완료)'" th:onclick="goToBoard([[${board.boardId}]],[[${searchCondition}]])"></td>
-        <td th:if="${board.answerId != null && board.secret == '1'}" th:text="${board.title} + '(답변완료)' + '$'" th:onclick="goToBoard([[${board.boardId}]],[[${searchCondition}]])"></td>
-        <td th:text="${board.views}"></td>
-        <td th:text="${#dates.format(board.createdAt,'yyyy.MM.dd hh:mm')}"></td>
-        <td th:text="${board.memberName}"></td>
-    </tr>
-    </tbody>
-</table>
-<nav th:if="${totalPageNum > 1}">
-    <li th:each="pageNum : ${#numbers.sequence(1,totalPageNum)}" style="display: inline-block">
-        <a th:text="${pageNum} " th:onclick="goToPageNum([[${pageNum}]],[[${searchCondition}]])"></a>
-    </li>
-</nav>
+
+            <div class="d-flex align-items-center">
+                <div class="me-2">
+                    <span class="form-text">정렬</span>
+                </div>
+                <div class="me-2">
+                    <select name="orderValue" id="orderValue" class="form-select">
+                        <option value="createdAt" th:selected="${searchCondition.orderValue == 'createdAt'}">등록 일시
+                        </option>
+                        <option value="title" th:selected="${searchCondition.orderValue == 'title'}">제목</option>
+                        <option value="views" th:selected="${searchCondition.orderValue == 'views'}">조회수</option>
+                    </select>
+                </div>
+                <div class="me-2">
+                    <select name="orderDirection" id="orderDirection" class="form-select">
+                        <option value="desc" th:selected="${searchCondition.orderDirection == 'desc'}">내림차순</option>
+                        <option value="asc" th:selected="${searchCondition.orderDirection == 'asc'}">오름차순</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </form>
+    <hr/>
+    <table class="table table-hover mt-2">
+        <thead>
+        <tr>
+            <th scope="col" class="text-center col-1">번호</th>
+            <th scope="col" class="text-start col-6">제목</th>
+            <th scope="col" class="text-center col-1">조회</th>
+            <th scope="col" class="text-center col-2">등록일시</th>
+            <th scope="col" class="text-center col-1">등록자</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="board : ${boardList}">
+            <td class="text-center">
+                    <span class="link" th:text="${board.boardId}"
+                          th:onclick="goToBoard([[${board.boardId}]],[[${searchCondition}]])"></span>
+            </td>
+            <td class="text-start">
+                    <span class="link" th:text="${board.title}"
+                          th:onclick="goToBoard([[${board.boardId}]],[[${searchCondition}]])"></span>
+                <span th:if="${board.answerId != null}">(답변완료)</span>
+                <span th:unless="${board.answerId != null}">(미답변)</span>
+                <span th:if="${board.isSecret == '1'}">🔒</span>
+            </td>
+            <td class="text-center" th:text="${board.views}"></td>
+            <td class="text-center" th:text="${#dates.format(board.createdAt,'yyyy.MM.dd hh:mm')}"></td>
+            <td class="text-center" th:text="${board.memberName}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <nav th:if="${totalPageNum > 1}" aria-label="Page navigation" class="d-flex justify-content-center">
+        <ul class="pagination">
+            <li th:each="pageNum : ${#numbers.sequence(1,totalPageNum)}" class="page-item"
+                th:classappend="${pageNum} == ${currentPage} ? 'active' : ''">
+                <a class="page-link" href="#" th:text="${pageNum}"
+                   th:onclick="goToPageNum([[${pageNum}]],[[${searchCondition}]])"></a>
+            </li>
+        </ul>
+    </nav>
+    <div/>
 </body>
 <script th:inline="javascript">
     const writeSuccess = [[${write}]];
@@ -96,7 +140,7 @@
     $("#pageSize, #orderValue, #orderDirection").change(getNewBoardList);
 
     const parseObjectToParam = (searchCondition) => {
-        return `?startDate=${searchCondition.startDate}&endDate=${searchCondition.endDate}&searchText=${searchCondition.searchText}`+
+        return `?startDate=${searchCondition.startDate}&endDate=${searchCondition.endDate}&searchText=${searchCondition.searchText}` +
             `&pageSize=${searchCondition.pageSize}&orderValue=${searchCondition.orderValue}` +
             `&orderDirection=${searchCondition.orderDirection}&pageNum=${searchCondition.pageNum}`;
     }
@@ -110,4 +154,14 @@
         location.href = `/board/inquiry` + parseObjectToParam(searchCondition);
     }
 </script>
+<style>
+    .link {
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .link:hover {
+        text-decoration: underline;
+    }
+</style>
 </html>
