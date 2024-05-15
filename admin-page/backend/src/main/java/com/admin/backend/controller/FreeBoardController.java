@@ -1,24 +1,27 @@
 package com.admin.backend.controller;
 
 import com.admin.backend.common.exception.BoardNotFoundException;
-import com.admin.backend.common.exception.StorageFailException;
+import com.admin.backend.common.exception.IllegalFileDataException;
 import com.admin.backend.common.type.Author;
 import com.admin.backend.common.type.Board;
+import com.admin.backend.common.utils.BindingResultUtils;
+import com.admin.backend.common.utils.MultipartFileUtils;
 import com.admin.backend.common.utils.PaginationUtils;
 import com.admin.backend.common.utils.StringUtils;
-import com.admin.backend.common.validator.BoardValidator;
-import com.admin.backend.common.validator.SearchConditionValidator;
+import com.admin.backend.common.validator.FileValidator;
+import com.admin.backend.common.validator.constraint.FreeBoardFileConstraint;
 import com.admin.backend.dto.*;
 import com.admin.backend.service.*;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -34,6 +37,7 @@ public class FreeBoardController {
     private final FileService fileService;
     private final CommentService commentService;
     private final FileStorageService fileStorageService;
+    private final FileValidator<FreeBoardFileConstraint> fileValidator;
 
     /**
      * 자유 게시판 리스트 페이지 GET
@@ -47,10 +51,6 @@ public class FreeBoardController {
     public String getListPage(Model model,
                               @SessionAttribute(name = LoginController.ADMIN_SESSION_ID) AdminDto adminDto,
                               @ModelAttribute SearchConditionDto searchConditionDto) {
-
-        // 검색조건 유효성 검증
-        // TODO : 검색조건 유효성 검증 및 검색조건 유지
-//        SearchConditionValidator.validateSearchCondition(searchConditionDto);
 
         // 페이지네이션 설정
         int totalRowCount = freeBoardService.getTotalRowCountByCondition(searchConditionDto);
@@ -101,14 +101,29 @@ public class FreeBoardController {
      * @return redirect:/board/free
      */
     @PostMapping("/board/free/write")
-    public String addBoard(@ModelAttribute FreeBoardDto freeBoardDto,
+    public String addBoard(@Valid @ModelAttribute FreeBoardDto freeBoardDto,
+                           BindingResult bindingResult,
                            @SessionAttribute(name = LoginController.ADMIN_SESSION_ID) AdminDto adminDto,
-                           @RequestParam(name = "file", required = false) MultipartFile[] files,
+                           @RequestParam(name = "file", required = false) MultipartFile[] fileList,
+                           @ModelAttribute SearchConditionDto searchConditionDto,
                            RedirectAttributes redirectAttributes) {
 
+        if (bindingResult.hasErrors()) {
+            String errorMessage = BindingResultUtils.getErrorMessage(bindingResult, new String[]{"title", "content"});
+            redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
+            return "redirect:/board/free/write" + StringUtils.searchConditionToQueryStringWithCategory(searchConditionDto);
+        }
+
         // 유효성 검증
-        // TODO : 유효성 검증 및 검색조건 유지
-//        BoardValidator.validateFreeBoard(freeBoardDto);
+        fileList = MultipartFileUtils.replaceEmptyFile(fileList);
+        if (fileList != null) {
+            try {
+                fileValidator.validateFile(fileList);
+            } catch (IllegalFileDataException e) {
+                redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+                return "redirect:/board/free/write" + StringUtils.searchConditionToQueryStringWithCategory(searchConditionDto);
+            }
+        }
 
         // author 세팅
         freeBoardDto.setAuthorType(Author.ADMIN.getAuthorType());
@@ -118,12 +133,8 @@ public class FreeBoardController {
         Long boardId = freeBoardService.addBoard(freeBoardDto);
 
         // storage 저장 후 DB 저장
-        if (files != null) {
-            try {
-                fileStorageService.fileStorage(files, boardId, Board.FREE_BOARD.getBoardType());
-            } catch (IOException e) {
-                new StorageFailException();
-            }
+        if (fileList != null) {
+            fileStorageService.storageFileList(fileList, boardId, Board.FREE_BOARD.getBoardType(), false);
         }
 
         // 등록 완료 응답 값 설정
@@ -149,7 +160,7 @@ public class FreeBoardController {
 
         // 데이터 가져오기
         List<CategoryDto> categoryDtoList = categoryService.getCategoryListByBoardType(Board.FREE_BOARD.getBoardType());
-        FreeBoardDto freeBoardDto = freeBoardService.getBoardById(boardId).orElseThrow(() -> new BoardNotFoundException());
+        FreeBoardDto freeBoardDto = freeBoardService.getBoardById(boardId).orElseThrow(() -> new BoardNotFoundException("잘못된 요청입니다."));
         List<FileDto> fileDtoList = fileService.getFileListByBoardId(boardId, Board.FREE_BOARD.getBoardType());
         List<CommentDto> commentDtoList = commentService.getCommentListByBoardId(boardId, Board.FREE_BOARD.getBoardType());
 
@@ -177,36 +188,45 @@ public class FreeBoardController {
      */
     @PostMapping("/board/free/modify/{boardId}")
     public String modifyBoard(@PathVariable(name = "boardId") Long boardId,
-                              @ModelAttribute FreeBoardDto freeBoardDto,
-                              @RequestParam(name = "file", required = false) MultipartFile[] files,
+                              @Valid @ModelAttribute FreeBoardDto freeBoardDto,
+                              BindingResult bindingResult,
+                              @RequestParam(name = "file", required = false) MultipartFile[] fileList,
                               @RequestParam(name = "deleteFileIdList", required = false) List<Long> deleteFileIdList,
                               @ModelAttribute SearchConditionDto searchConditionDto,
                               RedirectAttributes redirectAttributes) {
 
         // boardId 유효성 검증
-        freeBoardService.getBoardById(boardId).orElseThrow(() -> new BoardNotFoundException());
+        freeBoardService.getBoardById(boardId).orElseThrow(() -> new BoardNotFoundException("잘못된 요청입니다."));
+
+        if (bindingResult.hasErrors()) {
+            String errorMessage = BindingResultUtils.getErrorMessage(bindingResult, new String[]{"title", "content"});
+            redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
+            return "redirect:/board/free/" + boardId + StringUtils.searchConditionToQueryStringWithCategory(searchConditionDto);
+        }
+
+        fileList = MultipartFileUtils.replaceEmptyFile(fileList);
 
         // 유효성 검증에 필요한 현재 파일 개수
-        int fileCountInBoard = fileService.getRowCountByBoardId(boardId, Board.FREE_BOARD.getBoardType());
-
-        // 유효성 검증
-//        BoardValidator.validateFreeBoard(freeBoardDto, fileCountInBoard);
-
+        int currentFileCount = fileService.getRowCountByBoardId(boardId, Board.FREE_BOARD.getBoardType());
+        try {
+            fileValidator.validateFileForModify(fileList, deleteFileIdList, currentFileCount);
+        } catch (IllegalFileDataException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/board/free/" + boardId + StringUtils.searchConditionToQueryStringWithCategory(searchConditionDto);
+        }
         // boardId 세팅
         freeBoardDto.setBoardId(boardId);
 
         // 수정 및 삭제
         freeBoardService.modifyBoard(freeBoardDto);
-        if (deleteFileIdList != null) {
-            fileService.deleteFileList(deleteFileIdList);
-        }
 
-        if (files != null) {
-            try {
-                fileStorageService.fileStorage(files, boardId, Board.FREE_BOARD.getBoardType());
-            } catch (IOException e) {
-                new StorageFailException();
-            }
+        // 파일 삭제
+        if (deleteFileIdList != null) {
+            fileStorageService.deleteFileList(deleteFileIdList);
+        }
+        // 파일 추가
+        if (fileList != null) {
+            fileStorageService.storageFileList(fileList, boardId, Board.FREE_BOARD.getBoardType(), false);
         }
 
         // 수정 완료 응답 값 설정
@@ -229,7 +249,7 @@ public class FreeBoardController {
                               RedirectAttributes redirectAttributes) {
 
         // boardId 유효성 검증
-        freeBoardService.getBoardById(boardId).orElseThrow(() -> new BoardNotFoundException());
+        freeBoardService.getBoardById(boardId).orElseThrow(() -> new BoardNotFoundException("잘못된 요청입니다."));
 
         // 삭제
         freeBoardService.deleteBoard(boardId);
