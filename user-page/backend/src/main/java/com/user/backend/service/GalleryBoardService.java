@@ -63,4 +63,20 @@ public interface GalleryBoardService {
      * @param galleryBoardDto ( categoryId, title, content, boardId )
      */
     void modifyBoard(GalleryBoardDto galleryBoardDto);
+
+    /**
+     * 메인 페이지에 필요한 갤러리 리스트 가져오기
+     *
+     * @return 메인 페이지에 필요한 갤러리 리스트
+     */
+    List<GalleryBoardDto> getBoardListForMain();
+
+    /**
+     * boardId와 memberId가 일치하는 게시물 가져오기
+     *
+     * @param boardId ( pk )
+     * @param memberId memberId
+     * @return boardId와 memberId가 일치하는 게시물
+     */
+    Optional<GalleryBoardDto> getBoardByIdAndMemberId(Long boardId, String memberId);
 }
