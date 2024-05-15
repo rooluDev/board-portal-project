@@ -39,9 +39,6 @@ public class NoticeBoardServiceImpl implements NoticeBoardService {
 
     @Override
     public void addBoard(NoticeBoardDto noticeBoardDto) throws FixedBoardFullException {
-        if (noticeBoardDto.getFixed() != null) {
-            checkFixedCount();
-        }
         noticeBoardMapper.insertBoard(noticeBoardDto);
     }
 
@@ -52,14 +49,6 @@ public class NoticeBoardServiceImpl implements NoticeBoardService {
 
     @Override
     public void modifyBoard(NoticeBoardDto afterUpdateBoard) throws BoardNotFoundException, FixedBoardFullException {
-
-        NoticeBoardDto beforeUpdateBoard = getBoardByBoardId(afterUpdateBoard.getBoardId()).orElseThrow(() -> new BoardNotFoundException("존재하지 않은 게시물입니다."));
-
-        boolean modifyToFixed = afterUpdateBoard.getFixed() != null && beforeUpdateBoard.getFixed().equals("0");
-        if (modifyToFixed) {
-            checkFixedCount();
-        }
-
         noticeBoardMapper.updateBoard(afterUpdateBoard);
     }
 
@@ -73,13 +62,4 @@ public class NoticeBoardServiceImpl implements NoticeBoardService {
         noticeBoardMapper.updateView(boardId);
     }
 
-    private int getFixedBoardCount() {
-        return noticeBoardMapper.selectFixedBoardCount();
-    }
-
-    private void checkFixedCount() {
-        if (this.getFixedBoardCount() > 4) {
-            throw new FixedBoardFullException("상단 고정글이 5개까지 가능합니다.");
-        }
-    }
 }
