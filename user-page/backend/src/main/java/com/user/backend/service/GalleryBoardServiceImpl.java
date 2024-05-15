@@ -55,4 +55,14 @@ public class GalleryBoardServiceImpl implements GalleryBoardService{
     public void modifyBoard(GalleryBoardDto galleryBoardDto) {
         galleryBoardMapper.updateBoard(galleryBoardDto);
     }
+
+    @Override
+    public List<GalleryBoardDto> getBoardListForMain() {
+        return galleryBoardMapper.selectBoardListForMain();
+    }
+
+    @Override
+    public Optional<GalleryBoardDto> getBoardByIdAndMemberId(Long boardId, String memberId) {
+        return galleryBoardMapper.selectBoardByIdAndMemberId(boardId, memberId);
+    }
 }
