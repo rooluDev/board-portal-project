@@ -23,18 +23,4 @@ public class AnswerServiceImpl implements AnswerService {
         return answerMapper.selectByBoardId(boardId);
     }
 
-    @Override
-    public void addAnswer(AnswerDto answerDto) {
-        answerMapper.insertAnswer(answerDto);
-    }
-
-    @Override
-    public void deleteAnswer(Long boardId) {
-        answerMapper.deleteByBoardId(boardId);
-    }
-
-    @Override
-    public void modifyAnswer(AnswerDto answerDto) {
-        answerMapper.updateAnswer(answerDto);
-    }
 }
