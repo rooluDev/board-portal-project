@@ -1,11 +1,12 @@
 package com.admin.backend.common.exception.handler;
 
 import com.admin.backend.common.exception.*;
-import com.admin.backend.common.utils.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
@@ -20,82 +21,48 @@ public class GlobalControllerExceptionHandler {
      *
      * @param loginFailException LoginFailException
      * @param redirectAttributes RedirectAttributes
-     * @return redirect:/admin/login
+     * @param request            HttpServletRequest
+     * @return redirect:/login
      */
     @ExceptionHandler(LoginFailException.class)
     public String handleLoginFailException(LoginFailException loginFailException,
-                                           RedirectAttributes redirectAttributes) {
+                                           RedirectAttributes redirectAttributes,
+                                           HttpServletRequest request) {
+
+        log.error("Exception: LoginFailException / URI: " + request.getRequestURI());
 
         redirectAttributes.addFlashAttribute("errorMessage", loginFailException.getMessage());
 
-        return "redirect:/admin/login";
-    }
-
-    /**
-     * FixedBoardFullException Handler
-     *
-     * @param fixedBoardFullException FixedBoardFullException
-     * @param redirectAttributes      RedirectAttributes
-     * @param request                 HttpServletRequest
-     * @return redirect:/admin/board/notice or /write
-     */
-    @ExceptionHandler(FixedBoardFullException.class)
-    public String handleFixedBoardFullException(FixedBoardFullException fixedBoardFullException,
-                                                RedirectAttributes redirectAttributes,
-                                                HttpServletRequest request) {
-
-        String uri = request.getRequestURI();
-
-        return getDirectionByUriCase(uri, redirectAttributes, fixedBoardFullException);
-    }
-
-    /**
-     * IllegalBoardDataException Handler
-     *
-     * @param illegalBoardDataException IllegalBoardDataException
-     * @param redirectAttributes        RedirectAttributes
-     * @param request                   HttpServletRequest
-     * @return redirect getDirectionByUriCase()
-     */
-    @ExceptionHandler(IllegalBoardDataException.class)
-    public String handleIllegalBoardDataException(IllegalBoardDataException illegalBoardDataException,
-                                                  RedirectAttributes redirectAttributes,
-                                                  HttpServletRequest request) {
-
-        String uri = request.getRequestURI();
-
-        return getDirectionByUriCase(uri, redirectAttributes, illegalBoardDataException);
-
+        return "redirect:/login";
     }
 
     /**
      * BoardNotFoundException Handler
      *
-     * @param boardNotFoundException BoardNotFoundException
-     * @param redirectAttributes     RedirectAttributes
-     * @param request                HttpServletRequest
-     * @return redirect getDirectionByUriCase()
+     * @param request HttpServletRequest
+     * @return redirect:/error
      */
     @ExceptionHandler(BoardNotFoundException.class)
-    public String handleBoardNotFoundException(BoardNotFoundException boardNotFoundException,
-                                               RedirectAttributes redirectAttributes,
-                                               HttpServletRequest request) {
+    public String handleBoardNotFoundException(HttpServletRequest request) {
 
-        redirectAttributes.addFlashAttribute("errorMessage", boardNotFoundException.getMessage());
+        log.error("Exception: BoardNotFoundException / URI: " + request.getRequestURI());
 
-        String uri = request.getRequestURI();
-
-        if (uri.contains("notice")) {
-            return "redirect:/admin/board/notice";
-        } else if (uri.contains("inquiry")) {
-            return "redirect:/admin/board/inquiry";
-        } else if (uri.contains("free")) {
-            return "redirect:/admin/board/free";
-        } else if (uri.contains("gallery")) {
-            return "redirect:/admin/board/gallery";
-        }
         return "redirect:/error";
+    }
 
+    /**
+     * 갤러리 게시판에 파일을 등록하지 않았을 때 발생하는 MissingServletRequestPartException Handler
+     *
+     * @param request            HttpServletRequest
+     * @param redirectAttributes RedirectAttributes
+     * @return redirect:/board/gallery/write?" + request.getQueryString()
+     */
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public String handleMissingServletRequestPartException(HttpServletRequest request, RedirectAttributes redirectAttributes) {
+
+        redirectAttributes.addFlashAttribute("errorMessage", "파일을 1개 이상 등록하세요");
+
+        return "redirect:/board/gallery/write?" + request.getQueryString();
     }
 
     /**
@@ -110,120 +77,29 @@ public class GlobalControllerExceptionHandler {
                                                  RedirectAttributes redirectAttributes) {
 
         redirectAttributes.addFlashAttribute("errorMessage", commentNotFoundException.getMessage());
+
+        return "redirect:/error";
+    }
+
+
+    /**
+     * StorageFailException Handler
+     *
+     * @return redirect:/error
+     */
+    @ExceptionHandler(StorageFailException.class)
+    public String handleStorageFailException() {
+
         return "redirect:/error";
     }
 
     /**
-     * IllegalAnswerDataException Handler
+     * MaxUploadSizeExceededException Handler
      *
-     * @param illegalAnswerDataException
-     * @param redirectAttributes
-     * @param request
-     * @return redirect getDirectionByUriCase()
+     * @return redirect:/error
      */
-    @ExceptionHandler(IllegalAnswerDataException.class)
-    public String handleIllegalAnswerDataException(IllegalAnswerDataException illegalAnswerDataException,
-                                                   RedirectAttributes redirectAttributes,
-                                                   HttpServletRequest request) {
-
-        String uri = request.getRequestURI();
-        return getDirectionByUriCase(uri, redirectAttributes, illegalAnswerDataException);
-    }
-
-    /**
-     * IllegalFileDataException Handler
-     *
-     * @param illegalFileDataException IllegalFileDataException
-     * @param redirectAttributes       RedirectAttributes
-     * @param request                  HttpServletRequest
-     * @return redirect getDirectionByUriCase()
-     */
-    @ExceptionHandler(IllegalFileDataException.class)
-    public String handleIllegalFileDataException(IllegalFileDataException illegalFileDataException,
-                                                 RedirectAttributes redirectAttributes,
-                                                 HttpServletRequest request) {
-
-        String uri = request.getRequestURI();
-        return getDirectionByUriCase(uri, redirectAttributes, illegalFileDataException);
-    }
-
-    /**
-     * IllegalSearchConditionDataException Handler
-     *
-     * @param illegalSearchConditionDataException
-     * @param redirectAttributes
-     * @param request
-     * @return
-     */
-    @ExceptionHandler(IllegalSearchConditionDataException.class)
-    public String handleIllegalSearchConditionDataException(IllegalSearchConditionDataException illegalSearchConditionDataException,
-                                                            RedirectAttributes redirectAttributes,
-                                                            HttpServletRequest request) {
-
-        redirectAttributes.addFlashAttribute("errorMessage", illegalSearchConditionDataException.getMessage());
-
-        String uri = request.getRequestURI();
-
-        return "redirect:" + uri;
-    }
-
-    private String getDirectionByUriCase(String uri, RedirectAttributes redirectAttributes, RuntimeException runtimeException) {
-
-        if (uri.contains("/notice/write")) {
-
-            redirectAttributes.addFlashAttribute("errorMessage", runtimeException.getMessage());
-
-            return "redirect:/admin/board/notice/write";
-
-        } else if (uri.contains("/notice/modify")) {
-
-            String boardId = StringUtils.extractNumberFromUri(uri).get(0);
-            redirectAttributes.addFlashAttribute("errorMessage", runtimeException.getMessage());
-
-            return "redirect:/admin/board/notice/" + boardId;
-
-        } else if (uri.contains("/inquiry")) {
-
-            String boardId = StringUtils.extractNumberFromUri(uri).get(0);
-            redirectAttributes.addFlashAttribute("errorMessage", runtimeException.getMessage());
-
-            return "redirect:/admin/board/inquiry/" + boardId;
-
-        } else if (uri.contains("/answer")) {
-
-            redirectAttributes.addFlashAttribute("errorMessage", runtimeException.getMessage());
-            String boardId = StringUtils.extractNumberFromUri(uri).get(0);
-
-            return "redirect:/admin/board/inquiry/" + boardId;
-
-        } else if (uri.contains("/free/write")) {
-
-            redirectAttributes.addFlashAttribute("errorMessage", runtimeException.getMessage());
-
-            return "redirect:/admin/board/free/write";
-
-        } else if (uri.contains("/free/modify")) {
-
-            redirectAttributes.addFlashAttribute("errorMessage", runtimeException.getMessage());
-            String boardId = StringUtils.extractNumberFromUri(uri).get(0);
-
-            return "redirect:/admin/board/free/" + boardId;
-
-        } else if (uri.contains("/gallery/write")) {
-
-            redirectAttributes.addFlashAttribute("errorMessage", runtimeException.getMessage());
-
-            return "redirect:/admin/board/free/write";
-
-        } else if (uri.contains("/gallery/modify")) {
-
-            redirectAttributes.addFlashAttribute("errorMessage", runtimeException.getMessage());
-            String boardId = StringUtils.extractNumberFromUri(uri).get(0);
-
-            return "redirect:/admin/board/gallery/" + boardId;
-
-        }
-
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public String handleMaxUploadSizeExceededException() {
         return "redirect:/error";
     }
 }
