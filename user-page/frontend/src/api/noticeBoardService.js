@@ -1,23 +1,45 @@
-import axios from "axios";
+import {parseToQueryString} from "@/utils/stringUtils";
+import {Board} from "@/type/boardType";
+import {api} from "@/api/apiConfig";
 
-export const fetchNoticeBoardList = async (searchCondition) => {
-    const queryString = `?startDate=${searchCondition.startDate}&endDate=${searchCondition.endDate}` +
-        `&category=${searchCondition.category}&searchText=${searchCondition.searchText}&pageSize=${searchCondition.pageSize}` +
-        `&orderValue=${searchCondition.orderValue}&orderDirection=${searchCondition.orderDirection}&pageNum=${searchCondition.pageNum}`;
-    try {
-        const res = await axios.get("/api/boards/notice" + queryString);
-        return res.data;
-    } catch (error) {
-        throw new Error();
-    }
-
+/**
+ * GET /api/boards/notice
+ * 검색조건을 통한 공지사항 데이터 GET
+ *
+ * @param searchCondition 검색조건
+ * @returns {Promise<any>}
+ * {
+ *  totalPageNum : 0,
+ *  noticeBoardList : [],
+ *  fixedNoticeBoardList : [],
+ *  categoryList : [],
+ *  searchCondition : {}
+ * }
+ */
+export const fetchGetNoticeBoardList = async (searchCondition) => {
+    const queryString = parseToQueryString(searchCondition, Board.NOTICE_BOARD);
+    const res = await api.get("/boards/notice" + queryString);
+    return res.data;
 }
 
-export const fetchNoticeBoard = async (boardId) => {
-    try {
-        const res = await axios.get(`/api/board/notice/${boardId}`);
-        return res.data;
-    } catch (error) {
-        throw new Error();
-    }
+/**
+ * GET /api/board/notice/boardId
+ * 공지사항 데이터 GET
+ *
+ * @param boardId PathVariable
+ * @returns {Promise<any>} noticeBoard
+ */
+export const fetchGetNoticeBoard = async (boardId) => {
+    const res = await api.get(`/board/notice/${boardId}`);
+    return res.data;
+}
+
+/**
+ * PATCH /api/board/notice/${boardId}/increase-view
+ * 공지사항 조회수 1 증가
+ *
+ * @param boardId PathVariable
+ */
+export const fetchAddNoticeView = async (boardId) => {
+    await api.patch(`/board/notice/${boardId}/increase-view`);
 }

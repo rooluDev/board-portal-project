@@ -1,10 +1,16 @@
-import axios from "axios";
+import {api} from "@/api/apiConfig";
 
-export const loginService = async (memberId, password) => {
-    try {
-        const res = await axios.post('/api/login', {memberId, password});
-        return res.data;
-    } catch (error) {
-        return null;
-    }
+/**
+ * POST /api/login
+ * 로그인
+ *
+ * @param loginForm
+ * {
+ *     memberId,
+ *     password
+ * }
+ */
+export const fetchLogin = async (loginForm) => {
+    const res = await api.post('/login', loginForm);
+    return res.data;
 }

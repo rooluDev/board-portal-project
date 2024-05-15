@@ -1,24 +1,28 @@
-import axios from "axios";
+import {api} from "@/api/apiConfig";
 
-export const joinService = async (memberId, password, passwordCheck, memberName) => {
-    try {
-        await axios.post("/api/member", {
-            memberId: memberId,
-            password: password,
-            passwordCheck: passwordCheck,
-            memberName: memberName,
-        });
-        return "success";
-    } catch (error) {
-        throw new Error();
-    }
+/**
+ * POST /api/member
+ * 회원가입
+ *
+ * @param joinForm
+ * {
+ *   memberId:'',
+ *   password:'',
+ *   passwordCheck:'',
+ *   memberName:''
+ * }
+ */
+export const fetchAddMember = async (joinForm) => {
+    await api.post("/member", joinForm);
 }
 
-export const checkDuplicateMemberId = async (memberId) => {
-    try {
-        await axios.get(`/api/member/check-duplicate?memberId=${memberId}`)
-        return "success";
-    } catch (error) {
-        return "error";
-    }
+/**
+ * GET /api/member/check-duplicate?memberId=
+ * memberId 중복검사
+ *
+ * @param memberId memberId
+ */
+// TODO : 헤더?
+export const fetchCheckDuplicateMemberId = async (memberId) => {
+    await api.get(`/member/check-duplicate?memberId=${memberId}`)
 }

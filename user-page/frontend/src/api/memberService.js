@@ -1,14 +1,12 @@
-import axios from "axios";
+import {api} from "@/api/apiConfig";
 
-export const fetchMemberName = async (accessToken) => {
-    try{
-        const res = await axios.get(`/api/member-name`,{
-            headers:{
-                Authorization: `Bearer ${accessToken}`
-            }
-        })
-        return res.data;
-    }catch (error){
-        throw new Error();
-    }
+/**
+ * GET /api/member
+ * jwt와 일치하는 member 가져오기
+ *
+ * @returns {Promise<any>} member
+ */
+export const fetchGetMember = async () => {
+    const res = await api.get(`/member`)
+    return res.data;
 }
