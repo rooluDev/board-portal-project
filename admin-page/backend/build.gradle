@@ -11,8 +11,6 @@ java {
 	sourceCompatibility = '17'
 }
 
-compileJava { options.compilerArgs << '-parameters' }
-
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
@@ -28,7 +26,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'commons-io:commons-io:2.15.1'
+	implementation 'net.coobird:thumbnailator:0.4.14'
+
+	developmentOnly("org.springframework.boot:spring-boot-devtools")
+
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
