@@ -36,7 +36,7 @@ public class FileController {
     public void downloadFile(@PathVariable(name = "fileId") Long filId, HttpServletResponse response) throws IOException {
 
         // 파일 데이터 가져오기
-        FileDto fileDto = fileService.getFileById(filId).orElseThrow(() -> new FileNotFoundException());
+        FileDto fileDto = fileService.getFileById(filId).orElseThrow(() -> new FileNotFoundException("잘못된 요청입니다."));
 
         // 파일 객체 생성
         String fileName = fileDto.getPhysicalName() + "." + fileDto.getExtension();
