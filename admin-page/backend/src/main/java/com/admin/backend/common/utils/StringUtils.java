@@ -1,6 +1,8 @@
 package com.admin.backend.common.utils;
 
+import com.admin.backend.dto.FileDto;
 import com.admin.backend.dto.SearchConditionDto;
+import com.admin.backend.dto.ThumbnailDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,22 +13,6 @@ import java.util.regex.Pattern;
  * Custom String Utils
  */
 public class StringUtils {
-
-    /**
-     * uri에 있는 숫자 덩어리를 추출하는 메소드
-     *
-     * @param uri uri
-     * @return 추출된 numberList
-     */
-    public static List<String> extractNumberFromUri(String uri) {
-        List<String> numberList = new ArrayList<>();
-        Pattern pattern = Pattern.compile("\\d+");
-        Matcher matcher = pattern.matcher(uri);
-        while (matcher.find()) {
-            numberList.add(matcher.group());
-        }
-        return numberList;
-    }
 
     /**
      * SearchCondition 객체를 카테고리가 있는 쿼리 스트링으로 파싱
@@ -55,5 +41,24 @@ public class StringUtils {
                 "&pageNum=" + searchConditionDto.getPageNum();
 
         return queryString;
+    }
+
+    /**
+     * FileDto를 매개변수로 받아 상대경로로 반환
+     * @param fileDto FileDto
+     * @return 상대경로 ex : /gallery/physicalName.png
+     */
+    public static String parseToPath(FileDto fileDto) {
+        return fileDto.getFilePath() + "/" + fileDto.getPhysicalName() + "." + fileDto.getExtension();
+    }
+
+    /**
+     * ThumbnailDto를 매개변수로 받아 상대경로로 반환
+     *
+     * @param thumbnailDto ThumbnailDto
+     * @return 상대경로 ex : /thumbnail/physicalName.png
+     */
+    public static String parseToPath(ThumbnailDto thumbnailDto) {
+        return thumbnailDto.getFilePath() + "/" + thumbnailDto.getPhysicalName() + "." + thumbnailDto.getExtension();
     }
 }
