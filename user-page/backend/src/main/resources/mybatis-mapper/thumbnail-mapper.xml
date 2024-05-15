@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.user.backend.mapper.ThumbnailMapper">
+
+    <insert id="insertThumbnail" parameterType="com.user.backend.dto.ThumbnailDto">
+        INSERT INTO
+            tb_thumbnail (file_id, original_name, physical_name, file_path, extension, size)
+        VALUES
+            (#{fileId},#{originalName},#{physicalName},#{filePath},#{extension},#{size})
+    </insert>
+
+    <delete id="deleteThumbnailByFileId" parameterType="Long">
+        DELETE FROM
+            tb_thumbnail
+        WHERE
+            file_id = #{fileId}
+    </delete>
+    <select id="selectThumbnailByFileId" resultType="com.user.backend.dto.ThumbnailDto" parameterType="long">
+        SELECT
+            *
+        FROM
+            tb_thumbnail
+        WHERE
+            thumbnail_id = #{thumbnailId}
+    </select>
+</mapper>
