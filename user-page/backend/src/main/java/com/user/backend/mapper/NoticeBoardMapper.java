@@ -80,4 +80,11 @@ public interface NoticeBoardMapper {
      * @param boardId ( pk )
      */
     void updateView(Long boardId);
+
+    /**
+     * SELECT tb_notice_board LIMIT 6
+     *
+     * @return 최신 게시물 6개
+     */
+    List<NoticeBoardDto> selectBoardListForMain();
 }
