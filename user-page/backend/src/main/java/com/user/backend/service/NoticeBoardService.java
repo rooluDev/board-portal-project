@@ -1,6 +1,5 @@
 package com.user.backend.service;
 
-import com.user.backend.common.exception.FixedBoardFullException;
 import com.user.backend.dto.NoticeBoardDto;
 import com.user.backend.dto.SearchConditionDto;
 
@@ -36,13 +35,6 @@ public interface NoticeBoardService {
     int getTotalRowCountByCondition(SearchConditionDto searchConditionDto);
 
     /**
-     * 공지사항 추가
-     *
-     * @param noticeBoardDto ( category_id, author_id, title, content, fixed )
-     */
-    void addBoard(NoticeBoardDto noticeBoardDto) throws FixedBoardFullException;
-
-    /**
      * 공지사항 가져오기
      *
      * @param boardId ( pk )
@@ -51,23 +43,16 @@ public interface NoticeBoardService {
     Optional<NoticeBoardDto> getBoardByBoardId(Long boardId);
 
     /**
-     * 공지사항 수정
-     *
-     * @param noticeBoardDto ( categoryId, title, content, fixed )
-     */
-    void modifyBoard(NoticeBoardDto noticeBoardDto);
-
-    /**
-     * 공지사항 삭제
-     *
-     * @param boardId ( pk )
-     */
-    void deleteBoardByBoardId(Long boardId);
-
-    /**
      * 조회수 증가
      *
      * @param boardId ( pk )
      */
     void increaseView(Long boardId);
+
+    /**
+     * 메인 페이지에 필요한 공지사항 리스트 가져오기
+     *
+     * @return 메인 페이지에 필요한 공지사항 리스트
+     */
+    List<NoticeBoardDto> getBoardListForMain();
 }
