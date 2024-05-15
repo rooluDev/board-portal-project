@@ -19,4 +19,5 @@ public class AnswerDto {
     private String content;
     private Timestamp createdAt;
     private Timestamp editedAt;
+    private String authorName; // 패아자 답변에 필요한 등록자 이름
 }
