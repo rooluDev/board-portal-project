@@ -6,11 +6,14 @@
 
     <select id="selectByBoardId" parameterType="long" resultType="com.user.backend.dto.AnswerDto">
         SELECT
-            *
+            a.*,
+            ad.admin_name as authorName
         FROM
-            tb_answer
+            tb_answer a
+        LEFT JOIN
+            tb_admin ad ON a.author_id = ad.admin_id
         WHERE
-            board_id = #{boardId}
+            a.board_id = #{boardId}
     </select>
 
     <insert id="insertAnswer" parameterType="com.user.backend.dto.AnswerDto">
