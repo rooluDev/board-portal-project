@@ -5,22 +5,19 @@
 <mapper namespace="com.user.backend.mapper.NoticeBoardMapper">
     <sql id="boardSelectWhereQuery">
         WHERE
-            fixed = 0 AND nb.created_at BETWEEN #{startDateTimestamp} AND #{endDateTimestamp}
+            is_fixed = 0 AND nb.created_at BETWEEN #{startDateTimestamp} AND #{endDateTimestamp}
         <if test="searchText != null and searchText != ''">
             AND (nb.title LIKE CONCAT('%',#{searchText},'%')
             OR nb.content LIKE CONCAT('%',#{searchText},'%'))
         </if>
-        <if test = "categoryId > 0">
-            AND nb.category_id = #{categoryId}
+        <if test = "category > 0">
+            AND nb.category_id = #{category}
         </if>
     </sql>
 
     <sql id="selectBoardWithJoin">
         SELECT
-            nb.board_id,
-            nb.title,
-            nb.views,
-            nb.created_at,
+            nb.*,
             ad.admin_name as authorName,
             ctg.category_name
         FROM
@@ -63,7 +60,7 @@
     <select id="selectFixedBoardList" resultType="com.user.backend.dto.NoticeBoardDto">
         <include refid="selectBoardWithJoin"></include>
         WHERE
-            fixed = 1
+            is_fixed = 1
     </select>
 
     <select id="selectTotalRowCountByCondition" parameterType="com.user.backend.dto.SearchConditionDto" resultType="int">
@@ -82,16 +79,26 @@
         FROM
             tb_notice_board
         WHERE
-            fixed = 1
+            is_fixed = 1
     </select>
 
     <select id="selectBoardByBoardId" parameterType="long" resultType="com.user.backend.dto.NoticeBoardDto">
-        SELECT
-            *
-        FROM
-            tb_notice_board
+        <include refid="selectBoardWithJoin"></include>
         WHERE
-            board_id = #{boardId}
+            nb.board_id = #{boardId}
+    </select>
+
+    <select id="selectBoardListForMain" resultType="com.user.backend.dto.NoticeBoardDto">
+        SELECT
+            nb.*,
+            ctg.category_name
+        FROM
+            tb_notice_board nb
+        LEFT JOIN
+            tb_category ctg ON nb.category_id = ctg.category_id
+        ORDER BY
+            nb.created_at
+        DESC LIMIT 6;
     </select>
 
     <update id="updateBoard" parameterType="com.user.backend.dto.NoticeBoardDto">
@@ -100,11 +107,11 @@
         SET
             category_id = #{categoryId}, title = #{title}, content = #{content}, edited_at = CURRENT_TIMESTAMP
             <choose>
-                <when test="fixed != null">
-                    fixed = 1
+                <when test="isFixed != null">
+                    is_fixed = 1
                 </when>
                 <otherwise>
-                    fixed = 0
+                    is_fixed = 0
                 </otherwise>
             </choose>
         WHERE
@@ -122,7 +129,7 @@
 
     <insert id="insertBoard" parameterType="com.user.backend.dto.NoticeBoardDto">
         INSERT INTO
-            tb_notice_board (category_id, author_id, title, content, fixed)
+            tb_notice_board (category_id, author_id, title, content, is_fixed)
         VALUES
         <choose>
             <when test="fixed != null">
