@@ -18,7 +18,7 @@ public interface FileMapper {
      *
      * @param fileDto ( board_type, board_id, original_name, physical_name, file_path, extension, size )
      */
-    void insertFile(FileDto fileDto);
+    Long insertFile(FileDto fileDto);
 
     /**
      * SELECT tb_file By BoardId And BoardType
