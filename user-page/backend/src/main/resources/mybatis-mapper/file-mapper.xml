@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.user.backend.mapper.FileMapper">
 
-    <insert id="insertFile" parameterType="com.user.backend.dto.FileDto">
+    <insert id="insertFile" parameterType="com.user.backend.dto.FileDto" useGeneratedKeys="true" keyProperty="fileId">
         INSERT INTO
             tb_file (board_type, board_id, original_name, physical_name, file_path, extension, size)
         VALUES
