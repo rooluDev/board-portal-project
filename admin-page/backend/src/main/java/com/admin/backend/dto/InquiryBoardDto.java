@@ -9,13 +9,13 @@ import java.sql.Timestamp;
  */
 @Getter
 @Setter
-public class InquiryDto {
+public class InquiryBoardDto {
     private Long boardId;
     private String authorId;
     private String title;
     private String content;
     private int views;
-    private String secret;
+    private String isSecret;
     private Timestamp createdAt;
     private Timestamp editedAt;
     private String memberName; // 리스트 페이지에 필요한 등록자 이름

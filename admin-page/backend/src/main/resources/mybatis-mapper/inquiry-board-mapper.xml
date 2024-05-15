@@ -13,7 +13,7 @@
         </if>
     </sql>
 
-    <select id="selectBoardListByCondition" parameterType="com.admin.backend.dto.SearchConditionDto" resultType="com.admin.backend.dto.InquiryDto">
+    <select id="selectBoardListByCondition" parameterType="com.admin.backend.dto.SearchConditionDto" resultType="com.admin.backend.dto.InquiryBoardDto">
         SELECT
             ib.*,
             m.member_name,
@@ -58,7 +58,7 @@
         <include refid="boardSelectWhereQuery"></include>
     </select>
 
-    <select id="selectBoardById" parameterType="long" resultType="com.admin.backend.dto.InquiryDto">
+    <select id="selectBoardById" parameterType="long" resultType="com.admin.backend.dto.InquiryBoardDto">
         SELECT
             *
         FROM
