@@ -1,0 +1,92 @@
+package com.user.backend.controller;
+
+import com.user.backend.common.exception.custom.DownloadFailException;
+import com.user.backend.common.exception.custom.FileNotFoundException;
+import com.user.backend.common.exception.response.ErrorCode;
+import com.user.backend.common.utils.StringUtils;
+import com.user.backend.dto.FileDto;
+import com.user.backend.service.FileService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+/**
+ * File Controller
+ */
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api")
+public class FileController {
+
+    @Value("#{storage['path']}")
+    private String path;
+    private final FileService fileService;
+
+    /**
+     * 파일 다운로드 리소스 반환
+     *
+     * @param fileId ( pk )
+     * @return 파일 리소스
+     * @throws Exception
+     */
+    @GetMapping("/file/{fileId}/download")
+    public ResponseEntity<Resource> downloadFile(@PathVariable(name = "fileId") Long fileId) {
+        // 파일 정보 가져오기
+        FileDto file = fileService.getFileById(fileId).orElseThrow(() -> new FileNotFoundException(ErrorCode.FILE_NOT_FOUND));
+
+        // 파일 정보 설정
+        String filePathString = path + StringUtils.parseToPath(file);
+        File filePath = Paths.get(filePathString).toFile();
+
+        try {
+            Resource resource = new InputStreamResource(Files.newInputStream(filePath.toPath()));
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filePath.getName() + "\"")
+                    .body(resource);
+        } catch (IOException e) {
+            throw new DownloadFailException(ErrorCode.DOWNLOAD_FAIL);
+        }
+
+    }
+
+    /**
+     * 이미지 파일 리소스 가져오기
+     *
+     * @param fileId ( pk )
+     * @return 이미지 파일 리소스
+     */
+    @GetMapping("/file/{fileId}")
+    public ResponseEntity<Resource> getImage(@PathVariable(name = "fileId") Long fileId) {
+
+        FileDto fileDto = fileService.getFileById(fileId).orElseThrow(() -> new FileNotFoundException(ErrorCode.FILE_NOT_FOUND));
+
+        String uri = path + StringUtils.parseToPath(fileDto);
+        Resource resource = null;
+
+        try {
+            resource = new UrlResource("file://" + uri);
+        } catch (MalformedURLException e) {
+            new DownloadFailException(ErrorCode.DOWNLOAD_FAIL);
+        }
+
+        return ResponseEntity.ok(resource);
+    }
+}
