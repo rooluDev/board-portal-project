@@ -2,6 +2,9 @@ package com.admin.backend.common.utils;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Custom Multipart File Util class
  */
@@ -23,4 +26,28 @@ public class MultipartFileUtils {
         }
         return null;
     }
+
+    /**
+     * Multipart 내부 빈 파일 삭제 후 return
+     *
+     * @param fileList 전의 파일 리스트
+     * @return 내부 빈 파일을 삭제한 파일 리스트
+     */
+    public static MultipartFile[] replaceEmptyFile(MultipartFile[] fileList) {
+        if(fileList == null){
+            return null;
+        }
+        List<MultipartFile> replacedFileList = new ArrayList<>();
+        for (MultipartFile file : fileList) {
+            if (file != null && !file.isEmpty()) {
+                replacedFileList.add(file);
+            }
+        }
+        // 리스트가 비어있으면 null 반환
+        if (replacedFileList.isEmpty()) {
+            return null;
+        }
+        return replacedFileList.toArray(new MultipartFile[replacedFileList.size()]);
+    }
+
 }
