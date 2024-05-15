@@ -106,7 +106,7 @@
             tb_free_board
         SET
             content = '삭제된 게시물입니다.',
-            deleted = 1,
+            is_deleted = 1,
             edited_at = current_timestamp
         WHERE
             board_id = #{boardId}
