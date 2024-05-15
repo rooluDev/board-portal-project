@@ -1,21 +1,23 @@
 package com.admin.backend.controller;
 
 import com.admin.backend.common.exception.BoardNotFoundException;
+import com.admin.backend.common.exception.FixedBoardFullException;
 import com.admin.backend.common.type.Board;
+import com.admin.backend.common.utils.BindingResultUtils;
 import com.admin.backend.common.utils.PaginationUtils;
 import com.admin.backend.common.utils.StringUtils;
-import com.admin.backend.common.validator.BoardValidator;
-import com.admin.backend.common.validator.SearchConditionValidator;
 import com.admin.backend.dto.AdminDto;
 import com.admin.backend.dto.CategoryDto;
 import com.admin.backend.dto.NoticeBoardDto;
 import com.admin.backend.dto.SearchConditionDto;
 import com.admin.backend.service.CategoryService;
 import com.admin.backend.service.NoticeBoardService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -45,10 +47,6 @@ public class NoticeBoardController {
     public String getListPage(Model model,
                               @SessionAttribute(name = LoginController.ADMIN_SESSION_ID) AdminDto adminDto,
                               @ModelAttribute SearchConditionDto searchConditionDto) {
-
-        // 검색조건 유효성 검증
-        // TODO : 검색조건 유효성 검증 및 검색조건 유지
-//        SearchConditionValidator.validateSearchCondition(searchConditionDto);
 
         // 페이지네이션 설정
         int totalRowCount = noticeBoardService.getTotalRowCountByCondition(searchConditionDto);
@@ -102,15 +100,28 @@ public class NoticeBoardController {
      * @return redirect:/board/notice
      */
     @PostMapping("/board/notice/write")
-    public String addBoard(@ModelAttribute NoticeBoardDto noticeBoardDto,
+    public String addBoard(@Valid @ModelAttribute NoticeBoardDto noticeBoardDto,
+                           BindingResult bindingResult,
                            @SessionAttribute(name = LoginController.ADMIN_SESSION_ID) AdminDto adminDto,
                            @ModelAttribute SearchConditionDto searchConditionDto,
                            RedirectAttributes redirectAttributes) {
 
-        // 유효성 검증
-        // TODO : 검색조건 유효성 검증 및 검색조건 유지
-//        BoardValidator.validateNoticeBoard(noticeBoardDto);
+        if (bindingResult.hasErrors()) {
+            String errorMessage = BindingResultUtils.getErrorMessage(bindingResult, new String[]{"title", "content"});
+            redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
+            return "redirect:/board/notice/write" + StringUtils.searchConditionToQueryStringWithCategory(searchConditionDto);
+        }
 
+
+        // 유효성 검증
+        boolean isFixed = noticeBoardDto.getIsFixed() != null && noticeBoardDto.getIsFixed().equals("on");
+        if (isFixed) {
+            int currentFixedBoardCount = noticeBoardService.getFixedBoardList().size();
+            if (currentFixedBoardCount > 4) {
+                redirectAttributes.addFlashAttribute("errorMessage", "고정글은 5개까지 가능합니다.");
+                return "redirect:/board/notice/write" + StringUtils.searchConditionToQueryStringWithCategory(searchConditionDto);
+            }
+        }
         // author 세팅
         noticeBoardDto.setAuthorId(adminDto.getAdminId());
 
@@ -164,13 +175,26 @@ public class NoticeBoardController {
      */
     @PostMapping("/board/notice/modify/{boardId}")
     public String modifyBoard(@PathVariable(name = "boardId") Long boardId,
-                              @ModelAttribute NoticeBoardDto noticeBoardDto,
+                              @Valid @ModelAttribute NoticeBoardDto noticeBoardDto,
+                              BindingResult bindingResult,
                               @ModelAttribute SearchConditionDto searchConditionDto,
                               RedirectAttributes redirectAttributes) {
 
+        if (bindingResult.hasErrors()) {
+            String errorMessage = BindingResultUtils.getErrorMessage(bindingResult, new String[]{"title", "content"});
+            redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
+            return "redirect:/board/notice/" + boardId + StringUtils.searchConditionToQueryStringWithCategory(searchConditionDto);
+        }
+
         // 유효성 검증
-        // TODO : 검색조건 유효성 검증 및 검색조건 유지
-//        BoardValidator.validateNoticeBoard(noticeBoardDto);
+        boolean isFixed = noticeBoardDto.getIsFixed() != null && noticeBoardDto.getIsFixed().equals("on");
+        if (isFixed) {
+            int fixedBoardCount = noticeBoardService.getFixedBoardList().size();
+            if (fixedBoardCount > 4) {
+                redirectAttributes.addFlashAttribute("errorMessage", "고정글은 5개까지 가능합니다.");
+                return "redirect:/board/notice/" + boardId + StringUtils.searchConditionToQueryStringWithCategory(searchConditionDto);
+            }
+        }
 
         // 수정
         noticeBoardDto.setBoardId(boardId);
@@ -196,7 +220,7 @@ public class NoticeBoardController {
                               RedirectAttributes redirectAttributes) {
 
         // boardId 유효성 검증
-        noticeBoardService.getBoardByBoardId(boardId).orElseThrow(() -> new BoardNotFoundException());
+        noticeBoardService.getBoardByBoardId(boardId).orElseThrow(() -> new BoardNotFoundException("잘못된 요청입니다."));
 
         // 삭제
         noticeBoardService.deleteBoardByBoardId(boardId);
