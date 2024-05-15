@@ -17,25 +17,4 @@ public interface AnswerService {
      * @return 문의 게시물에 등록된 답변
      */
     Optional<AnswerDto> getAnswerByBoardId(Long boardId);
-
-    /**
-     * 문의 게시물에 답변 추가
-     *
-     * @param answerDto ( boardId, authorId, content )
-     */
-    void addAnswer(AnswerDto answerDto);
-
-    /**
-     * 문의 게시물에 등록된 답변 삭제
-     *
-     * @param boardId 문의 게시물의 pk
-     */
-    void deleteAnswer(Long boardId);
-
-    /**
-     * 문의 게시물에 등록된 답변 수정
-     *
-     * @param answerDto ( authorId, content , boardId )
-     */
-    void modifyAnswer(AnswerDto answerDto);
 }
