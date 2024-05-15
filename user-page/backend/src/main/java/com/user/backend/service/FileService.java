@@ -12,19 +12,18 @@ import java.util.Optional;
 public interface FileService {
 
     /**
-     * file 등록
+     * File 등록
      *
-     * @param fileList 추가 될 파일 리스트
-     * @param boardType boardType
-     * @param boardId boardId
-     * @return 추가한 File 리스트
+     * @param fileList DB에 저장할 File List
+     * @param boardId  boardId ( pk )
+     * @return 저장된 FileList
      */
-    List<FileDto> addFile(MultipartFile[] fileList, String boardType, Long boardId);
+    List<FileDto> addFileList(List<FileDto> fileList, Long boardId);
 
     /**
      * 특정 게시물에 있는 file 리스트 가져오기
      *
-     * @param boardId boardId
+     * @param boardId   boardId
      * @param boardType boardType
      * @return boardType boardId에 있는 파일 리스트
      */
@@ -48,10 +47,10 @@ public interface FileService {
     /**
      * 게시물 내 존재하는 file의 수
      *
-     * @param boardId boardId
+     * @param boardId   boardId
      * @param boardType boardType
      * @return file의 수
      */
-    int getRowCountByBoardId(Long boardId, String boardType);
+    int getFileCountByBoardId(Long boardId, String boardType);
 
 }
