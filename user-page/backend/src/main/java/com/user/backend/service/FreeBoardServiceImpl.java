@@ -16,7 +16,7 @@ import java.util.Optional;
 @Service
 @Primary
 @RequiredArgsConstructor
-public class FreeBoardServiceImpl implements FreeBoardService{
+public class FreeBoardServiceImpl implements FreeBoardService {
 
     private final FreeBoardMapper freeBoardMapper;
 
@@ -54,5 +54,15 @@ public class FreeBoardServiceImpl implements FreeBoardService{
     @Override
     public void modifyBoard(FreeBoardDto freeBoardDto) {
         freeBoardMapper.updateBoard(freeBoardDto);
+    }
+
+    @Override
+    public List<FreeBoardDto> getBoardListForMain() {
+        return freeBoardMapper.selectBoardListForMain();
+    }
+
+    @Override
+    public Optional<FreeBoardDto> getBoardByIdAndMemberId(Long boardId, String memberId) {
+        return freeBoardMapper.selectBoardByIdAndMemberId(boardId, memberId);
     }
 }
