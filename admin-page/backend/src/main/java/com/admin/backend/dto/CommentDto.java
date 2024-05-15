@@ -1,5 +1,6 @@
 package com.admin.backend.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,6 +13,7 @@ import java.sql.Timestamp;
 @Setter
 public class CommentDto {
     private Long commentId;
+    @NotBlank
     private String content;
     private String boardType;
     private Long boardId;
