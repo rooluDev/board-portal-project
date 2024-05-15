@@ -3,6 +3,7 @@ package com.admin.backend.service;
 import com.admin.backend.common.utils.MultipartFileUtils;
 import com.admin.backend.dto.FileDto;
 import com.admin.backend.mapper.FileMapper;
+import com.admin.backend.mapper.ThumbnailMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -24,12 +25,15 @@ public class FileServiceImpl implements FileService {
     private final FileMapper fileMapper;
 
     @Override
-    public void addFile(List<FileDto> fileList, Long boardId) {
+    public Long addFileList(List<FileDto> fileList, Long boardId) {
+        List<Long> pk = new ArrayList<>();
         for (FileDto fileDto : fileList) {
             fileDto.setBoardId(boardId);
             fileMapper.insertFile(fileDto);
+            pk.add(fileDto.getFileId());
         }
-
+        // return 첫번째 ID
+        return pk.get(0);
     }
 
     @Override
