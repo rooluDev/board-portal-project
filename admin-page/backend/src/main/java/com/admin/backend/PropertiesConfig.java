@@ -18,4 +18,14 @@ public class PropertiesConfig {
         return propertiesFactoryBean;
     }
 
+    @Bean(name = "constraint")
+    public PropertiesFactoryBean constraintPropertiesBean(){
+        PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
+        ClassPathResource classPathResource = new ClassPathResource("properties/constraint.properties");
+
+        propertiesFactoryBean.setLocation(classPathResource);
+
+        return propertiesFactoryBean;
+    }
+
 }
