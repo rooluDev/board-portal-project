@@ -3,6 +3,7 @@ package com.user.backend.mapper;
 import com.user.backend.dto.FreeBoardDto;
 import com.user.backend.dto.SearchConditionDto;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -66,4 +67,20 @@ public interface FreeBoardMapper {
      * @param freeBoardDto ( categoryId, title, content, boardId )
      */
     void updateBoard(FreeBoardDto freeBoardDto);
+
+    /**
+     * SELECT tb_free_board LIMIT 6
+     *
+     * @return 최신 게시물 6개
+     */
+    List<FreeBoardDto> selectBoardListForMain();
+
+    /**
+     * SELECT tb_free_board By boardId And memberId
+     *
+     * @param boardId ( pk )
+     * @param memberId authorId
+     * @return boardId와 authorId가 일치하는 게시물
+     */
+    Optional<FreeBoardDto> selectBoardByIdAndMemberId(@Param("boardId") Long boardId, @Param("memberId") String memberId);
 }
