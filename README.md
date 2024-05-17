@@ -58,9 +58,7 @@
 ## 화면
 + 사용자 페이지
 
-
 https://github.com/rooluDev/board-portal-project/assets/152958052/cb58d35b-bd4d-449d-b753-bb6c39681f93
-
 
 + 관리자 페이지
 
