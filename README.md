@@ -66,13 +66,18 @@ https://github.com/rooluDev/board-portal-project/assets/152958052/7d07e346-0a2b-
 
 
 ## 주요 기능
-+ JWT을 통한 인증 진행
-+ 사용자, 관리자 서버 분리
++ JWT을 통한 인증 및 인가
+  [코드 보러가기](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/jwt/JwtProvider.java#L22)
 + Multipart Form-Data를 통한 게시물 작성 및 수정
-+ 갤러리 페이지 파일 선택 시 미리보기 이미지 지원
+  [코드 보러가기](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/controller/GalleryBoardController.java#L143)
++ GlobalExceptionHandler를 통해 Custom ErrorCode와 Exception을 만들어서 에러 핸들링
 
-## 코드 설명
+  * Backend Handler
+  [코드 보러가기](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/common/exception/handler/GlobalExceptionHandler.java)
 
+  * Frontend Handler
+    [코드 보러가기](https://github.com/rooluDev/board-portal-project/blob/main/user-page/frontend/src/error/index.js)
+## Structure
 
 
 ## ERD
