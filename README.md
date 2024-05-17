@@ -1,4 +1,4 @@
-# 게시판 포털 사이트
+# 게시판 포탈 사이트
 
 ## 프로젝트 개요
 웹 개발자로서 필요한 기본 소양을 키우고 또 잘 보여줄 수 있는 게시판 포털 사이트 프로젝트를 진행했습니다.
@@ -72,6 +72,8 @@ https://github.com/rooluDev/board-portal-project/assets/152958052/7d07e346-0a2b-
 + 갤러리 페이지 파일 선택 시 미리보기 이미지 지원
 
 ## 코드 설명
+
+
 
 ## ERD
 ![스크린샷 2024-05-17 오후 9 02 18](https://github.com/rooluDev/board-portal-project/assets/152958052/a2754673-1a6c-4915-85d6-b30e3e180a89)
