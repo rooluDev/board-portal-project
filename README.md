@@ -40,18 +40,30 @@
 
 ## 게시판 페이지 링크
 + 관리자 페이지 (MPA 버전)
-
+ 
+ 관리자 아이디 : admin
+ 
+ 관리자 비밀번호 : 1234
+ 
 + 사용자 페이지 (SPA 버전)
 
-## [API 문서](https://documenter.getpostman.com/view/32925626/2sA3JRXyGT)
+ 사용자 아이디 : user
+
+ 사용자 비밀번호 : 1234
+
+## [API 문서 링크](https://documenter.getpostman.com/view/32925626/2sA3JRXyGT)
 
 + Post Man으로 작성한 REST API 문서입니다.
 
 ## 화면
 
 ## 주요 기능
++ JWT을 통한 인증 진행
++ 사용자, 관리자 서버 분리
++ Multipart Form-Data를 통한 게시물 작성 및 수정
++ 갤러리 페이지 파일 선택 시 미리보기 이미지 지원
 
-## 코드 간략 설명
+## 코드 설명
 
 ## ERD
 ![스크린샷 2024-05-17 오후 9 02 18](https://github.com/rooluDev/board-portal-project/assets/152958052/a2754673-1a6c-4915-85d6-b30e3e180a89)
