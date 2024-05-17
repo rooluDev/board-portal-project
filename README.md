@@ -43,8 +43,9 @@
 
 + 사용자 페이지 (SPA 버전)
 
-## API 문서
+## [API 문서](https://documenter.getpostman.com/view/32925626/2sA3JRXyGT)
 
++ Post Man으로 작성한 REST API 문서입니다.
 
 ## 화면
 
