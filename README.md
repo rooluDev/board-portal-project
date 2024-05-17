@@ -62,6 +62,8 @@ https://github.com/rooluDev/board-portal-project/assets/152958052/cb58d35b-bd4d-
 
 + 관리자 페이지
 
+https://github.com/rooluDev/board-portal-project/assets/152958052/7d07e346-0a2b-4108-bf77-70367f29c75f
+
 
 ## 주요 기능
 + JWT을 통한 인증 진행
