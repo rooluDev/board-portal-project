@@ -77,8 +77,6 @@ https://github.com/rooluDev/board-portal-project/assets/152958052/7d07e346-0a2b-
 
   * Frontend Handler
     [코드 보러가기](https://github.com/rooluDev/board-portal-project/blob/main/user-page/frontend/src/error/index.js)
-## Structure
-
 
 ## ERD
 ![스크린샷 2024-05-17 오후 9 02 18](https://github.com/rooluDev/board-portal-project/assets/152958052/a2754673-1a6c-4915-85d6-b30e3e180a89)
