@@ -1,4 +1,4 @@
-# 게시판 포털 사이트 포트폴리오
+# 게시판 포털 사이트
 
 ## 프로젝트 개요
 웹 개발자로서 필요한 기본 소양을 키우고 또 잘 보여줄 수 있는 게시판 포털 사이트 프로젝트를 진행했습니다.
@@ -12,11 +12,11 @@
   * Front-end
 
     <img src="https://img.shields.io/badge/thymeleaf-005F0F?style=for-the-badge&logo=thymeleaf&logoColor=white">
-    <img src="https://img.shields.io/badge/MyBatis-000000?style=for-the-badge&logo=MyBatis&logoColor=white">
 
   * Back-end
   
     <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white">
+    <img src="https://img.shields.io/badge/MyBatis-000000?style=for-the-badge&logo=MyBatis&logoColor=white">
 
 + 사용자 페이지(SPA)
   * Front-end
@@ -33,6 +33,10 @@
   
   <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white">
 
++ 인프라
+  
+  <img src="https://img.shields.io/badge/amazonec2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white">
+  <img src="https://img.shields.io/badge/nginx-009639?style=for-the-badge&logo=nginx&logoColor=white">
 
 ## 게시판 페이지 링크
 + 관리자 페이지 (MPA 버전)
