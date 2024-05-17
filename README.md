@@ -50,11 +50,13 @@
 ## 📺 화면
 + **사용자 페이지**
 
-https://github.com/rooluDev/board-portal-project/assets/152958052/cb58d35b-bd4d-449d-b753-bb6c39681f93
+https://github.com/rooluDev/board-portal-project/assets/152958052/cb1a80b6-286a-4ac9-a44d-ff9b87691eec
 
 + **관리자 페이지**
 
-https://github.com/rooluDev/board-portal-project/assets/152958052/7d07e346-0a2b-4108-bf77-70367f29c75f
+https://github.com/rooluDev/board-portal-project/assets/152958052/cd23df82-18aa-4d47-9845-08079bce5460
+
+
 
 
 ## 💡 주요 기능
