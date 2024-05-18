@@ -33,7 +33,7 @@
   * ![Nginx](https://img.shields.io/badge/nginx-009639?style=for-the-badge&logo=nginx&logoColor=white)
 
 ## 🔗 게시판 페이지 링크
-+ **[관리자 페이지](http://3.35.111.101:8080/) (MPA 버전)**
++ **[관리자 페이지](http://3.35.111.101:8080/login) (MPA 버전)**
  
 > **관리자 아이디:** admin  
 > **관리자 비밀번호:** 1234
