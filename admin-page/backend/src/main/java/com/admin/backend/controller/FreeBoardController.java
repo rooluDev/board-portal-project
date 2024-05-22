@@ -66,7 +66,7 @@ public class FreeBoardController {
         model.addAttribute("totalPageNum", totalPageNum);
         model.addAttribute("admin", adminDto);
 
-        return "/board/free/free-list";
+        return "board/free/free-list";
     }
 
     /**
@@ -89,7 +89,7 @@ public class FreeBoardController {
         model.addAttribute("searchCondition", searchConditionDto);
         model.addAttribute("admin", adminDto);
 
-        return "/board/free/free-write";
+        return "board/free/free-write";
     }
 
     /**
@@ -108,13 +108,14 @@ public class FreeBoardController {
                            @ModelAttribute SearchConditionDto searchConditionDto,
                            RedirectAttributes redirectAttributes) {
 
+        // 텍스트 유효성 검증
         if (bindingResult.hasErrors()) {
             String errorMessage = BindingResultUtils.getErrorMessage(bindingResult, new String[]{"title", "content"});
             redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
             return "redirect:/board/free/write" + StringUtils.searchConditionToQueryStringWithCategory(searchConditionDto);
         }
 
-        // 유효성 검증
+        // 파일 유효성 검증
         fileList = MultipartFileUtils.replaceEmptyFile(fileList);
         if (fileList != null) {
             try {
@@ -132,7 +133,7 @@ public class FreeBoardController {
         // free board 추가 후 생성 된 pk return
         Long boardId = freeBoardService.addBoard(freeBoardDto);
 
-        // storage 저장 후 DB 저장
+        // 물리적 파일 저장 후 DB 저장
         if (fileList != null) {
             fileStorageService.storageFileList(fileList, boardId, Board.FREE_BOARD.getBoardType(), false);
         }
@@ -174,7 +175,7 @@ public class FreeBoardController {
         model.addAttribute("commentList", commentDtoList);
         model.addAttribute("admin", adminDto);
 
-        return "/board/free/free-view";
+        return "board/free/free-view";
     }
 
     /**
@@ -198,20 +199,25 @@ public class FreeBoardController {
         // boardId 유효성 검증
         freeBoardService.getBoardById(boardId).orElseThrow(() -> new BoardNotFoundException("잘못된 요청입니다."));
 
+        // 텍스트 유효성 검증
         if (bindingResult.hasErrors()) {
             String errorMessage = BindingResultUtils.getErrorMessage(bindingResult, new String[]{"title", "content"});
             redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
+
             return "redirect:/board/free/" + boardId + StringUtils.searchConditionToQueryStringWithCategory(searchConditionDto);
         }
 
         fileList = MultipartFileUtils.replaceEmptyFile(fileList);
 
-        // 유효성 검증에 필요한 현재 파일 개수
-        int currentFileCount = fileService.getRowCountByBoardId(boardId, Board.FREE_BOARD.getBoardType());
+
+        // 파일 유효성 검증
         try {
+            // 유효성 검증에 필요한 현재 파일 개수
+            int currentFileCount = fileService.getRowCountByBoardId(boardId, Board.FREE_BOARD.getBoardType());
             fileValidator.validateFileForModify(fileList, deleteFileIdList, currentFileCount);
         } catch (IllegalFileDataException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+
             return "redirect:/board/free/" + boardId + StringUtils.searchConditionToQueryStringWithCategory(searchConditionDto);
         }
         // boardId 세팅
