@@ -21,15 +21,13 @@ public class GlobalControllerExceptionHandler {
      *
      * @param loginFailException LoginFailException
      * @param redirectAttributes RedirectAttributes
-     * @param request            HttpServletRequest
      * @return redirect:/login
      */
     @ExceptionHandler(LoginFailException.class)
     public String handleLoginFailException(LoginFailException loginFailException,
-                                           RedirectAttributes redirectAttributes,
-                                           HttpServletRequest request) {
+                                           RedirectAttributes redirectAttributes) {
 
-        log.error("Exception: LoginFailException / URI: " + request.getRequestURI());
+        log.info("LoginFail Message: {}", loginFailException.getMessage());
 
         redirectAttributes.addFlashAttribute("errorMessage", loginFailException.getMessage());
 
@@ -39,44 +37,26 @@ public class GlobalControllerExceptionHandler {
     /**
      * BoardNotFoundException Handler
      *
-     * @param request HttpServletRequest
      * @return redirect:/error
      */
     @ExceptionHandler(BoardNotFoundException.class)
-    public String handleBoardNotFoundException(HttpServletRequest request) {
+    public String handleBoardNotFoundException(BoardNotFoundException e) {
 
-        log.error("Exception: BoardNotFoundException / URI: " + request.getRequestURI());
+        log.info("BoardNotFoundException: {}", e.getMessage());
 
         return "redirect:/error";
     }
 
     /**
-     * 갤러리 게시판에 파일을 등록하지 않았을 때 발생하는 MissingServletRequestPartException Handler
-     *
-     * @param request            HttpServletRequest
-     * @param redirectAttributes RedirectAttributes
-     * @return redirect:/board/gallery/write?" + request.getQueryString()
-     */
-    @ExceptionHandler(MissingServletRequestPartException.class)
-    public String handleMissingServletRequestPartException(HttpServletRequest request, RedirectAttributes redirectAttributes) {
-
-        redirectAttributes.addFlashAttribute("errorMessage", "파일을 1개 이상 등록하세요");
-
-        return "redirect:/board/gallery/write?" + request.getQueryString();
-    }
-
-    /**
      * CommentNotFoundException Handler
      *
-     * @param commentNotFoundException
-     * @param redirectAttributes
+     * @param e CommentNotFoundException
      * @return redirect:/error
      */
     @ExceptionHandler(CommentNotFoundException.class)
-    public String handleCommentNotFoundException(CommentNotFoundException commentNotFoundException,
-                                                 RedirectAttributes redirectAttributes) {
-
-        redirectAttributes.addFlashAttribute("errorMessage", commentNotFoundException.getMessage());
+    public String handleCommentNotFoundException(CommentNotFoundException e) {
+        log.error("Error message: {}", e.getMessage());
+        log.error("Error on: ", e);
 
         return "redirect:/error";
     }
@@ -88,7 +68,10 @@ public class GlobalControllerExceptionHandler {
      * @return redirect:/error
      */
     @ExceptionHandler(StorageFailException.class)
-    public String handleStorageFailException() {
+    public String handleStorageFailException(StorageFailException e) {
+
+        log.error("Error message: {}", e.getMessage());
+        log.error("Error on: ", e);
 
         return "redirect:/error";
     }
@@ -99,7 +82,24 @@ public class GlobalControllerExceptionHandler {
      * @return redirect:/error
      */
     @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public String handleMaxUploadSizeExceededException() {
+    public String handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e) {
+        log.error("Error message: {}", e.getMessage());
+        log.error("Error on: ", e);
+
+        return "redirect:/error";
+    }
+
+    /**
+     * Exception Handler
+     *
+     * @param e Exception
+     * @return redirect:/error
+     */
+    @ExceptionHandler(Exception.class)
+    public String handleDefaultHandler(Exception e) {
+        log.error("Error message: {}", e.getMessage());
+        log.error("Error on: ", e);
+
         return "redirect:/error";
     }
 }

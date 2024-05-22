@@ -69,7 +69,7 @@ public class GalleryBoardController {
         model.addAttribute("searchCondition", searchConditionDto);
         model.addAttribute("admin", adminDto);
 
-        return "/board/gallery/gallery-list";
+        return "board/gallery/gallery-list";
     }
 
     /**
@@ -92,7 +92,7 @@ public class GalleryBoardController {
         model.addAttribute("searchCondition", searchConditionDto);
         model.addAttribute("admin", adminDto);
 
-        return "/board/gallery/gallery-write";
+        return "board/gallery/gallery-write";
     }
 
 
@@ -110,28 +110,32 @@ public class GalleryBoardController {
                            @Valid @ModelAttribute GalleryBoardDto galleryBoardDto,
                            BindingResult bindingResult,
                            @ModelAttribute SearchConditionDto searchConditionDto,
-                           @RequestParam(name = "file", required = true) MultipartFile[] fileList,
+                           @RequestParam(name = "file") MultipartFile[] fileList,
                            RedirectAttributes redirectAttributes) {
 
-        fileList = MultipartFileUtils.replaceEmptyFile(fileList);
-
+        // 텍스트 검증
         if (bindingResult.hasErrors()) {
             String errorMessage = BindingResultUtils.getErrorMessage(bindingResult, new String[]{"title", "content"});
             redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
             return "redirect:/board/gallery/write" + StringUtils.searchConditionToQueryStringWithCategory(searchConditionDto);
         }
 
+        // 파일 리스트 내부 null 삭제 및 유효성 검증
+        fileList = MultipartFileUtils.replaceEmptyFile(fileList);
         try {
             fileValidator.validateFile(fileList);
         } catch (IllegalFileDataException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/board/gallery/write" + StringUtils.searchConditionToQueryStringWithCategory(searchConditionDto);
         }
+
+        // Author set
         galleryBoardDto.setAuthorId(adminDto.getAdminId());
         galleryBoardDto.setAuthorType(Author.ADMIN.getAuthorType());
 
         Long boardId = galleryBoardService.addBoard(galleryBoardDto);
 
+        // 파일 저장
         if (fileList != null) {
             fileStorageService.storageFileList(fileList, boardId, Board.GALLERY_BOARD.getBoardType(), true);
         }
@@ -175,7 +179,7 @@ public class GalleryBoardController {
         model.addAttribute("commentList", commentDtoList);
         model.addAttribute("fileCountInBoard", fileCountInBoard);
 
-        return "/board/gallery/gallery-view";
+        return "board/gallery/gallery-view";
     }
 
     /**
@@ -199,20 +203,22 @@ public class GalleryBoardController {
         // boardId 유효성 검증
         galleryBoardService.getBoardById(boardId).orElseThrow(() -> new BoardNotFoundException("잘못된 요청입니다."));
 
+        // 텍스트 검증
         if (bindingResult.hasErrors()) {
             String errorMessage = BindingResultUtils.getErrorMessage(bindingResult, new String[]{"title", "content"});
             redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
             return "redirect:/board/gallery/" + boardId + StringUtils.searchConditionToQueryStringWithCategory(searchConditionDto);
         }
 
+        // 파일 리스트 내부 null 삭제 및 유효성 검증
         fileList = MultipartFileUtils.replaceEmptyFile(fileList);
-
-        // 유효성 검증에 필요한 현재 파일 개수
-        int currentFileCount = fileService.getRowCountByBoardId(boardId, Board.GALLERY_BOARD.getBoardType());
         try {
+            // 유효성 검증에 필요한 현재 파일 개수
+            int currentFileCount = fileService.getRowCountByBoardId(boardId, Board.GALLERY_BOARD.getBoardType());
             fileValidator.validateFileForModify(fileList, deleteFileIdList, currentFileCount);
         } catch (IllegalFileDataException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+
             return "redirect:/board/gallery/" + boardId + StringUtils.searchConditionToQueryStringWithCategory(searchConditionDto);
         }
 

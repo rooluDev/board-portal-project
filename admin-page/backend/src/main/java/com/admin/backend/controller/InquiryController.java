@@ -52,7 +52,7 @@ public class InquiryController {
         model.addAttribute("totalPageNum", totalPageNum);
         model.addAttribute("admin", adminDto);
 
-        return "/board/inquiry/inquiry-list";
+        return "board/inquiry/inquiry-list";
     }
 
     /**
@@ -71,7 +71,7 @@ public class InquiryController {
                               @ModelAttribute SearchConditionDto searchConditionDto) {
 
         // 데이터 가져오기
-        InquiryBoardDto inquiryBoardDto = inquiryBoardService.getBoardById(boardId).orElseThrow(() -> new BoardNotFoundException());
+        InquiryBoardDto inquiryBoardDto = inquiryBoardService.getBoardById(boardId).orElseThrow(() -> new BoardNotFoundException("잘못된 요청입니다."));
         AnswerDto answerDto = answerService.getAnswerByBoardId(boardId).orElseGet(AnswerDto::new);
 
         // 조회수 증가
@@ -82,7 +82,7 @@ public class InquiryController {
         model.addAttribute("searchCondition", searchConditionDto);
         model.addAttribute("admin", adminDto);
 
-        return "/board/inquiry/inquiry-view";
+        return "board/inquiry/inquiry-view";
     }
 
     /**

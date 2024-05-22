@@ -6,6 +6,9 @@ import lombok.Setter;
 
 import java.sql.Timestamp;
 
+/**
+ * Thumbnail Dto
+ */
 @Getter
 @Setter
 @Builder

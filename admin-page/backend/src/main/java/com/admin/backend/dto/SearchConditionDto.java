@@ -45,7 +45,7 @@ public class SearchConditionDto {
 
     /**
      * offset을 computed로 사용자 정의 getter 생성
-     * @return
+     * @return Offset
      */
     public int getOffset() {
         return (this.pageNum - 1) * this.pageSize;
@@ -53,7 +53,7 @@ public class SearchConditionDto {
 
     /**
      * Timestamp 사용자 정의 getter 생성
-     * @return
+     * @return Timestamp startDate
      */
     public Timestamp getStartDateTimestamp() {
         LocalDate localStateDate = LocalDate.parse(this.startDate);
@@ -63,7 +63,7 @@ public class SearchConditionDto {
 
     /**
      * Timestamp 사용자 정의 getter 생성
-     * @return
+     * @return Timestamp endDate
      */
     public Timestamp getEndDateTimestamp() {
         LocalDate localEndDate = LocalDate.parse(this.endDate);

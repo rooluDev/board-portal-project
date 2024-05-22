@@ -51,7 +51,7 @@ public class CommentController {
      */
     @DeleteMapping("/comment/{commentId}")
     public ResponseEntity<Long> deleteComment(@PathVariable(name = "commentId") Long commentId) {
-
+        // commentId 유효성 검증
         commentService.getCommentById(commentId).orElseThrow(() -> new CommentNotFoundException("잘못된 요청입니다."));
 
         commentService.deleteCommentById(commentId);

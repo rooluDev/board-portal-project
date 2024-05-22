@@ -37,10 +37,11 @@ public class AnswerController {
                             BindingResult bindingResult,
                             @ModelAttribute SearchConditionDto searchConditionDto,
                             RedirectAttributes redirectAttributes) {
-
+        // 유효성 검증
         if (bindingResult.hasErrors()) {
             String errorMessage = BindingResultUtils.getErrorMessage(bindingResult, new String[]{"content"});
             redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
+
             return "redirect:/board/notice" + answerDto.getBoardId() + StringUtils.searchConditionToQueryStringWithOutCategory(searchConditionDto);
         }
 

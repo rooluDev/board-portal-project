@@ -1,6 +1,7 @@
 package com.admin.backend.controller;
 
 
+import com.admin.backend.common.exception.FileNotFoundException;
 import com.admin.backend.dto.FileDto;
 import com.admin.backend.service.FileService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -9,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.*;
 

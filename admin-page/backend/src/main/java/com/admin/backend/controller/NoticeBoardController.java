@@ -64,7 +64,7 @@ public class NoticeBoardController {
         model.addAttribute("fixedBoardList", fixedBoardList);
         model.addAttribute("admin", adminDto);
 
-        return "/board/notice/notice-list";
+        return "board/notice/notice-list";
     }
 
     /**
@@ -87,7 +87,7 @@ public class NoticeBoardController {
         model.addAttribute("searchCondition", searchConditionDto);
         model.addAttribute("admin", adminDto);
 
-        return "/board/notice/notice-write";
+        return "board/notice/notice-write";
     }
 
     /**
@@ -106,14 +106,16 @@ public class NoticeBoardController {
                            @ModelAttribute SearchConditionDto searchConditionDto,
                            RedirectAttributes redirectAttributes) {
 
+        // 텍스트 유효성 검증
         if (bindingResult.hasErrors()) {
             String errorMessage = BindingResultUtils.getErrorMessage(bindingResult, new String[]{"title", "content"});
             redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
+
             return "redirect:/board/notice/write" + StringUtils.searchConditionToQueryStringWithCategory(searchConditionDto);
         }
 
 
-        // 유효성 검증
+        // 고정글 유효성 검증
         boolean isFixed = noticeBoardDto.getIsFixed() != null && noticeBoardDto.getIsFixed().equals("on");
         if (isFixed) {
             int currentFixedBoardCount = noticeBoardService.getFixedBoardList().size();
@@ -150,7 +152,7 @@ public class NoticeBoardController {
                                @ModelAttribute SearchConditionDto searchConditionDto) {
 
         // 데이터 가져오기
-        NoticeBoardDto noticeBoardDto = noticeBoardService.getBoardByBoardId(boardId).orElseThrow(() -> new BoardNotFoundException());
+        NoticeBoardDto noticeBoardDto = noticeBoardService.getBoardByBoardId(boardId).orElseThrow(() -> new BoardNotFoundException("잘못된 요청입니다."));
         List<CategoryDto> categoryDtoList = categoryService.getCategoryListByBoardType(Board.NOTICE_BOARD.getBoardType());
 
         // 조회수 증가
@@ -161,7 +163,7 @@ public class NoticeBoardController {
         model.addAttribute("board", noticeBoardDto);
         model.addAttribute("admin", adminDto);
 
-        return "/board/notice/notice-view";
+        return "board/notice/notice-view";
     }
 
     /**
@@ -180,13 +182,14 @@ public class NoticeBoardController {
                               @ModelAttribute SearchConditionDto searchConditionDto,
                               RedirectAttributes redirectAttributes) {
 
+        // 텍스트 유효성 검증
         if (bindingResult.hasErrors()) {
             String errorMessage = BindingResultUtils.getErrorMessage(bindingResult, new String[]{"title", "content"});
             redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
             return "redirect:/board/notice/" + boardId + StringUtils.searchConditionToQueryStringWithCategory(searchConditionDto);
         }
 
-        // 유효성 검증
+        // 고정글 유효성 검증
         boolean isFixed = noticeBoardDto.getIsFixed() != null && noticeBoardDto.getIsFixed().equals("on");
         if (isFixed) {
             int fixedBoardCount = noticeBoardService.getFixedBoardList().size();
