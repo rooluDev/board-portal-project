@@ -1,17 +1,19 @@
-package com.admin.backend;
+package com.admin.backend.config;
 
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 
 @Configuration
-public class PropertiesConfig {
+@Profile("prod")
+public class PropertiesProdConfig {
 
     @Bean(name = "storage")
     public PropertiesFactoryBean filePropertiesBean() {
         PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
-        ClassPathResource classPathResource = new ClassPathResource("properties/storage.properties");
+        ClassPathResource classPathResource = new ClassPathResource("properties/storage-prod.properties");
 
         propertiesFactoryBean.setLocation(classPathResource);
 
@@ -19,7 +21,7 @@ public class PropertiesConfig {
     }
 
     @Bean(name = "constraint")
-    public PropertiesFactoryBean constraintPropertiesBean(){
+    public PropertiesFactoryBean constraintPropertiesBean() {
         PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
         ClassPathResource classPathResource = new ClassPathResource("properties/constraint.properties");
 
@@ -27,5 +29,4 @@ public class PropertiesConfig {
 
         return propertiesFactoryBean;
     }
-
 }

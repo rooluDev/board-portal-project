@@ -1,18 +1,17 @@
-package com.admin.backend;
+package com.admin.backend.config;
 
 import com.admin.backend.common.interceptor.InterceptorHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-/**
- * Interceptor Configuration
- */
 @Configuration
+@Profile("prod")
 @RequiredArgsConstructor
-public class WebMvcConfig implements WebMvcConfigurer {
+public class WebMvcProdConfig implements WebMvcConfigurer {
 
     private final InterceptorHandler interceptorHandler;
 
