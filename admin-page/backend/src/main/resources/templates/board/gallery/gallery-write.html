@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>갤러리</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -55,6 +55,7 @@
     </form>
 </body>
 <script th:inline="javascript">
+
     const fileInputBox = document.getElementById('fileInputBox');
 
     const addFileInputTag = () => {
@@ -97,8 +98,10 @@
         reader.onload = function () {
             const newImg = document.createElement('img');
             newImg.src = reader.result;
-            newImg.style.width = '100px';  // Set the width of the preview image
-            newImg.style.height = 'auto';
+            newImg.width = 100;
+            newImg.height = 50;
+            newImg.style.objectFit = 'cover';
+            newImg.className = 'me-2';
             const parentDiv = event.target.parentNode;
 
             parentDiv.insertBefore(newImg, event.target);

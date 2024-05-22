@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>공지사항 게시판</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -97,12 +97,17 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="fixedBoard : ${fixedBoardList}">
+        <tr th:each="fixedBoard : ${fixedBoardList}" class="fixed-list">
             <td></td>
             <td class="text-center" th:text="${fixedBoard.categoryName}"></td>
             <td class="text-start">
-                    <span class="link" th:text="${fixedBoard.title}"
-                          th:onclick="goToBoard([[${fixedBoard.boardId}]],[[${searchCondition}]])"></span>
+                <span class="link" th:if="${#strings.length(fixedBoard.title) > 52}"
+                      th:text="${fixedBoard.title.substring(0, 52) + '...'}"
+                      th:onclick="goToBoard([[${fixedBoard.boardId}]],[[${searchCondition}]])"></span>
+
+                <span class="link" th:if="${#strings.length(fixedBoard.title) <= 52}"
+                      th:text="${fixedBoard.title}"
+                      th:onclick="goToBoard([[${fixedBoard.boardId}]],[[${searchCondition}]])"></span>
             </td>
             <td class="text-center" th:text="${fixedBoard.views}"></td>
             <td class="text-center" th:text="${#dates.format(fixedBoard.createdAt,'yyyy.MM.dd hh:mm')}"></td>
@@ -115,8 +120,13 @@
             </td>
             <td class="text-center" th:text="${board.categoryName}"></td>
             <td class="text-start">
-                    <span class="link" th:text="${board.title}"
-                          th:onclick="goToBoard([[${board.boardId}]],[[${searchCondition}]])"></span>
+                <span class="link" th:if="${#strings.length(board.title) > 52}"
+                      th:text="${board.title.substring(0, 52) + '...'}"
+                      th:onclick="goToBoard([[${board.boardId}]],[[${searchCondition}]])"></span>
+
+                <span class="link" th:if="${#strings.length(board.title) <= 52}"
+                      th:text="${board.title}"
+                      th:onclick="goToBoard([[${board.boardId}]],[[${searchCondition}]])"></span>
             </td>
             <td class="text-center" th:text="${board.views}"></td>
             <td class="text-center" th:text="${#dates.format(board.createdAt,'yyyy.MM.dd hh:mm')}"></td>
@@ -128,7 +138,7 @@
     <nav th:if="${totalPageNum > 1}" aria-label="Page navigation" class="d-flex justify-content-center">
         <ul class="pagination">
             <li th:each="pageNum : ${#numbers.sequence(1,totalPageNum)}" class="page-item"
-                th:classappend="${pageNum} == ${currentPage} ? 'active' : ''">
+                th:classappend="${pageNum} == ${searchCondition.pageNum} ? 'active' : ''">
                 <a class="page-link" href="#" th:text="${pageNum}"
                    th:onclick="goToPageNum([[${pageNum}]],[[${searchCondition}]])"></a>
             </li>
@@ -170,6 +180,14 @@
             `&orderDirection=${searchCondition.orderDirection}&pageNum=${searchCondition.pageNum}`;
     }
 
+    const truncateTitle = (title) => {
+        console.log(1);
+        if (title.length > 50) {
+            return title.substring(0, 50) + '...';
+        }
+        return title;
+    }
+
     const goToPageNum = (pageNum, searchCondition) => {
         searchCondition.pageNum = pageNum;
         location.href = `/board/notice` + parseObjectToParam(searchCondition);
@@ -191,6 +209,10 @@
 
     .link:hover {
         text-decoration: underline;
+    }
+
+    .fixed-list {
+        background-color: rgba(211, 211, 211, 1);
     }
 </style>
 </html>
