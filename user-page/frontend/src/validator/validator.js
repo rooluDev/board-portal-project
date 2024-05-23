@@ -12,42 +12,49 @@ export const isValidFileSize = (fileSize, maxSize) => {
     return fileSize < maxSize;
 }
 
-export const validateFileLength = (fileList, minLength, maxLength) => {
-    if (fileList == undefined || fileList.length < minLength) {
-        throw new Error(`파일을 ${minLength}개 이상 첨부하세요.`);
-    } else if (fileList.length > maxLength) {
-        throw new Error(`파일을 ${maxLength}개 이상 첨부할 수 없습니다.`);
-    }
-}
-
-export const replaceEmptyFileList = (fileList) => {
-    return fileList.filter(file => file != null);
-}
-
-// export const validateFileLengthForModify = (fileList, deletedFileList,minLength, maxLength) => {
-//     console.log(fileList.length);
-//     console.log(deletedFileList.length);
-// }
-
 export const freeBoardValidator = (freeBoard, constraint) => {
     if (freeBoard.categoryId == -1) {
         throw new Error("카테고리를 선택하세요.");
     }
-    textValidator(freeBoard.title, constraint.title.minLength, constraint.title.minLength, "제목");
+    textValidator(freeBoard.title, constraint.title.minLength, constraint.title.maxLength, "제목");
     textValidator(freeBoard.content, constraint.content.minLength, constraint.content.maxLength, "내용");
 }
 
 
 export const galleryBoardValidator = (galleryBoard, constraint) => {
-    textValidator(galleryBoard.title, 1, 100, "제목");
-    textValidator(galleryBoard.content, 1, 4000, "내용");
     if (galleryBoard.categoryId == -1) {
         throw new Error("카테고리를 선택하세요.");
     }
+    textValidator(galleryBoard.title, constraint.title.minLength, constraint.title.maxLength, "제목");
+    textValidator(galleryBoard.content, constraint.content.minLength, constraint.content.maxLength, "내용");
 }
 
 
-export const inquiryBoardValidator = (inquiryBoard) => {
-    textValidator(inquiryBoard.title, 1, 100, "제목");
-    textValidator(inquiryBoard.content, 1, 4000, "내용");
+export const inquiryBoardValidator = (inquiryBoard, constraint) => {
+    textValidator(inquiryBoard.title, constraint.title.minLength, constraint.title.maxLength, "제목");
+    textValidator(inquiryBoard.content, constraint.content.minLength, constraint.content.maxLength, "내용");
+}
+
+const passwordValidator = (password, passwordCheck, memberId, constraint) => {
+    if (!password || password.length < constraint.minLength || password.length > constraint.maxLength) {
+        throw new Error(`비밀번호는 ${constraint.minLength}자 이상 ${constraint.maxLength}자 이하이어야 합니다.`);
+    }
+    if (password !== passwordCheck) {
+        throw new Error("비밀번호가 일치하지 않습니다.");
+    }
+    if (password === memberId) {
+        throw new Error("비밀번호는 아이디와 동일할 수 없습니다.");
+    }
+    if (/(\w)\1{2,}/.test(password)) {
+        throw new Error("비밀번호는 동일한 문자를 3번 이상 연속할 수 없습니다.");
+    }
+    if (constraint.regex && !new RegExp(constraint.regex).test(password)) {
+        throw new Error("비밀번호가 유효하지 않습니다.");
+    }
+};
+
+export const joinValidator = (joinForm, constraint) => {
+    textValidator(joinForm.memberId, constraint.memberId.minLength, constraint.memberId.maxLength,"아이디");
+    textValidator(joinForm.memberName, constraint.memberName.minLength, constraint.memberName.maxLength,"이름");
+    passwordValidator(joinForm.password, joinForm.passwordCheck, joinForm.memberId, constraint.password);
 }
