@@ -1,7 +1,7 @@
 <template>
   <v-container class="container">
     <v-row justify="center">
-      <v-col cols="20" sm="18" md="6">
+      <v-col cols="12" sm="18" md="6">
         <v-card class="elevation-12">
           <v-toolbar color="primary" dark>
             <v-toolbar-title>로그인</v-toolbar-title>
