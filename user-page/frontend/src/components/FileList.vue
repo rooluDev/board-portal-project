@@ -25,7 +25,7 @@ export default {
       const res = await downloadFile(fileId);
       const fileName = props.fileList.find(f => f.fileId === fileId)?.originalName;
       if (fileName) {
-        const url = window.URL.createObjectURL(new Blob([res.data]));
+        const url = window.URL.createObjectURL(new Blob([res]));
         const link = document.createElement('a');
         link.href = url;
         link.setAttribute('download', fileName);
