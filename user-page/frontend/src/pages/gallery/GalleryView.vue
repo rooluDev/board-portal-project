@@ -23,21 +23,22 @@
             </v-col>
           </v-row>
         </v-card-subtitle>
-        <v-carousel class="mb-12">
-            <v-carousel-item
+        <v-carousel class="mb-12" v-if="imageUrls.length">
+          <v-carousel-item
               v-for="(url,index) in imageUrls"
               :key="index"
               :src="url"
-            >
-            </v-carousel-item>
+          >
+          </v-carousel-item>
         </v-carousel>
         <v-card-title class="content">{{ galleryBoard.content }}</v-card-title>
         <FileList :fileList="fileList"/>
         <CommentList :commentList="commentList" @submit="addComment" :isDeleted="galleryBoard.isDeleted == 1"/>
         <v-card-actions style="justify-content: center">
           <v-btn class="custom-btn" @click="goToList">목록</v-btn>
-          <v-btn class="custom-btn"  v-if="galleryBoard.isDeleted != 1" @click="goToModify" v-show="isMyBoard">수정</v-btn>
-          <v-btn class="custom-btn" v-if="galleryBoard.isDeleted != 1" @click="deleteBoard" v-show="isMyBoard">삭제</v-btn>
+          <v-btn class="custom-btn" v-if="galleryBoard.isDeleted != 1" @click="goToModify" v-show="isMyBoard">수정</v-btn>
+          <v-btn class="custom-btn" v-if="galleryBoard.isDeleted != 1" @click="deleteBoard" v-show="isMyBoard">삭제
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-col>
@@ -86,6 +87,8 @@ export default {
       commentList.value = res.commentList;
       fileList.value = res.fileList;
     }
+
+
 
     /**
      * 게시판의 이미지 파일 리소스 로드
@@ -206,13 +209,13 @@ export default {
 }
 
 .title-container {
-  min-height: 48px; /* Ensure there is enough height for multiline titles */
+  min-height: 48px;
 }
 
 .title {
   font-weight: 500;
   font-size: 24px;
-  max-width: 100%; /* Ensure the title does not overflow the container */
+  max-width: 100%;
   white-space: pre-wrap;
 }
 
