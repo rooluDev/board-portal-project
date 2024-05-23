@@ -28,7 +28,7 @@
           <thead>
           <tr>
             <th class="text-center">번호</th>
-            <th class="text-left">제목</th>
+            <th class="text-left" style="width: 800px">제목</th>
             <th class="text-center">조회</th>
             <th class="text-center">등록일시</th>
             <th class="text-center">등록자</th>
@@ -39,10 +39,10 @@
             <td class="text-center">
               <span class="link" @click="goToView(board.boardId, board.isSecret)">{{ board.boardId }}</span>
             </td>
-            <td class=" text-left">
+            <td class=" text-left" style="width: 800px">
               <div>
                 <span class="link" @click="goToView(board.boardId,board.isSecret)">{{
-                    truncateTitle(board.title, 60)
+                    truncateText(board.title, 60)
                   }}</span>
                 <span v-if="board.answerId">(답변완료)</span>
                 <span v-else>(미답변)</span>
@@ -73,7 +73,7 @@ import {useStore} from "vuex";
 import {useRoute} from "vue-router";
 import {fetchCheckInquiryAuthor, fetchGetInquiryBoardList} from "@/api/inquiryBoardService";
 import {parseStringByFormat} from "@/utils/searchConditionUtils";
-import {parseToQueryString, truncateTitle} from "@/utils/stringUtils";
+import {parseToQueryString, truncateText} from "@/utils/stringUtils";
 import {isNew} from "@/utils/dateUtils";
 import {format, subMonths} from "date-fns";
 import {Board} from "@/type/boardType";
@@ -189,7 +189,7 @@ export default {
       parseStringByFormat,
       goToView,
       goToWrite,
-      truncateTitle,
+      truncateText,
       isNew,
       accessToken,
       getMyInquiryBoardList
