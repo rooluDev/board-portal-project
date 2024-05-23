@@ -41,6 +41,7 @@ public class MainController {
     @GetMapping("/boards/all")
     public ResponseEntity<Map> getBoardListForMain() {
 
+        // 데이터 가져오기
         List<NoticeBoardDto> noticeBoardDtoList = noticeBoardService.getBoardListForMain();
         List<GalleryBoardDto> galleryBoardDtoList = galleryBoardService.getBoardListForMain();
         List<FreeBoardDto> freeBoardDtoList = freeBoardService.getBoardListForMain();

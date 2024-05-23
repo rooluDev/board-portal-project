@@ -32,13 +32,15 @@ public class CommentController {
      */
     @PostMapping("/comment")
     public ResponseEntity<List<CommentDto>> addComment(@Valid @RequestBody CommentDto commentDto, HttpServletRequest request) {
-
+        // author 세팅
         String memberId = jwtService.getMemberIdFromToken(request);
         commentDto.setAuthorType(Author.MEMBER.getAuthorType());
         commentDto.setAuthorId(memberId);
 
+        // 추가
         commentService.addComment(commentDto);
 
+        // 댓글 리스트 리로드
         List<CommentDto> commentDtoList = commentService.getCommentListByBoardId(commentDto.getBoardId(), commentDto.getBoardType());
 
         return ResponseEntity.ok().body(commentDtoList);
@@ -54,8 +56,10 @@ public class CommentController {
     @DeleteMapping("/comment/{commentId}")
     public ResponseEntity deleteComment(@PathVariable(name = "commentId") Long commentId, HttpServletRequest request) {
 
+        // 로그인 확인
         jwtService.getMemberIdFromToken(request);
 
+        // 삭제
         commentService.deleteCommentById(commentId);
 
         return ResponseEntity.ok().build();

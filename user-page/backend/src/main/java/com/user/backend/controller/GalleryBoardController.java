@@ -1,7 +1,6 @@
 package com.user.backend.controller;
 
 import com.user.backend.common.exception.custom.BoardNotFoundException;
-import com.user.backend.common.exception.custom.IllegalFileDataException;
 import com.user.backend.common.exception.custom.NotLoggedInException;
 import com.user.backend.common.exception.custom.NotMyBoardException;
 import com.user.backend.common.exception.response.ErrorCode;
@@ -56,6 +55,7 @@ public class GalleryBoardController {
     @GetMapping("/boards/gallery")
     public ResponseEntity<Map> getBoardList(@Valid @ModelAttribute SearchConditionDto searchConditionDto) {
 
+        // 데이터 가져오기
         List<GalleryBoardDto> galleryBoardDtoList = galleryBoardService.getBoardListByCondition(searchConditionDto);
         List<CategoryDto> categoryDtoList = categoryService.getCategoryListByBoardType(Board.GALLERY_BOARD.getBoardType());
 
@@ -86,6 +86,7 @@ public class GalleryBoardController {
     @GetMapping("/board/gallery/{boardId}")
     public ResponseEntity<Map> getBoard(@PathVariable(name = "boardId") Long boardId) {
 
+        // 데이터 가져오기
         GalleryBoardDto galleryBoardDto = galleryBoardService.getBoardById(boardId).orElseThrow(() -> new BoardNotFoundException(ErrorCode.BOARD_NOT_FOUND));
         List<FileDto> fileDtoList = fileService.getFileListByBoardId(boardId, Board.GALLERY_BOARD.getBoardType());
         List<CommentDto> commentDtoList = commentService.getCommentListByBoardId(boardId, Board.GALLERY_BOARD.getBoardType());
@@ -110,18 +111,21 @@ public class GalleryBoardController {
      */
     @PostMapping("/board/gallery")
     public ResponseEntity addBoard(@Valid @ModelAttribute GalleryBoardDto galleryBoardDto,
-                                   @RequestParam(name = "file") MultipartFile[] fileList,
+                                   @RequestPart(name = "file") MultipartFile[] fileList,
                                    HttpServletRequest request) {
-
+        // 로그인 확인
         String memberId = jwtService.getMemberIdFromToken(request);
 
+        // 파일 검증
         multipartFileValidator.validateFile(fileList);
 
+        // author 세팅
         galleryBoardDto.setAuthorId(memberId);
         galleryBoardDto.setAuthorType(Author.MEMBER.getAuthorType());
 
         Long boardId = galleryBoardService.addBoard(galleryBoardDto);
 
+        // 파일 저장
         if (fileList != null) {
             fileStorageService.storageFileList(fileList, boardId, Board.GALLERY_BOARD.getBoardType(), true);
         }
@@ -142,13 +146,14 @@ public class GalleryBoardController {
     @PutMapping("/board/gallery/{boardId}")
     public ResponseEntity modifyBoard(@PathVariable(name = "boardId") Long boardId,
                                       @Valid @ModelAttribute GalleryBoardDto galleryBoardDto,
-                                      @RequestParam(name = "file", required = false) MultipartFile[] fileList,
-                                      @RequestParam(name = "deleteFileIdList", required = false) List<Long> deleteFileIdList,
+                                      @ModelAttribute(name = "deleteFileIdList") List<Long> deleteFileIdList,
+                                      @RequestPart(name = "file", value = "file", required = false) MultipartFile[] fileList,
                                       HttpServletRequest request) {
 
+        // 로그인 확인
         jwtService.getMemberIdFromToken(request);
 
-        // 파일 5개 넘는지
+        // 파일 검증
         int fileCount = fileService.getFileCountByBoardId(boardId, Board.GALLERY_BOARD.getBoardType());
         multipartFileValidator.validateFileForModify(fileList, deleteFileIdList, fileCount);
 
@@ -158,19 +163,18 @@ public class GalleryBoardController {
 
         // 파일 삭제
         if (deleteFileIdList != null) {
-            // 썸네일 이미지 삭제인지
             isThumbnailDeleted = fileStorageService.deleteFileList(deleteFileIdList);
         }
 
+        // 파일 추가
         if (fileList != null) {
-            // 파일 추가
             fileStorageService.storageFileList(fileList, boardId, Board.GALLERY_BOARD.getBoardType(), isThumbnailDeleted);
         } else if (isThumbnailDeleted) {
-            // 추가 없이 썸네일 파일 삭제 포함 있을 경우
             FileDto fileDto = fileService.getFileListByBoardId(boardId, Board.GALLERY_BOARD.getBoardType()).get(0);
             fileStorageService.storageThumbnail(fileDto);
         }
-        // 수정
+
+        // 텍스트 수정
         galleryBoardService.modifyBoard(galleryBoardDto);
 
         return ResponseEntity.ok().build();
@@ -185,8 +189,10 @@ public class GalleryBoardController {
     @PatchMapping("/board/gallery/{boardId}/increase-view")
     public ResponseEntity increaseView(@PathVariable(name = "boardId") Long boardId) {
 
+        // boardId 확인
         galleryBoardService.getBoardById(boardId).orElseThrow(() -> new BoardNotFoundException(ErrorCode.BOARD_NOT_FOUND));
 
+        // 조회수 증가
         galleryBoardService.increaseView(boardId);
 
         return ResponseEntity.ok().build();
@@ -202,7 +208,9 @@ public class GalleryBoardController {
     @GetMapping("/board/gallery/{boardId}/check-author")
     public ResponseEntity checkAuthor(@PathVariable(name = "boardId") Long boardId, HttpServletRequest request) {
         try {
+            // 로그인 확인
             String memberId = jwtService.getMemberIdFromToken(request);
+            // 게시판 본인 확인
             galleryBoardService.getBoardByIdAndMemberId(boardId, memberId).orElseThrow(() -> new BoardNotFoundException(ErrorCode.BOARD_NOT_FOUND));
         } catch (NotLoggedInException | BoardNotFoundException e) {
             throw new NotMyBoardException(ErrorCode.NOT_MY_BOARD);
@@ -219,11 +227,16 @@ public class GalleryBoardController {
      */
     @DeleteMapping("/board/gallery/{boardId}")
     public ResponseEntity deleteBoard(@PathVariable(name = "boardId") Long boardId, HttpServletRequest request) {
-
-        jwtService.getMemberIdFromToken(request);
-
-        galleryBoardService.deleteBoard(boardId);
-
+        try {
+            // 로그인 확인
+            String memberId = jwtService.getMemberIdFromToken(request);
+            // 게시판 본인 확인
+            galleryBoardService.getBoardByIdAndMemberId(boardId, memberId).orElseThrow(() -> new BoardNotFoundException(ErrorCode.BOARD_NOT_FOUND));
+            // 삭제
+            galleryBoardService.deleteBoard(boardId);
+        } catch (NotLoggedInException | BoardNotFoundException e) {
+            throw new NotMyBoardException(ErrorCode.NOT_MY_BOARD);
+        }
         return ResponseEntity.ok().build();
     }
 }

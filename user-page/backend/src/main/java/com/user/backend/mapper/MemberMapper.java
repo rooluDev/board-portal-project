@@ -15,9 +15,9 @@ public interface MemberMapper {
     /**
      * SELECT tb_member By ID and password
      *
-     * @param memberId
-     * @param password
-     * @return
+     * @param memberId memberId
+     * @param password password
+     * @return Id 와 password 일치하는 member
      */
     Optional<MemberDto> selectMemberByIdAndPassword(@Param("memberId") String memberId, @Param("password") String password);
 

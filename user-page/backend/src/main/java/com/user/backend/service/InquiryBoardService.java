@@ -22,7 +22,7 @@ public interface InquiryBoardService {
     /**
      * 검색조건과 페이지네이션에 맞는 문의 게시물 리스트 가져오기
      *
-     * @param searchConditionDto
+     * @param searchConditionDto 검색조건
      * @return 검색조건과 페이지네이션에 맞는 문의 게시물 리스트
      */
     List<InquiryBoardDto> getBoardListByCondition(SearchConditionDto searchConditionDto, String memberId);

@@ -161,21 +161,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotMyBoardException.class)
     public ResponseEntity handleNotMyBoardException(NotMyBoardException e){
 
-        log.error(e.getMessage());
+        log.error(e.getErrorCode().getMessage());
 
         return ErrorResponseEntity.toResponseEntity(e.getErrorCode());
     }
 
 
-    @ExceptionHandler(SQLException.class)
-    public ResponseEntity handleSQLException() {
-
-        log.error("SQL Exception");
-
-        return ErrorResponseEntity.toResponseEntity(ErrorCode.SERVER_ERROR);
-    }
-
-
+//    @ExceptionHandler(SQLException.class)
+//    public ResponseEntity handleSQLException() {
+//
+//        log.error("SQL Exception");
+//
+//        return ErrorResponseEntity.toResponseEntity(ErrorCode.SERVER_ERROR);
+//    }
+//
+//
 //    @ExceptionHandler(Exception.class)
 //    public ResponseEntity handleException(Exception exception) {
 //

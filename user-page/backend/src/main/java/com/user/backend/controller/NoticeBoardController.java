@@ -44,6 +44,7 @@ public class NoticeBoardController {
     @GetMapping("/boards/notice")
     public ResponseEntity<Map> getBoardList(@ModelAttribute SearchConditionDto searchConditionDto) {
 
+        // 데이터 가져오기
         List<NoticeBoardDto> noticeBoardList = noticeBoardService.getBoardListByCondition(searchConditionDto);
         List<NoticeBoardDto> fixedNoticeBoardList = noticeBoardService.getFixedBoardList();
         List<CategoryDto> categoryList = categoryService.getCategoryListByBoardType(Board.NOTICE_BOARD.getBoardType());
@@ -71,6 +72,7 @@ public class NoticeBoardController {
     @GetMapping("/board/notice/{boardId}")
     public ResponseEntity<NoticeBoardDto> getBoard(@PathVariable(name = "boardId") Long boardId) {
 
+        // 데이터 가져오기
         NoticeBoardDto noticeBoardDto = noticeBoardService.getBoardByBoardId(boardId).orElseThrow(() -> new BoardNotFoundException(ErrorCode.BOARD_NOT_FOUND));
 
         return ResponseEntity.ok().body(noticeBoardDto);
@@ -85,6 +87,7 @@ public class NoticeBoardController {
     @PatchMapping("/board/notice/{boardId}/increase-view")
     public ResponseEntity increaseView(@PathVariable(name = "boardId") Long boardId) {
 
+        // boardId 검증
         noticeBoardService.getBoardByBoardId(boardId).orElseThrow(() -> new BoardNotFoundException(ErrorCode.BOARD_NOT_FOUND));
         // 조회수 증가
         noticeBoardService.increaseView(boardId);

@@ -9,18 +9,16 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * MemberService Impl
+ */
 @Service
 @Primary
 @RequiredArgsConstructor
 @Slf4j
-public class MemberServiceImpl implements MemberService{
+public class MemberServiceImpl implements MemberService {
 
     private final MemberMapper memberMapper;
-
-    @Override
-    public Optional<MemberDto> findMember(String id, String pw) {
-        return memberMapper.selectMemberByIdAndPassword(id, pw);
-    }
 
     @Override
     public Optional<MemberDto> findById(String memberId) {

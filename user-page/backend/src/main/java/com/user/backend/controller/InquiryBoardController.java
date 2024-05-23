@@ -57,11 +57,13 @@ public class InquiryBoardController {
             }
         }
 
-        List<InquiryBoardDto> inquiryBoardDtoList = inquiryBoardService.getBoardListByCondition(searchConditionDto, memberId);
-
         // 페이지네이션 설정
         int totalRowCount = inquiryBoardService.getTotalRowCountByCondition(searchConditionDto, memberId);
         int totalPageNum = PaginationUtils.getTotalPageNum(totalRowCount, searchConditionDto.getPageSize());
+
+        // 데이터 가져오기
+        List<InquiryBoardDto> inquiryBoardDtoList = inquiryBoardService.getBoardListByCondition(searchConditionDto, memberId);
+
 
         Map response = new HashMap();
         response.put("totalPageNum", totalPageNum);
@@ -84,13 +86,16 @@ public class InquiryBoardController {
     @GetMapping("/board/inquiry/{boardId}")
     public ResponseEntity<Map> getBoard(@PathVariable(name = "boardId") Long boardId, HttpServletRequest request) {
 
+        // boardId 검증
         InquiryBoardDto inquiryBoardDto = inquiryBoardService.getBoardById(boardId).orElseThrow(() -> new BoardNotFoundException(ErrorCode.BOARD_NOT_FOUND));
+
         // 비밀글 체크 후 작성자 확인
         if (inquiryBoardDto.getIsSecret().equals("1")) {
             String memberId = jwtService.getMemberIdFromToken(request);
             inquiryBoardService.getBoardByIdAndMemberId(boardId, memberId).orElseThrow(() -> new BoardNotFoundException(ErrorCode.BOARD_NOT_FOUND));
         }
 
+        // 답변 데이터 가져오기
         AnswerDto answerDto = answerService.getAnswerByBoardId(boardId).orElseGet(AnswerDto::new);
 
         Map response = new HashMap();
@@ -112,10 +117,11 @@ public class InquiryBoardController {
     public ResponseEntity addBoard(@Valid @RequestBody InquiryBoardDto inquiryBoardDto,
                                    HttpServletRequest request) {
 
+        // 로그인 확인 및 author 세팅
         String memberId = jwtService.getMemberIdFromToken(request);
-
         inquiryBoardDto.setAuthorId(memberId);
 
+        // 추가
         inquiryBoardService.addBoard(inquiryBoardDto);
 
         return ResponseEntity.ok().build();
@@ -133,13 +139,14 @@ public class InquiryBoardController {
     public ResponseEntity modifyBoard(@PathVariable(name = "boardId") Long boardId,
                                       @Valid @RequestBody InquiryBoardDto inquiryBoardDto,
                                       HttpServletRequest request) {
-
+        // 로그인 확인
         jwtService.getMemberIdFromToken(request);
 
+        // boardId 검증
         inquiryBoardService.getBoardById(boardId).orElseThrow(() -> new BoardNotFoundException(ErrorCode.BOARD_NOT_FOUND));
 
+        // 수정
         inquiryBoardDto.setBoardId(boardId);
-
         inquiryBoardService.modifyBoard(inquiryBoardDto);
 
         return ResponseEntity.ok().build();
@@ -154,8 +161,10 @@ public class InquiryBoardController {
     @PatchMapping("/board/inquiry/{boardId}/increase-view")
     public ResponseEntity increaseView(@PathVariable(name = "boardId") Long boardId) {
 
+        // boardId 검증
         inquiryBoardService.getBoardById(boardId).orElseThrow(() -> new BoardNotFoundException(ErrorCode.BOARD_NOT_FOUND));
 
+        // 조회수 증가
         inquiryBoardService.increaseView(boardId);
 
         return ResponseEntity.ok().build();
@@ -171,7 +180,9 @@ public class InquiryBoardController {
     @GetMapping("/board/inquiry/{boardId}/check-author")
     public ResponseEntity checkAuthor(@PathVariable(name = "boardId") Long boardId, HttpServletRequest request) {
         try {
+            // 로그인 확인
             String memberId = jwtService.getMemberIdFromToken(request);
+            // 게시판 본인 확인
             inquiryBoardService.getBoardByIdAndMemberId(boardId, memberId).orElseThrow(() -> new BoardNotFoundException(ErrorCode.BOARD_NOT_FOUND));
         } catch (NotLoggedInException | BoardNotFoundException e) {
             throw new NotMyBoardException(ErrorCode.NOT_MY_BOARD);
@@ -188,12 +199,16 @@ public class InquiryBoardController {
      */
     @DeleteMapping("/board/inquiry/{boardId}")
     public ResponseEntity deleteBoard(@PathVariable(name = "boardId") Long boardId, HttpServletRequest request) {
-
-        inquiryBoardService.getBoardById(boardId).orElseThrow(() -> new BoardNotFoundException(ErrorCode.BOARD_NOT_FOUND));
-
-        jwtService.getMemberIdFromToken(request);
-
-        inquiryBoardService.deleteBoardById(boardId);
+        try {
+            // 로그인 확인
+            String memberId = jwtService.getMemberIdFromToken(request);
+            // 게시판 본인 확인
+            inquiryBoardService.getBoardById(boardId).orElseThrow(() -> new BoardNotFoundException(ErrorCode.BOARD_NOT_FOUND));
+            // 삭제
+            inquiryBoardService.deleteBoardById(boardId);
+        } catch (NotLoggedInException | BoardNotFoundException e) {
+            throw new NotMyBoardException(ErrorCode.NOT_MY_BOARD);
+        }
 
         return ResponseEntity.ok().build();
     }

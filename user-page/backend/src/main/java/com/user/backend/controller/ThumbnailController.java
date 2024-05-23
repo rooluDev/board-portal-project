@@ -45,14 +45,14 @@ public class ThumbnailController {
 
         // Path 설정
         String uri = path + StringUtils.parseToPath(thumbnailDto);
-        // 리소스 생성
-        Resource resource = null;
+
         try {
-            resource = new UrlResource("file://" + uri);
+            // 리소스 생성
+            Resource resource = new UrlResource("file://" + uri);
+            return ResponseEntity.ok(resource);
         } catch (MalformedURLException e) {
             throw new DownloadFailException(ErrorCode.DOWNLOAD_FAIL);
         }
 
-        return ResponseEntity.ok(resource);
     }
 }

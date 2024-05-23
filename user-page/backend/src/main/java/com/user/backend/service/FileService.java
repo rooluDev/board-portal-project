@@ -1,7 +1,6 @@
 package com.user.backend.service;
 
 import com.user.backend.dto.FileDto;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;

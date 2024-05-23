@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.unit.DataSize;
 
+/**
+ * FreeBoardFileConstraint
+ */
 @Getter
 @NoArgsConstructor
 @Component
@@ -16,7 +19,9 @@ public class FreeBoardFileConstraint {
     @Value("#{constraint['free.file.allowed.max.size']}")
     private DataSize maxSize;
 
+    @Value("#{constraint['free.file.allowed.minLength']}")
+    private int fileMinLength;
 
-    @Value("#{constraint['free.file.allowed.length']}")
-    private int fileLength;
+    @Value("#{constraint['free.file.allowed.maxLength']}")
+    private int fileMaxLength;
 }

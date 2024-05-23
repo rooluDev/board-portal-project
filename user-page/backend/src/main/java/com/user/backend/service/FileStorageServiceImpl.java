@@ -10,6 +10,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+/**
+ * FileStorageService Impl
+ */
 @Service
 @RequiredArgsConstructor
 @Primary

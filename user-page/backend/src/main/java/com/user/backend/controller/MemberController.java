@@ -1,6 +1,7 @@
 package com.user.backend.controller;
 
 
+import com.user.backend.common.exception.custom.JoinFailException;
 import com.user.backend.common.exception.custom.MemberIdExistedException;
 import com.user.backend.common.exception.custom.MemberNotFoundException;
 import com.user.backend.common.exception.response.ErrorCode;
@@ -35,8 +36,10 @@ public class MemberController {
     @GetMapping("/member")
     public ResponseEntity getMember(HttpServletRequest request) {
 
+        // 로그인 확인
         String memberId = jwtService.getMemberIdFromToken(request);
 
+        // 로그인 정보 가져오기
         MemberDto memberDto = memberService.findById(memberId).orElseThrow(() -> new MemberNotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
         return ResponseEntity.ok(memberDto);
@@ -51,6 +54,12 @@ public class MemberController {
     @GetMapping("/member/check-duplicate")
     public ResponseEntity checkMemberId(@RequestParam(name = "memberId") String memberId) {
 
+        // null 체크
+        if (memberId.isBlank()) {
+            throw new MemberIdExistedException(ErrorCode.ID_DUPLICATE);
+        }
+
+        // 중복검사
         memberService.findById(memberId).ifPresent(member -> {
             throw new MemberIdExistedException(ErrorCode.ID_DUPLICATE);
         });
@@ -66,7 +75,12 @@ public class MemberController {
      */
     @PostMapping("/member")
     public ResponseEntity join(@Valid @RequestBody MemberDto memberDto) {
+        // TODO : 회원가입 유효성 검증
+        if(!memberDto.getPassword().equals(memberDto.getPasswordCheck())){
+            throw new JoinFailException(ErrorCode.SERVER_ERROR);
+        }
 
+        // 추가
         memberService.addMember(memberDto);
 
         return ResponseEntity.ok().build();

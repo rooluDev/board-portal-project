@@ -2,6 +2,8 @@ package com.user.backend.service;
 
 import com.user.backend.dto.MemberDto;
 
+import java.util.Optional;
+
 
 /**
  * Login Service
@@ -15,5 +17,5 @@ public interface LoginService {
      * @param password PW
      * @return ID PW 일치하는 MemberDto
      */
-    MemberDto login(String memberId, String password);
+    Optional<MemberDto> login(String memberId, String password);
 }

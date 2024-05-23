@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Gallery Board Service 구현체
+ * Gallery Board Service Impl
  */
 @Service
 @Primary

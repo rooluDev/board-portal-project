@@ -106,8 +106,9 @@ public class FreeBoardController {
      */
     @PostMapping("/board/free")
     public ResponseEntity addBoard(@Valid @ModelAttribute FreeBoardDto freeBoardDto,
-                                   @RequestParam(name = "file", required = false) MultipartFile[] fileList,
+                                   @RequestPart(name = "file", required = false) MultipartFile[] fileList,
                                    HttpServletRequest request) {
+
         if (fileList != null) {
             multipartFileValidator.validateFile(fileList);
         }
@@ -133,7 +134,7 @@ public class FreeBoardController {
      *
      * @param boardId          PathVariable ( pk )
      * @param freeBoardDto     수정할 데이터
-     * @param fileList         수정할 파일
+     * @param fileList         추가할 파일
      * @param deleteFileIdList 삭제할 파일의 pk 리스트
      * @param request          HttpServletRequest
      * @return null
@@ -141,8 +142,8 @@ public class FreeBoardController {
     @PutMapping("/board/free/{boardId}")
     public ResponseEntity modifyBoard(@PathVariable(name = "boardId") Long boardId,
                                       @Valid @ModelAttribute FreeBoardDto freeBoardDto,
-                                      @RequestParam(name = "file", required = false) MultipartFile[] fileList,
-                                      @RequestParam(name = "deleteFileIdList", required = false) List<Long> deleteFileIdList,
+                                      @ModelAttribute(name = "deleteFileIdList") List<Long> deleteFileIdList,
+                                      @RequestPart(name = "file", value = "file",required = false) MultipartFile[] fileList,
                                       HttpServletRequest request) {
         // 토근 확인
         jwtService.getMemberIdFromToken(request);

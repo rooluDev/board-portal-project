@@ -31,14 +31,14 @@ public class LoginController {
      */
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody MemberDto memberDto) {
-        String accessToken = null;
-        try {
-            MemberDto member = loginService.login(memberDto.getMemberId(), memberDto.getPassword());
-            accessToken = jwtService.createToken(member);
-        } catch (MemberNotFoundException e) {
-            new LoginFailException(ErrorCode.LOGIN_FAIL);
-        }
+
+        MemberDto member = loginService.login(memberDto.getMemberId(), memberDto.getPassword())
+                .orElseThrow(() -> new MemberNotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+
+        String accessToken = jwtService.createToken(member);
+
         return ResponseEntity.ok(accessToken);
+
     }
 }
 

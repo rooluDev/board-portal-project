@@ -7,6 +7,7 @@ import com.user.backend.common.utils.StringUtils;
 import com.user.backend.dto.FileDto;
 import com.user.backend.service.FileService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -31,6 +32,7 @@ import java.nio.file.Paths;
  */
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 @RequestMapping("/api")
 public class FileController {
 
@@ -50,22 +52,26 @@ public class FileController {
         // 파일 정보 가져오기
         FileDto file = fileService.getFileById(fileId).orElseThrow(() -> new FileNotFoundException(ErrorCode.FILE_NOT_FOUND));
 
-        // 파일 정보 설정
-        String filePathString = path + StringUtils.parseToPath(file);
-        File filePath = Paths.get(filePathString).toFile();
-
         try {
+            // 파일 정보 설정
+            String filePathString = path + StringUtils.parseToPath(file);
+
+            File filePath = Paths.get(filePathString).toFile();
+
             Resource resource = new InputStreamResource(Files.newInputStream(filePath.toPath()));
 
             return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filePath.getName() + "\"")
+                    .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(filePath.length()))
                     .body(resource);
+
         } catch (IOException e) {
             throw new DownloadFailException(ErrorCode.DOWNLOAD_FAIL);
         }
-
     }
+
+
 
     /**
      * 이미지 파일 리소스 가져오기
@@ -76,17 +82,17 @@ public class FileController {
     @GetMapping("/file/{fileId}")
     public ResponseEntity<Resource> getImage(@PathVariable(name = "fileId") Long fileId) {
 
+        // 파일 정보 가져오기
         FileDto fileDto = fileService.getFileById(fileId).orElseThrow(() -> new FileNotFoundException(ErrorCode.FILE_NOT_FOUND));
 
-        String uri = path + StringUtils.parseToPath(fileDto);
-        Resource resource = null;
+        // 파일 path
+        String fullPath = path + StringUtils.parseToPath(fileDto);
 
         try {
-            resource = new UrlResource("file://" + uri);
+            Resource resource = new UrlResource("file://" + fullPath);
+            return ResponseEntity.ok(resource);
         } catch (MalformedURLException e) {
-            new DownloadFailException(ErrorCode.DOWNLOAD_FAIL);
+            throw new DownloadFailException(ErrorCode.DOWNLOAD_FAIL);
         }
-
-        return ResponseEntity.ok(resource);
     }
 }

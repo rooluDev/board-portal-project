@@ -34,9 +34,4 @@ public class CommentServiceImpl implements CommentService {
         commentMapper.insertComment(commentDto);
         return commentDto.getCommentId();
     }
-
-    @Override
-    public Optional<CommentDto> getCommentById(Long commentId) {
-        return commentMapper.selectCommentById(commentId);
-    }
 }

@@ -32,12 +32,4 @@ public interface CommentService {
      * @param commentDto ( content, board_type, board_id, author_type, author_id )
      */
     Long addComment(CommentDto commentDto);
-
-    /**
-     * comment 가져오기
-     *
-     * @param commentId ( pk )
-     * @return commentId와 일치하는 Comment
-     */
-    Optional<CommentDto> getCommentById(Long commentId);
 }

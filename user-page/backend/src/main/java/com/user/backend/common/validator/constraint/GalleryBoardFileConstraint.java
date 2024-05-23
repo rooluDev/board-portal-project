@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.unit.DataSize;
 
+/**
+ * GalleryBoardFileConstraint
+ */
 @Getter
 @Component
 @NoArgsConstructor
@@ -17,6 +20,9 @@ public class GalleryBoardFileConstraint {
     @Value("#{constraint['gallery.file.allowed.max.size']}")
     private DataSize maxSize;
 
-    @Value("#{constraint['gallery.file.allowed.length']}")
-    private int fileLength;
+    @Value("#{constraint['gallery.file.allowed.minLength']}")
+    private int fileMinLength;
+
+    @Value("#{constraint['gallery.file.allowed.maxLength']}")
+    private int fileMaxLength;
 }

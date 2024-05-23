@@ -10,15 +10,6 @@ import java.util.Optional;
 public interface MemberService {
 
     /**
-     * id와 pw로 멤버 찾기
-     *
-     * @param id
-     * @param pw
-     * @return
-     */
-    Optional<MemberDto> findMember(String id, String pw);
-
-    /**
      * memberId로 member 데이터 가져오기
      *
      * @param memberId memberId
