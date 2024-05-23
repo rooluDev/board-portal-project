@@ -24,22 +24,14 @@
               v-model="freeBoard.content">
           </v-textarea>
           <h3 class="mb-3">첨부 파일</h3>
-          <div class="d-flex" v-for="(selectedFile,index) in selectedFileList" :key="index">
+          <div class="d-flex" v-for="(existFile,index) in existFileList" :key="index">
             <v-file-input
                 label="첨부"
-                :model-value="selectedFile"
-                @change="fileSelected($event,index,selectedFile)"
+                :model-value="existFile.file"
+                @change="fileSelected($event,index,existFile.fileId)"
                 :accept="fileAcceptTypes">
             </v-file-input>
-            <v-btn class="ml-2" style="height: 55px" @click="removeFileInput(index,file)">삭제</v-btn>
-          </div>
-          <div class="d-flex" v-for="(file,index) in fileList" :key="index">
-            <v-file-input
-                label="첨부"
-                @change="fileSelected($event,index,file)"
-                :accept="fileAcceptTypes">
-            </v-file-input>
-            <v-btn class="ml-2" style="height: 55px" @click="removeFileInput(index,file)">삭제</v-btn>
+            <v-btn class="ml-2" style="height: 55px" @click="removeFileInput(index,existFile.fileId)">삭제</v-btn>
           </div>
           <v-btn class="d-block mb-4" @click="addFileInput">추가</v-btn>
           <div class=" d-flex justify-center align-center">
@@ -58,9 +50,8 @@ import Navbar from "@/components/Navbar.vue";
 import {computed, onMounted, ref, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {useStore} from "vuex";
-import {fetchGetFreeBoard, fetchCheckFreeAuthor} from "@/api/freeBoardService";
-import {downloadFile} from "@/api/fileService";
-import {isValidFileSize} from "@/validator/validator";
+import {fetchGetFreeBoard, fetchCheckFreeAuthor, fetchModifyFreeBoard} from "@/api/freeBoardService";
+import {freeBoardValidator, isValidFileSize} from "@/validator/validator";
 import {fetchGetFileResource} from "@/api/imgaeService";
 
 export default {
@@ -75,11 +66,21 @@ export default {
 
     const freeBoard = ref({});
     const categoryList = ref([{categoryId: -1, categoryName: '카테고리 선택'}]);
-    const fileList = ref([]);
+    const existFileList = ref([]);
+    const addFileList = ref([]);
     const deleteFileIdList = ref([]);
+    const constraint = {
+      title: {
+        maxLength: 99,
+        minLength: 1
+      },
+      content: {
+        maxLength: 3999,
+        minLength: 1
+      }
+    }
 
     const fileAcceptTypes = 'image/jpeg, image/jpg, image/gif, image/png, application/zip';
-    const selectedFileList = ref([]);
 
     /**
      * 페이지 구성을 위한 데이터 로드
@@ -87,23 +88,33 @@ export default {
     const getBoard = async () => {
       const res = await fetchGetFreeBoard(boardId);
       freeBoard.value = res.freeBoard;
-      fileList.value = res.fileList;
+      res.fileList.forEach(file => {
+        existFileList.value.push({
+          fileId: file.fileId,
+          originalName: file.originalName,
+          file: null
+        });
+      });
       res.categoryList.forEach((category) => {
         categoryList.value.push(category);
       })
     }
 
-    const getSelectedFileBlobResource = async () => {
-      for (const file of fileList.value) {
-        const blob = await fetchGetFileResource(file.fileId);
-        selectedFileList.value.push(new File([blob], file.originalName));
+    const getExistFileBlobResource = async () => {
+      for (const existedFile of existFileList.value) {
+        try {
+          const blob = await fetchGetFileResource(existedFile.fileId);
+          existedFile.file = new File([blob], existedFile.originalName);
+        } catch (error) {
+          existedFile.file = null;
+        }
       }
     }
 
     onMounted(async () => {
       await getBoard();
       // checkAuthor();
-      await getSelectedFileBlobResource();
+      await getExistFileBlobResource();
     })
 
     watch(accessToken, async () => {
@@ -123,90 +134,61 @@ export default {
      * 게시물 수정
      */
     const modifyBoard = async () => {
+      console.log(deleteFileIdList.value);
       try {
-        fileList.value = fileList.value.filter(file => file != null);
-
-        console.log(fileList.value);
-        // console.log(deleteFileIdList.value);
-        // freeBoardValidator(freeBoard.value);
+        addFileList.value = addFileList.value.filter(file => file != null);
+        freeBoardValidator(freeBoard.value, constraint);
 
         const formData = new FormData();
-        fileList.value.forEach((file) => {
-          if (file instanceof File){
-            console.log(1);
+        addFileList.value.forEach((file) => {
+          if (file instanceof File) {
             formData.append('file', file);
           }
-
         })
-        formData.append('deleteFileIdList', deleteFileIdList.value);
         formData.append('categoryId', freeBoard.value.categoryId);
         formData.append('title', freeBoard.value.title);
         formData.append('content', freeBoard.value.content);
-        // await fetchModifyFreeBoard(boardId, formData);
-        // goToList();
-
+        formData.append('deleteFileIdList', deleteFileIdList.value);
+        await fetchModifyFreeBoard(boardId, formData);
+        alert("수정 되었습니다.");
+        goToList();
       } catch (error) {
         alert(error.message);
       }
     }
 
-    /**
-     * 파일 다운로드
-     *
-     * @param fileId fileId PK
-     */
-    const download = async (fileId) => {
-      const res = await downloadFile(fileId);
-      let fileName = '';
+    const fileSelected = (event, index, existFileId) => {
+      const selectedFile = event.target.files[0];
 
-      for (const file of fileList.value) {
-        if (file.fileId == fileId) {
-          fileName = file.originalName;
-        }
+      const isValidFile = selectedFile && isValidFileSize(selectedFile.size, 2 * 1024 * 1024);
+
+      if (existFileId) {
+        deleteFileIdList.value.push(existFileId);
       }
-
-      // download object 설정
-      const url = window.URL.createObjectURL(new Blob([res]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `${fileName}`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    }
-
-    const fileSelected = (event, index, existedFile) => {
-      if (existedFile) {
-        deleteFileIdList.value.push(existedFile.fileId);
-      }
-
-      const addedFile = event.target.files[0];
-
-      const isValidFile = addedFile && isValidFileSize(addedFile.size, 2 * 1024 * 1024);
-
       if (isValidFile) {
-        fileList.value[index] = addedFile;
-      } else {
-        fileList.value.splice(index, 1);
+        existFileList.value[index].file = selectedFile;
+        addFileList.value.push(selectedFile);
       }
     }
 
     const addFileInput = () => {
-      if (fileList.value.length < 5) {
-        fileList.value.push(null);
+      if (existFileList.value.length < 5) {
+        existFileList.value.push({
+          fileId: null,
+          originalName: null,
+          file: null
+        });
       } else {
         alert("파일은 최대 5개까지만 등록 가능합니다.");
       }
     }
 
-    const removeFileInput = (index, file) => {
-      console.log(fileList.value);
-      console.log(index);
-      if (file) {
-        deleteFileIdList.value.push(file.fileId);
-        selectedFileList.value.splice(index, 1);
+    const removeFileInput = (index, fileId) => {
+      if (fileId) {
+        deleteFileIdList.value.push(fileId);
       }
-      fileList.value.splice(index, 1);
+      existFileList.value.splice(index, 1);
+      addFileList.value.splice(index, 1);
     }
 
     const goToList = () => {
@@ -219,16 +201,15 @@ export default {
     return {
       freeBoard,
       categoryList,
-      fileList,
+      addFileList,
       fileAcceptTypes,
+      existFileList,
       getBoard,
       goToList,
       modifyBoard,
       fileSelected,
       addFileInput,
-      removeFileInput,
-      download,
-      selectedFileList
+      removeFileInput
     }
   }
 }
