@@ -25,6 +25,17 @@ export default {
       isSecret: ''
     });
 
+    const constraint = {
+      title: {
+        maxLength: 99,
+        minLength: 1
+      },
+      content: {
+        maxLength: 3999,
+        minLength: 1
+      }
+    }
+
     /**
      * 문의게시판 추가
      */
@@ -40,18 +51,13 @@ export default {
      */
     const writeBoard = async () => {
       try {
-        inquiryBoardValidator(inquiryBoardForm.value);
-      } catch (error) {
-        alert(error.message);
-        return;
-      }
-      try {
+        inquiryBoardValidator(inquiryBoardForm.value, constraint);
         await fetchAddInquiryBoard(inquiryBoardForm.value);
         await router.push({
           name: 'Inquiry-List'
         })
       } catch (error) {
-        alert("입력 데이터 오류가 났습니다.");
+        alert(error.message);
       }
     }
 
