@@ -78,9 +78,6 @@ export default {
       content: {
         maxLength: 3999,
         minLength: 1
-      },
-      fileList: {
-        maxLength: 5
       }
     }
 
@@ -116,7 +113,6 @@ export default {
         const formData = new FormData();
         freeBoardForm.value.fileList.forEach((file) => {
           formData.append('file', file);
-
         })
         formData.append('categoryId', freeBoardForm.value.categoryId);
         formData.append('title', freeBoardForm.value.title);
