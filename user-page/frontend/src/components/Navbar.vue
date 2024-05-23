@@ -2,7 +2,7 @@
   <v-app-bar :elevation="1" class="d-flex justify-space-between">
     <v-col cols="4">
       <v-app-bar-title @click="goToMain" style="cursor: pointer" class="ma-3">
-        포트폴리오
+        김승현 포트폴리오
       </v-app-bar-title>
     </v-col>
     <v-col cols="4" class="d-flex justify-center">
