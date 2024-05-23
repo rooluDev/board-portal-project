@@ -1,13 +1,17 @@
-package com.user.backend;
+package com.user.backend.config;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/**
+ * WebMvc Prod Config
+ */
 @Configuration
-@RequiredArgsConstructor
-public class WebConfig implements WebMvcConfigurer {
+@Profile("prod")
+public class WebMvcProdConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -19,5 +23,13 @@ public class WebConfig implements WebMvcConfigurer {
 
         registry.addResourceHandler("/upload/thumbnail/**")
                 .addResourceLocations("file:///Users/user/upload/thumbnail/");
+    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("*")
+                .allowedMethods("GET", "POST", "DELETE", "PATCH", "PUT")
+                .maxAge(3000);
     }
 }

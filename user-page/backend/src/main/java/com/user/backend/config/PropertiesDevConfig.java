@@ -1,12 +1,17 @@
-package com.user.backend;
+package com.user.backend.config;
 
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 
+/**
+ * Properties Dev Config
+ */
 @Configuration
-public class PropertiesConfig {
+@Profile("dev")
+public class PropertiesDevConfig {
 
     @Bean(name = "jwt")
     public PropertiesFactoryBean jwtPropertiesBean() {
@@ -21,7 +26,7 @@ public class PropertiesConfig {
     @Bean(name = "storage")
     public PropertiesFactoryBean storagePropertiesBean() {
         PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
-        ClassPathResource classPathResource = new ClassPathResource("properties/storage.properties");
+        ClassPathResource classPathResource = new ClassPathResource("properties/storage-dev.properties");
 
         propertiesFactoryBean.setLocation(classPathResource);
 
