@@ -25,22 +25,22 @@
           </v-textarea>
           <h3 class="mb-3">첨부 파일</h3>
           <div class="d-flex" v-for="(fileInput, index) in galleryBoardForm.fileList" :key="index">
-              <v-img
-                  v-if="filePreviews[index]"
-                  :src="filePreviews[index]"
-                  :max-width="60"
-                  :height="60"
-                  :aspect-ratio="1"
-                  cover
-              ></v-img>
-              <v-file-input
-                  v-model="galleryBoardForm.fileList[index]"
-                  label="첨부"
-                  accept=".jpeg, .jpg, .gif, .png, .zip"
-                  prepend-icon="none"
-                  @change="fileSelected($event,index)"
-              ></v-file-input>
-              <v-btn class="ml-2" style="height: 55px" @click="removeFileInput(index)">삭제</v-btn>
+            <v-img
+                v-show="filePreviews[index]"
+                :src="filePreviews[index]"
+                :max-width="60"
+                :height="60"
+                :aspect-ratio="1"
+                cover
+            ></v-img>
+            <v-file-input
+                v-model="galleryBoardForm.fileList[index]"
+                label="첨부"
+                :accept="fileAcceptTypes"
+                prepend-icon="none"
+                @change="fileSelected($event,index)"
+            ></v-file-input>
+            <v-btn class="ml-2" style="height: 55px" @click="removeFileInput(index)">삭제</v-btn>
           </div>
           <v-btn class="d-block mb-4" @click="addFileInput">추가</v-btn>
           <div class=" d-flex justify-center align-center">
@@ -78,6 +78,17 @@ export default {
       fileList: []
     })
 
+    const constraint = {
+      title: {
+        maxLength: 99,
+        minLength: 1
+      },
+      content: {
+        maxLength: 3999,
+        minLength: 1
+      }
+    }
+
     /**
      * 갤러리 게시판 카테고리 리스트 가져오기
      */
@@ -103,43 +114,44 @@ export default {
      */
     const writeBoard = async () => {
       try {
-        galleryBoardValidator(galleryBoardForm.value);
-      } catch (error) {
-        alert(error.message);
-        return;
-      }
-      const formData = new FormData();
-      galleryBoardForm.value.fileList.forEach((file) => {
-        if (file instanceof File) {
-          formData.append('file', file);
-        }
-      })
-      formData.append('categoryId', galleryBoardForm.value.categoryId);
-      formData.append('title', galleryBoardForm.value.title);
-      formData.append('content', galleryBoardForm.value.content);
+        galleryBoardForm.value.fileList = galleryBoardForm.value.fileList.filter(file => file != null);
 
-      try {
+        galleryBoardValidator(galleryBoardForm.value, constraint);
+
+        const formData = new FormData();
+        galleryBoardForm.value.fileList.forEach((file) => {
+          formData.append('file', file);
+        })
+        formData.append('categoryId', galleryBoardForm.value.categoryId);
+        formData.append('title', galleryBoardForm.value.title);
+        formData.append('content', galleryBoardForm.value.content);
+
         await fetchAddGalleryBoard(formData);
+        alert("등록 되었습니다.");
         await router.push({
           name: 'Gallery-List'
         })
       } catch (error) {
-        alert("입력 데이터 오류가 났습니다.");
+        alert(error.message);
       }
+    }
+
+    const createdPreviewImage = (index, file) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        filePreviews.value[index] = e.target.result;
+      }
+      reader.readAsDataURL(file);
     }
 
     const fileSelected = (event, index) => {
       const file = event.target.files[0];
+
       const isValidFile = file && isValidFileSize(file.size, 1 * 1024 * 1024);
+
       if (isValidFile) {
-        // 리스트 추가
         galleryBoardForm.value.fileList[index] = file;
-        // 미리보기 이미지 추가
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          filePreviews.value[index] = e.target.result;
-        };
-        reader.readAsDataURL(file);
+        createdPreviewImage(index, file);
       } else {
         galleryBoardForm.value.fileList.splice(index, 1);
         filePreviews.value.splice(index, 1);
