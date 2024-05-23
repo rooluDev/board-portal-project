@@ -7,7 +7,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-
+/**
+ * FreeBoardFileValidator Impl
+ */
 @Component
 @RequiredArgsConstructor
 public class FreeBoardFileValidatorImpl implements FileValidator<FreeBoardFileConstraint> {
