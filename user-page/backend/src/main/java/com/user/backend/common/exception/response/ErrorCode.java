@@ -29,7 +29,8 @@ public enum ErrorCode {
     DOWNLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "A010", "다운로드 실패"),
     STORAGE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "A011", "파일 저장 실패"),
     SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"A012","서버 에러"),
-    ILLEGAL_BOARD_DATA(HttpStatus.UNPROCESSABLE_ENTITY,"A013","게시물 데이터 에러");
+    ILLEGAL_BOARD_DATA(HttpStatus.UNPROCESSABLE_ENTITY,"A013","게시물 데이터 에러"),
+    JOIN_FAIL(HttpStatus.UNPROCESSABLE_ENTITY,"A014","회원가입 실패");
 
 
     private final HttpStatus httpStatus;
