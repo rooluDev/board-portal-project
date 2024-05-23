@@ -19,7 +19,7 @@
           <tr>
             <th class="text-center">번호</th>
             <th class="text-center">분류</th>
-            <th class="text-left">제목</th>
+            <th style="width: 800px" class="text-left">제목</th>
             <th class="text-center">조회</th>
             <th class="text-center">등록일시</th>
             <th class="text-center">등록자</th>
@@ -32,12 +32,12 @@
                 {{ board.boardId }}
               </span>
             </td>
-            <td class="text-left">
+            <td class="text-center">
               <span class="link" @click="goToView(board.boardId)">{{ board.categoryName }}</span>
             </td>
-            <td class="text-left">
+            <td class="text-left" style="width: 800px">
               <span class="link" @click="goToView(board.boardId)">
-                {{ truncateTitle(board.title, 60) }}
+                {{ truncateText(board.title, 60) }}
               </span>
               <span v-if="board.commentCount > 0" class="link"
                     @click="goToView(board.boardId)">{{ '(' + board.commentCount + ')' }}</span>
@@ -68,7 +68,7 @@ import {useRoute} from "vue-router";
 import {parseStringByFormat} from "@/utils/searchConditionUtils";
 import {fetchGetFreeBoardList} from "@/api/freeBoardService";
 import {isNew} from "@/utils/dateUtils";
-import {parseToQueryString, truncateTitle} from "@/utils/stringUtils";
+import {parseToQueryString, truncateText} from "@/utils/stringUtils";
 import {format, subMonths} from "date-fns";
 import {useStore} from "vuex";
 
@@ -161,7 +161,7 @@ export default {
       parseStringByFormat,
       goToWrite,
       goToView,
-      truncateTitle,
+      truncateText,
       isNew
     }
   }
