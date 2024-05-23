@@ -6,7 +6,7 @@ class ErrorCommand {
     }
 
     execute() {
-        throw new Error("must be implemented");
+        throw new Error("error");
     }
 }
 
@@ -39,9 +39,18 @@ export class ErrorCommandFactory {
                 return new ServerErrorCommand(error);
             case 'A013':
                 return new BoardDataCommand(error);
+            case 'A014':
+                return new JoinFailCommand(error);
             default:
                 return new DefaultErrorCommand(error);
         }
+    }
+}
+
+class JoinFailCommand extends ErrorCommand {
+    execute() {
+        alert("회원 가입 실패");
+        router.push({name: 'Join'})
     }
 }
 
