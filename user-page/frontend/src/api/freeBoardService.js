@@ -85,5 +85,9 @@ export const fetchCheckFreeAuthor = async (boardId) => {
  * @param formData FreeBoard Form Data
  */
 export const fetchModifyFreeBoard = async (boardId, formData) => {
-    await api.put(`/board/free/${boardId}`, formData);
+    await api.put(`/board/free/${boardId}`, formData,{
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
 }

@@ -85,5 +85,9 @@ export const fetchDeleteGalleryBoard = async (boardId) => {
  * @param formData 폼데이터
  */
 export const fetchModifyGalleryBoard = async (boardId, formData) => {
-    await api.put(`/board/gallery/${boardId}`, formData);
+    await api.put(`/board/gallery/${boardId}`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
 }
