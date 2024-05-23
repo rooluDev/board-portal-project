@@ -1,53 +1,56 @@
 <template>
   <Navbar/>
   <div class="box">
-    <v-col cols="1"></v-col>
-    <v-col cols="10">
-      <h1 class="mb-4">갤러리</h1>
-      <v-form @submit.prevent="modifyBoard">
-        <v-select
-            :items="categoryList"
-            item-title="categoryName"
-            item-value="categoryId"
-            v-model="galleryBoard.categoryId"
-            solo
-        ></v-select>
-        <v-text-field
-            label="제목"
-            placeholder="제목을 입력하세요."
-            v-model="galleryBoard.title">
-        </v-text-field>
-        <v-textarea
-            placeholder="내용을 입력하세요."
-            rows="15"
-            v-model="galleryBoard.content">
-        </v-textarea>
-        <h3 class="mb-3">첨부 파일</h3>
-        <div class="d-flex" v-for="(file, index) in fileList" :key="index">
-          <v-img
-            :src="filePreviews[index] || imageUrls[file.fileId]"
-            :max-width="60"
-            :height="60"
-            :aspect-ratio="1"
-            cover
-          ></v-img>
-          <v-file-input
-              label="첨부"
-              :accept="fileAcceptTypes"
-              :model-value="selectedFileList[index]"
-              prepend-icon="none"
-              @change="fileSelected($event, index, file.fileId)"
-          ></v-file-input>
-          <v-btn class="ml-2" style="height: 55px" @click="removeFileInput($event, index, file.fileId)">삭제</v-btn>
-        </div>
-        <v-btn class="d-block mb-4" @click="addFileInput">추가</v-btn>
-        <div class=" d-flex justify-center align-center">
-          <v-btn class="custom-btn" type="button">취소</v-btn>
-          <v-btn class="custom-btn" type="submit">등록</v-btn>
-        </div>
-      </v-form>
-    </v-col>
-    <v-col cols="1"></v-col>
+    <v-row justify="center">
+      <v-col cols="1"></v-col>
+      <v-col cols="10">
+        <h1 class="mb-4">갤러리</h1>
+        <v-form @submit.prevent="modifyBoard">
+          <v-select
+              :items="categoryList"
+              item-title="categoryName"
+              item-value="categoryId"
+              v-model="galleryBoard.categoryId"
+              solo
+          ></v-select>
+          <v-text-field
+              label="제목"
+              placeholder="제목을 입력하세요."
+              v-model="galleryBoard.title">
+          </v-text-field>
+          <v-textarea
+              placeholder="내용을 입력하세요."
+              rows="15"
+              v-model="galleryBoard.content">
+          </v-textarea>
+          <h3 class="mb-3">첨부 파일</h3>
+          <div class="d-flex" v-for="(existFile, index) in existFileList" :key="index">
+            <v-img
+                :src="imageUrls[index]"
+                :max-width="60"
+                :height="60"
+                :aspect-ratio="1"
+                cover
+            ></v-img>
+            <v-file-input
+                label="첨부"
+                :accept="fileAcceptTypes"
+                :model-value="existFile.file"
+                prepend-icon="none"
+                @change="fileSelected($event, index, existFile.fileId)"
+            ></v-file-input>
+            <v-btn class="ml-2" style="height: 55px" @click="removeFileInput(index, existFile.fileId)">삭제
+            </v-btn>
+          </div>
+          <v-btn class="d-block mb-4" @click="addFileInput">추가</v-btn>
+          <div class=" d-flex justify-center align-center">
+            <v-btn class="custom-btn" type="button">취소</v-btn>
+            <v-btn class="custom-btn" type="submit">등록</v-btn>
+          </div>
+        </v-form>
+      </v-col>
+      <v-col cols="1"></v-col>
+    </v-row>
   </div>
 </template>
 
@@ -57,9 +60,8 @@ import store from "@/store";
 import {computed, onMounted, ref, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {fetchGetGalleryBoard, fetchModifyGalleryBoard, fetchCheckGalleryAuthor} from "@/api/galleryBoardService";
-import {downloadFile} from "@/api/fileService";
 import {fetchGetFileResource} from "@/api/imgaeService";
-import { isValidFileSize} from "@/validator/validator";
+import {galleryBoardValidator, isValidFileSize} from "@/validator/validator";
 
 export default {
   components: {Navbar},
@@ -71,12 +73,23 @@ export default {
 
     const galleryBoard = ref({});
     const categoryList = ref([{categoryId: -1, categoryName: '카테고리 선택'}]);
-    const fileList = ref([]);
     const deleteFileIdList = ref([]);
-    const imageUrls = ref({});
+    const existFileList = ref([]);
+    const addFileList = ref([]);
+    const imageUrls = ref([]);
     const filePreviews = ref([]);
     const fileAcceptTypes = 'image/jpeg, image/jpg, image/gif, image/png';
-    const selectedFileList = ref([]);
+
+    const constraint = {
+      title: {
+        maxLength: 99,
+        minLength: 1
+      },
+      content: {
+        maxLength: 3999,
+        minLength: 1
+      }
+    }
 
 
     /**
@@ -85,7 +98,13 @@ export default {
     const getBoard = async () => {
       const res = await fetchGetGalleryBoard(boardId);
       galleryBoard.value = res.galleryBoard;
-      fileList.value = res.fileList;
+      res.fileList.forEach(file => {
+        existFileList.value.push({
+          fileId: file.fileId,
+          originalName: file.originalName,
+          file: null
+        });
+      });
       res.categoryList.forEach((category) => {
         categoryList.value.push(category);
       })
@@ -94,21 +113,21 @@ export default {
     /**
      *  미리보기용 파일 이미지 리소스 가져오기
      */
-    const getFileResource = async () => {
-      for (const file of fileList.value) {
+    const getExistFileBlobResource = async () => {
+      for (const existedFile of existFileList.value) {
         try {
-          const imageBlob = await fetchGetFileResource(file.fileId);
-          selectedFileList.value.push(new File([imageBlob], file.originalName));
-          imageUrls.value[file.fileId] = URL.createObjectURL(imageBlob);
+          const blob = await fetchGetFileResource(existedFile.fileId);
+          existedFile.file = new File([blob], existedFile.originalName);
+          imageUrls.value.push(URL.createObjectURL(blob));
         } catch (error) {
-          imageUrls.value[file.fileId] = null;
+          imageUrls.value.push(null);
         }
       }
     };
 
     onMounted(async () => {
       await getBoard();
-      await getFileResource();
+      await getExistFileBlobResource();
     })
 
     watch(accessToken, async (newToken) => {
@@ -129,25 +148,21 @@ export default {
      * 게시물 수정
      */
     const modifyBoard = async () => {
-      // try {
-      //   galleryBoardValidator(galleryBoard.value);
-      //   validateFileLengthForModify(fileList.value, deleteFileIdList.value, 1, 5);
-      // } catch (error) {
-      //   alert(error.message);
-      //   return;
-      // }
-      const formData = new FormData();
-      fileList.value.forEach((file) => {
-        if (file instanceof File) {
-          formData.append('file', file);
-        }
-      })
-      formData.append("deleteFileIdList", deleteFileIdList.value);
-      formData.append('categoryId', galleryBoard.value.categoryId);
-      formData.append('title', galleryBoard.value.title);
-      formData.append('content', galleryBoard.value.content);
       try {
+        addFileList.value = addFileList.value.filter(file => file != null);
+        galleryBoardValidator(galleryBoard.value, constraint);
+        const formData = new FormData();
+        addFileList.value.forEach((file) => {
+          if (file instanceof File) {
+            formData.append('file', file);
+          }
+        })
+        formData.append('categoryId', galleryBoard.value.categoryId);
+        formData.append('title', galleryBoard.value.title);
+        formData.append('content', galleryBoard.value.content);
+        formData.append("deleteFileIdList", deleteFileIdList.value);
         await fetchModifyGalleryBoard(boardId, formData);
+        alert("수정 되었습니다.");
         goToList();
       } catch (error) {
         await router.push({
@@ -156,62 +171,48 @@ export default {
       }
     };
 
-    const download = async (fileId) => {
-      const res = await downloadFile(fileId);
-      let fileName = '';
-
-      for (const file of fileList.value) {
-        if (file.fileId == fileId) {
-          fileName = file.originalName;
-        }
+    const createdPreviewImage = (index, file) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        imageUrls.value[index] = e.target.result;
       }
-      // download object 설정
-      const url = window.URL.createObjectURL(new Blob([res]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `${fileName}`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
+      reader.readAsDataURL(file);
     }
 
+    const fileSelected = (event, index, existFileId) => {
+      const selectedFile = event.target.files[0];
 
-    const fileSelected = (event, index, fileId) => {
-      const file = event.target.files[0];
-      const isValidFile = file && isValidFileSize(file.size, 1 * 1024 * 1024);
+      const isValidFile = selectedFile && isValidFileSize(selectedFile.size, 1 * 1024 * 1024);
+
+      if (existFileId) {
+        deleteFileIdList.value.push(existFileId);
+      }
 
       if (isValidFile) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          filePreviews.value[index] = e.target.result;
-        };
-        fileList.value.splice(index, 1, file);
-        reader.readAsDataURL(file);
-        deleteFileIdList.value.push(fileId);
-      } else {
-        if (fileId) {
-          deleteFileIdList.value.push(fileId);
-          fileList.value.splice(index, 1);
-          filePreviews.value.splice(index, 1);
-        }
+        existFileList.value[index].file = selectedFile;
+        addFileList.value[index] = selectedFile;
+        createdPreviewImage(index, selectedFile);
       }
     }
 
     const addFileInput = () => {
-      if (fileList.value.length < 5) {
-        fileList.value.push({});
+      if (existFileList.value.length < 5) {
+        existFileList.value.push({
+          fileId: null,
+          originalName: null,
+          file: null
+        });
       } else {
         alert("파일은 최대 5개까지만 등록 가능합니다.");
       }
     }
 
     const removeFileInput = (index, fileId) => {
-      console.log(filePreviews.value);
       if (fileId) {
         deleteFileIdList.value.push(fileId);
-        filePreviews.value.splice(fileId, 1);
       }
-      fileList.value.splice(index, 1);
+      existFileList.value.splice(index, 1);
+      addFileList.value.splice(index, 1);
       filePreviews.value.splice(index, 1);
     }
 
@@ -225,18 +226,17 @@ export default {
     return {
       galleryBoard,
       categoryList,
-      fileList,
+      addFileList,
       imageUrls,
       filePreviews,
       fileAcceptTypes,
-      selectedFileList,
+      existFileList,
       getBoard,
       goToList,
       modifyBoard,
       fileSelected,
       addFileInput,
-      removeFileInput,
-      download
+      removeFileInput
     }
   }
 }
