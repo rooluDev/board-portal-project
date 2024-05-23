@@ -1,6 +1,5 @@
 package com.admin.backend.common.validator;
 
-import com.admin.backend.common.exception.IllegalFileDataException;
 import com.admin.backend.common.validator.constraint.GalleryBoardFileConstraint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -8,6 +7,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+/**
+ * GalleryBoardFileValidator Impl
+ */
 @Component
 @RequiredArgsConstructor
 public class GalleryBoardFileValidatorImpl implements FileValidator<GalleryBoardFileConstraint> {
