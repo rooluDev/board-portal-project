@@ -43,20 +43,22 @@ public class JwtProvider implements InitializingBean {
      * @return JWT
      */
     public String createAccessToken(String memberId, String memberName) {
+        // Claim Subject 설정
         Claims claims = Jwts.claims().setSubject(memberId);
+        // 이름 추가
         claims.put("memberName", memberName);
 
+        // expire 설정
         Date now = new Date();
         Date accessValidity = new Date(now.getTime() + 999999999);
 
-        String accessToken = Jwts.builder()
+        // 빌드 후 return
+        return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .setExpiration(accessValidity) // 만료시간 설정
                 .compact();
-
-        return accessToken;
     }
 
     /**
@@ -66,7 +68,7 @@ public class JwtProvider implements InitializingBean {
      * @return JWT
      */
     public String getHeaderFromToken(HttpServletRequest request) {
-
+        // 헤더에서 accessToken 가져오기
         String accessToken = request.getHeader(headerKey);
 
         if (accessToken != null && accessToken.startsWith("Bearer ")) {
@@ -90,22 +92,5 @@ public class JwtProvider implements InitializingBean {
                 .getBody();
 
         return claims.getSubject();
-    }
-
-    /**
-     * JWT에서 memberName 추출
-     *
-     * @param accessToken JWT
-     * @return memberNAme
-     */
-    public String getMemberNameFromJwt(String accessToken) {
-
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(accessToken)
-                .getBody();
-
-        return claims.get("memberName").toString();
     }
 }

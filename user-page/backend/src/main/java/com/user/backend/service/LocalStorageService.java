@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * LocalStorageService
+ */
 @Service
 @Primary
 public class LocalStorageService implements StorageService {
@@ -30,30 +33,34 @@ public class LocalStorageService implements StorageService {
 
     @Override
     public List<FileDto> storageFileList(MultipartFile[] multipartFiles, String boardType) throws StorageFailException {
+        // 저장 된 파일 Dto 정보 저장될 리스트
         List<FileDto> savedFileList = new ArrayList<>();
 
+        // 저장
         for (MultipartFile multipartFile : multipartFiles) {
-            if (!multipartFile.isEmpty()) {
-                try {
-                    FileDto fileDto = FileDto.builder()
-                            .boardType(boardType)
-                            .originalName(multipartFile.getOriginalFilename())
-                            .physicalName(UUID.randomUUID().toString())
-                            .filePath("/" + boardType)
-                            .extension(MultipartFileUtils.extractExtension(multipartFile))
-                            .size(multipartFile.getSize())
-                            .build();
+            try {
+                // 파일 Dto 생성
+                FileDto fileDto = FileDto.builder()
+                        .boardType(boardType)
+                        .originalName(multipartFile.getOriginalFilename())
+                        .physicalName(UUID.randomUUID().toString())
+                        .filePath("/" + boardType)
+                        .extension(MultipartFileUtils.extractExtension(multipartFile))
+                        .size(multipartFile.getSize())
+                        .build();
 
-                    String filePath = path + StringUtils.parseToPath(fileDto);
-                    File saveFile = new File(filePath);
+                // File 객체 생성
+                String filePath = path + StringUtils.parseToPath(fileDto);
+                File saveFile = new File(filePath);
 
-                    FileUtils.copyInputStreamToFile(multipartFile.getInputStream(), saveFile);
+                // 물리적 파일 생성
+                FileUtils.copyInputStreamToFile(multipartFile.getInputStream(), saveFile);
 
-                    savedFileList.add(fileDto);
+                // fileDto 저장
+                savedFileList.add(fileDto);
 
-                } catch (IOException e) {
-                    throw new StorageFailException(ErrorCode.STORAGE_FAIL);
-                }
+            } catch (IOException e) {
+                throw new StorageFailException(ErrorCode.STORAGE_FAIL);
             }
         }
 
@@ -62,7 +69,7 @@ public class LocalStorageService implements StorageService {
 
     @Override
     public ThumbnailDto storageThumbnailFromFile(FileDto fileDto) {
-
+        // 썸네일 Dto 생성
         ThumbnailDto thumbnailDto = ThumbnailDto.builder()
                 .originalName(fileDto.getOriginalName())
                 .physicalName(UUID.randomUUID().toString())
@@ -79,17 +86,19 @@ public class LocalStorageService implements StorageService {
         String thumbnailPath = path + StringUtils.parseToPath(thumbnailDto);
         Path filePath = Paths.get(thumbnailPath);
 
+        // 썸네일 생성
+        createThumbNail(file, filePath);
+        return thumbnailDto;
+
+    }
+
+    private void createThumbNail(File file, Path filePath) {
         try {
-            createThumbNail(file, filePath);
+            Thumbnails.of(file)
+                    .size(300, 300)
+                    .toFile(filePath.toFile());
         } catch (IOException e) {
             throw new StorageFailException(ErrorCode.STORAGE_FAIL);
         }
-        return thumbnailDto;
-    }
-
-    private void createThumbNail(File file, Path filePath) throws IOException {
-        Thumbnails.of(file)
-                .size(100, 100)
-                .toFile(filePath.toFile());
     }
 }

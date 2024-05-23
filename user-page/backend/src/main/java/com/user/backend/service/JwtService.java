@@ -24,5 +24,4 @@ public interface JwtService {
      */
     String createToken(MemberDto memberDto);
 
-    String getMemberNameFromToken(HttpServletRequest request);
 }

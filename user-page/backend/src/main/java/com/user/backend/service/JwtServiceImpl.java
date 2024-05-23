@@ -24,9 +24,7 @@ public class JwtServiceImpl implements JwtService {
         try {
             String accessToken = jwtProvider.getHeaderFromToken(request);
             return jwtProvider.getMemberIdFromJwt(accessToken);
-        } catch (MalformedJwtException e) {
-            throw new NotLoggedInException(ErrorCode.NOT_LOGGED_IN);
-        } catch (IllegalArgumentException e) {
+        } catch (MalformedJwtException | IllegalArgumentException e) {
             throw new NotLoggedInException(ErrorCode.NOT_LOGGED_IN);
         }
     }
@@ -36,15 +34,4 @@ public class JwtServiceImpl implements JwtService {
         return jwtProvider.createAccessToken(memberDto.getMemberId(), memberDto.getMemberName());
     }
 
-    @Override
-    public String getMemberNameFromToken(HttpServletRequest request) {
-        try {
-            String accessToken = jwtProvider.getHeaderFromToken(request);
-            return jwtProvider.getMemberNameFromJwt(accessToken);
-        } catch (MalformedJwtException e) {
-            throw new NotLoggedInException(ErrorCode.NOT_LOGGED_IN);
-        } catch (IllegalArgumentException e) {
-            throw new NotLoggedInException(ErrorCode.NOT_LOGGED_IN);
-        }
-    }
 }
