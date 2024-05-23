@@ -27,7 +27,7 @@
                 <td>{{ board.categoryName }}</td>
                 <td>
                   <span class="link" @click="goToNoticeView(board.boardId)">
-                    {{ truncateTitle(board.title, 11) }}
+                    {{ truncateText(board.title, 25) }}
                   </span>
                   <span class="ml-2" style="color: red" v-if="isNew(board.createdAt, 7)">new</span>
                 </td>
@@ -62,9 +62,10 @@
                 <td>{{ board.categoryName }}</td>
                 <td>
                   <span class="link" @click="goToFreeView(board.boardId)">
-                    {{ truncateTitle(board.title, 11) }} <span v-if="board.commentCount > 0">({{
-                      board.commentCount
-                    }})</span>
+                    {{ truncateText(board.title, 45) }}
+                  </span>
+                  <span v-if="board.commentCount > 0" class="ml-2">
+                    {{'(' + board.commentCount + ')' }}
                   </span>
                   <span class="ml-2" style="color: red" v-if="isNew(board.createdAt, 7)">new</span>
                   <span class="ml-2" v-if="board.fileId">📁</span>
@@ -100,9 +101,8 @@
                   </span>
                 </td>
                 <td>
-                  <span class="link" @click="goToGalleryView(board.boardId)">{{
-                      board.categoryName
-                    }}
+                  <span class="link" @click="goToGalleryView(board.boardId)">
+                    {{ board.categoryName }}
                   </span>
                 </td>
                 <td>
@@ -143,12 +143,12 @@
                 </td>
                 <td>
                   <span v-if="board.answerId" class="link"
-                        @click="goToInquiryView(board.boardId, board.isSecret)">{{
-                      truncateTitle(board.title, 11)
-                    }}(답변완료)</span>
-                  <span v-else class="link" @click="goToInquiryView(board.boardId, board.isSecret)">{{
-                      truncateTitle(board.title, 11)
-                    }}(미답변)</span>
+                        @click="goToInquiryView(board.boardId, board.isSecret)">
+                    {{ truncateText(board.title, 40) + ' (답변완료)' }}
+                  </span>
+                  <span v-else class="link" @click="goToInquiryView(board.boardId, board.isSecret)">
+                    {{ truncateText(board.title, 40) + ' (미답변)' }}
+                  </span>
                   <span class="ml-2" style="color: red" v-if="isNew(board.createdAt, 7)">new</span>
                   <span class="ml-2" v-if="board.isSecret === '1'">🔒</span>
                 </td>
@@ -171,7 +171,7 @@ import {fetchGetBoardListForMain} from "@/api/boardsService";
 import {fetchGetThumbnailResource} from "@/api/imgaeService";
 import {fetchCheckInquiryAuthor} from "@/api/inquiryBoardService";
 import {isNew} from "@/utils/dateUtils";
-import {truncateTitle} from "@/utils/stringUtils";
+import {truncateText} from "@/utils/stringUtils";
 
 export default {
   components: {
@@ -303,7 +303,7 @@ export default {
       noticeBoardList,
       imageUrls,
       isNew,
-      truncateTitle,
+      truncateText,
       goToInquiryView,
       goToMyInquiryList,
       goToGalleryView,
