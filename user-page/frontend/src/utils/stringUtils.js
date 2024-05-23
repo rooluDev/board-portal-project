@@ -1,17 +1,17 @@
 import {Board} from "@/type/boardType";
 
 /**
- * 타이틀 일정 길이가 넘어가면 그때부터 ...추가
+ * Text가 일정 길이가 넘어가면 그때부터 ...추가
  *
- * @param title 제목
+ * @param text Text
  * @param maxLength 최대길이
  * @returns {*|string} ... 추가한 제목
  */
-export const truncateTitle = (title, maxLength) => {
-    if (title.length <= maxLength) {
-        return title;
+export const truncateText = (text, maxLength) => {
+    if (text.length <= maxLength) {
+        return text;
     } else {
-        return title.substring(0, maxLength) + '...';
+        return text.substring(0, maxLength) + '...';
     }
 }
 /**
