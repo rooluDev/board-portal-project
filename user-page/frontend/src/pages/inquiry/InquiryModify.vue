@@ -25,6 +25,17 @@ export default {
     const boardId = route.params.id;
     const accessToken = computed(() => store.getters.getAccessToken);
 
+    const constraint = {
+      title: {
+        maxLength: 99,
+        minLength: 1
+      },
+      content: {
+        maxLength: 3999,
+        minLength: 1
+      }
+    }
+
 
     watch(accessToken, (newToken) => {
       if (!newToken) {
@@ -63,20 +74,12 @@ export default {
      */
     const modifyBoard = async () => {
       try {
-        inquiryBoardValidator(inquiryBoard.value);
-      } catch (error) {
-        alert(error.message);
-        return;
-      }
-
-      try {
+        inquiryBoardValidator(inquiryBoard.value, constraint);
         await fetchModifyInquiryBoard(inquiryBoard.value);
         alert("수정 되었습니다.");
         goToList();
       } catch (error) {
-        await router.push({
-          name: 'Error'
-        })
+        alert(error.message);
       }
     }
 
