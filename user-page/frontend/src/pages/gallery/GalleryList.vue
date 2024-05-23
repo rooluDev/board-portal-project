@@ -27,11 +27,11 @@
                 </v-col>
                 <v-col cols="9" class="mt-2">
                   <v-card-title class="headline link" @click="goToView(board.boardId)">
-                    {{ truncateTitle(board.title, 20) }}
+                    {{ truncateText(board.title, 40) }}
                     <span class="new" style="color: red" v-if="isNew(board.createdAt,12)">new</span>
                   </v-card-title>
                   <v-card-text @click="goToView(board.boardId)">
-                    {{ board.content }}
+                    {{truncateText(board.content,470) }}
                   </v-card-text>
                 </v-col>
               </v-row>
@@ -59,7 +59,7 @@ import {isNew} from "@/utils/dateUtils";
 import {fetchGetGalleryBoardList} from "@/api/galleryBoardService";
 import {fetchGetThumbnailResource} from "@/api/imgaeService";
 import {format, subMonths} from "date-fns";
-import {parseToQueryString, truncateTitle} from "@/utils/stringUtils";
+import {parseToQueryString, truncateText} from "@/utils/stringUtils";
 
 export default {
   components: {Navbar, SearchForm, Pagination},
@@ -166,7 +166,7 @@ export default {
       categoryList,
       galleryBoardList,
       imageUrls,
-      truncateTitle,
+      truncateText,
       getGalleryBoardList,
       parseStringByFormat,
       goToView,
