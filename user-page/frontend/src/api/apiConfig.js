@@ -2,8 +2,10 @@ import axios from "axios";
 import store from "@/store";
 import {ErrorCommandFactory} from "@/error";
 
+const baseUrl = process.env.VUE_APP_API_URL + '/api';
+
 export const api = axios.create({
-    baseURL: '/api',
+    baseURL: baseUrl,
 });
 
 api.interceptors.request.use(
