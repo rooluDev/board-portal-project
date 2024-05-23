@@ -13,23 +13,23 @@
           <tr>
             <th class="text-center">번호</th>
             <th class="text-center">분류</th>
-            <th class="title-left">제목</th>
+            <th style="width: 800px" class="title-left">제목</th>
             <th class="text-center">조회</th>
             <th class="text-center">등록일시</th>
             <th class="text-center">등록자</th>
           </tr>
           </thead>
           <tbody>
-          <tr v-for="fixedBoard in fixedNoticeBoardList" :key="fixedBoard.boardId">
+          <tr v-for="fixedBoard in fixedNoticeBoardList" :key="fixedBoard.boardId" style="background-color: rgba(211, 211, 211, 1)">
             <td></td>
             <td class="text-center">
               <span class="link" @click="goToView(fixedBoard.boardId)">
                 {{ fixedBoard.categoryName }}
               </span>
             </td>
-            <td class="title-left">
+            <td class="title-left" style="width: 800px">
               <span class="link" @click="goToView(fixedBoard.boardId)">
-                {{ truncateTitle(fixedBoard.title, 60) }}
+                {{ truncateText(fixedBoard.title, 60) }}
               </span>
               <span class="new" v-if="isNew(fixedBoard.createdAt, 7)">new</span>
             </td>
@@ -48,9 +48,9 @@
                 {{ board.categoryName }}
               </span>
             </td>
-            <td class="title-left">
+            <td class="title-left" style="width: 800px">
               <span class="link" @click="goToView(board.boardId)">
-                {{ truncateTitle(board.title, 60) }}
+                {{ truncateText(board.title, 60) }}
               </span>
               <span class="new" v-if="isNew(board.createdAt, 7)">new</span>
             </td>
@@ -77,7 +77,7 @@ import {fetchGetNoticeBoardList} from "@/api/noticeBoardService";
 import {useRoute} from "vue-router";
 import {parseStringByFormat} from "@/utils/searchConditionUtils";
 import {isNew} from "@/utils/dateUtils";
-import {truncateTitle} from "@/utils/stringUtils";
+import {truncateText} from "@/utils/stringUtils";
 import {format, subMonths} from "date-fns";
 
 export default {
@@ -158,7 +158,7 @@ export default {
       parseStringByFormat,
       goToView,
       isNew,
-      truncateTitle
+      truncateText
     }
   }
 }
