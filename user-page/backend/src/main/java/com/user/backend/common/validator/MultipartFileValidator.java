@@ -87,9 +87,9 @@ public interface MultipartFileValidator<T> {
         boolean isValidMaxFileLength = currentFileSize + files.length - deletedFileId.size() <= maxFileLength;
         boolean isValidMinFileLength = currentFileSize + files.length - deletedFileId.size() >= minFileLength;
 
-        if (isValidMaxFileLength) {
+        if (!isValidMaxFileLength) {
             throw new IllegalFileDataException(ErrorCode.ILLEGAL_FILE_DATA);
-        } else if (isValidMinFileLength) {
+        } else if (!isValidMinFileLength) {
             throw new IllegalFileDataException(ErrorCode.ILLEGAL_FILE_DATA);
         }
     }
