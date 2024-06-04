@@ -41,7 +41,6 @@ public class FileStorageServiceImpl implements FileStorageService {
         thumbnailService.addThumbnail(thumbnailDto);
     }
 
-    // TODO : void, boolean 따로?
     @Override
     public boolean deleteFileList(List<Long> deleteFileIdList) {
         boolean isThumbnailDeleted = false;
