@@ -25,37 +25,42 @@
 
 ## 📺 화면
 + **사용자 페이지**
-  + 메인 페이지 및 게시판 페이지
-  ![사용자 메인 및 게시판](https://github.com/rooluDev/board-portal-project/assets/152958052/2912c0c6-168c-4caf-84e0-39a475a9935b)
-  + 자유 게시판 작성
-  ![자유 게시판 작성](https://github.com/rooluDev/board-portal-project/assets/152958052/8aa9b76e-705a-41e4-8e95-8223ab60b4cb)
-  + 자유 게시판 보기
-  ![자유 게시판 보기](https://github.com/rooluDev/board-portal-project/assets/152958052/728748f3-da72-4698-b8a6-0d1aa887db6b)
-  + 자유 게시판 수정
-  + 자유 게시판 삭제
-  + 댓글 등록 및 삭제
+  + **메인 페이지 및 게시판 페이지**
   
-  + 로그인 및 회원가입
+    ![사용자 메인 및 게시판](https://github.com/rooluDev/board-portal-project/assets/152958052/2912c0c6-168c-4caf-84e0-39a475a9935b)
+  + **자유 게시판 작성**
+  
+    ![자유 게시판 작성](https://github.com/rooluDev/board-portal-project/assets/152958052/8aa9b76e-705a-41e4-8e95-8223ab60b4cb)
+  + **자유 게시판 보기**
+  
+    ![자유 게시판 보기](https://github.com/rooluDev/board-portal-project/assets/152958052/728748f3-da72-4698-b8a6-0d1aa887db6b)
+  + **자유 게시판 수정**
+  
+    ![자유 게시판 수정](https://github.com/rooluDev/board-portal-project/assets/152958052/99bb67c2-e9f9-45d1-90df-64c944ea087a)
+  + **자유 게시판 삭제**
+  
+    ![자유 게시판 삭제](https://github.com/rooluDev/board-portal-project/assets/152958052/93f822e7-c842-4b49-ab0a-c37375cc0f35)
+  + **댓글 등록 및 삭제**
+  
+    ![댓글 등록 및 삭제](https://github.com/rooluDev/board-portal-project/assets/152958052/f27fcce8-a762-4c8a-8463-de0b89c45a97)
 
 + **관리자 페이지**
-  + 로그인 및 게시판 페이지
-  + 자유 게시판 작성
-  + 자유 게시판 보기 및 수정
-  + 자유 게시판 삭제
+  + **로그인 및 게시판 페이지**
+
+    ![관리자 로그인 및](https://github.com/rooluDev/board-portal-project/assets/152958052/12419a4a-ef7c-43d2-a193-5c167f3c35f9)
+  + **공지사항 작성**
+  
+    ![공지사항 작성](https://github.com/rooluDev/board-portal-project/assets/152958052/46ee4660-62b4-4725-94ef-101b03fd4fd2)
+  + **문의 게시판 보기 및 답변**
+
+    ![문의 게시판 답변](https://github.com/rooluDev/board-portal-project/assets/152958052/eccb71f4-af5d-4dcf-b510-11ab65e39060)  
+  + **공지사항 수정 및 삭제**
+
+    ![공지사항 수정 및 삭제](https://github.com/rooluDev/board-portal-project/assets/152958052/c4a1d2ba-f7a4-4ac6-9a87-b1f91062c72e)
 
 
 ## 💡 주요 기능
-+ **JWT을 통한 인증 및 인가**  
-  [코드 보러가기](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/jwt/JwtProvider.java#L22)
-
-+ **Multipart Form-Data를 통한 게시물 작성 및 수정**  
-  [코드 보러가기](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/controller/GalleryBoardController.java#L143)
-
-+ **GlobalExceptionHandler를 통해 Custom ErrorCode와 Exception을 만들어서 에러 핸들링**
-  * Backend Handler  
-    [코드 보러가기](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/common/exception/handler/GlobalExceptionHandler.java)
-  * Frontend Handler  
-    [코드 보러가기](https://github.com/rooluDev/board-portal-project/blob/main/user-page/frontend/src/error/index.js)
++ **
 
 ## 🗂 ERD
 ![ERD](https://github.com/rooluDev/board-portal-project/assets/152958052/a2754673-1a6c-4915-85d6-b30e3e180a89)
@@ -73,7 +78,6 @@
 
 ### 🌐 사용자 페이지(SPA)
 ![Vue.js](https://img.shields.io/badge/vue.js-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white)
-![Vuetify](https://img.shields.io/badge/vuetify-1867C0?style=for-the-badge&logo=vuetify&logoColor=white)
 ![Spring Boot](https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
 ![MyBatis](https://img.shields.io/badge/MyBatis-000000?style=for-the-badge&logo=MyBatis&logoColor=white)
 
