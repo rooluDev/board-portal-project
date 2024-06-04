@@ -27,12 +27,12 @@ public class WebMvcProdConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/upload/free/**")
-                .addResourceLocations("file:///Users/user/upload/free/");
+                .addResourceLocations("file:///home/ubuntu/upload/free/");
 
         registry.addResourceHandler("/upload/gallery/**")
-                .addResourceLocations("file:///Users/user/upload/gallery/");
+                .addResourceLocations("file:///home/ubuntu/upload/gallery/");
 
         registry.addResourceHandler("/upload/thumbnail/**")
-                .addResourceLocations("file:///Users/user/upload/thumbnail/");
+                .addResourceLocations("file:///home/ubuntu/upload/thumbnail/");
     }
 }
