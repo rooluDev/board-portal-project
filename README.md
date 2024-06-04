@@ -24,7 +24,7 @@
 + Postman으로 작성한 REST API 문서입니다.
 
 ## 📺 화면
-+ **사용자 페이지**
++ ## 사용자 페이지
   + **메인 페이지 및 게시판 페이지**
   
     ![사용자 메인 및 게시판](https://github.com/rooluDev/board-portal-project/assets/152958052/2912c0c6-168c-4caf-84e0-39a475a9935b)
@@ -44,7 +44,7 @@
   
     ![댓글 등록 및 삭제](https://github.com/rooluDev/board-portal-project/assets/152958052/f27fcce8-a762-4c8a-8463-de0b89c45a97)
 
-+ **관리자 페이지**
++ ## 관리자 페이지
   + **로그인 및 게시판 페이지**
 
     ![관리자 로그인 및](https://github.com/rooluDev/board-portal-project/assets/152958052/12419a4a-ef7c-43d2-a193-5c167f3c35f9)
