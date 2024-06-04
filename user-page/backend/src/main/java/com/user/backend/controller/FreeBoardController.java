@@ -142,9 +142,10 @@ public class FreeBoardController {
     @PutMapping("/board/free/{boardId}")
     public ResponseEntity modifyBoard(@PathVariable(name = "boardId") Long boardId,
                                       @Valid @ModelAttribute FreeBoardDto freeBoardDto,
-                                      @ModelAttribute(name = "deleteFileIdList") List<Long> deleteFileIdList,
-                                      @RequestPart(name = "file", value = "file",required = false) MultipartFile[] fileList,
+                                      @RequestParam(name = "deleteFileIdList") List<Long> deleteFileIdList,
+                                      @RequestPart(name = "file", required = false) MultipartFile[] fileList,
                                       HttpServletRequest request) {
+
         // 토근 확인
         jwtService.getMemberIdFromToken(request);
 

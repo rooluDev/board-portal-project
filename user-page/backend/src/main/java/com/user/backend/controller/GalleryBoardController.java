@@ -146,8 +146,8 @@ public class GalleryBoardController {
     @PutMapping("/board/gallery/{boardId}")
     public ResponseEntity modifyBoard(@PathVariable(name = "boardId") Long boardId,
                                       @Valid @ModelAttribute GalleryBoardDto galleryBoardDto,
-                                      @ModelAttribute(name = "deleteFileIdList") List<Long> deleteFileIdList,
-                                      @RequestPart(name = "file", value = "file", required = false) MultipartFile[] fileList,
+                                      @RequestParam(name = "deleteFileIdList") List<Long> deleteFileIdList,
+                                      @RequestPart(name = "file", required = false) MultipartFile[] fileList,
                                       HttpServletRequest request) {
 
         // 로그인 확인
