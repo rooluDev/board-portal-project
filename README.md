@@ -2,7 +2,9 @@
 
 ## 📝 프로젝트 개요
 이 프로젝트는 게시판 포털 사이트를 구축하는 것을 목표로 합니다. 
+
 게시판의 종류로는 자유 게시판, 문의 게시판, 갤러리 게시판과 공지사항 총 4개의 게시판으로 구성되어 있습니다.
+
 사용자 페이지는 SPA로 SpringBoot와 Vue.js를 통해 제작했고 관리자 페이지는 MPA로 SpringBoot와 Thymeleaf로 제작했습니다.
 
 
@@ -23,14 +25,23 @@
 
 ## 📺 화면
 + **사용자 페이지**
-
-https://github.com/rooluDev/board-portal-project/assets/152958052/cb1a80b6-286a-4ac9-a44d-ff9b87691eec
+  + 메인 페이지 및 게시판 페이지
+  ![사용자 메인 및 게시판](https://github.com/rooluDev/board-portal-project/assets/152958052/2912c0c6-168c-4caf-84e0-39a475a9935b)
+  + 자유 게시판 작성
+  ![자유 게시판 작성](https://github.com/rooluDev/board-portal-project/assets/152958052/8aa9b76e-705a-41e4-8e95-8223ab60b4cb)
+  + 자유 게시판 보기
+  ![자유 게시판 보기](https://github.com/rooluDev/board-portal-project/assets/152958052/728748f3-da72-4698-b8a6-0d1aa887db6b)
+  + 자유 게시판 수정
+  + 자유 게시판 삭제
+  + 댓글 등록 및 삭제
+  
+  + 로그인 및 회원가입
 
 + **관리자 페이지**
-
-https://github.com/rooluDev/board-portal-project/assets/152958052/cd23df82-18aa-4d47-9845-08079bce5460
-
-
+  + 로그인 및 게시판 페이지
+  + 자유 게시판 작성
+  + 자유 게시판 보기 및 수정
+  + 자유 게시판 삭제
 
 
 ## 💡 주요 기능
