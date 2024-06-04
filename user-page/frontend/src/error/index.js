@@ -84,6 +84,7 @@ class ThumbnailNotFoundCommand extends ErrorCommand {
 
 class IllegalFileDataCommand extends ErrorCommand {
     execute() {
+        alert(this.error.response.data.message);
         console.error(this.error.response.data.message);
         router.push({name: 'Error'});
     }
