@@ -89,9 +89,9 @@ public interface FileValidator<T> {
     default void validateFilesLength(MultipartFile[] files, List<Long> deletedFileId, int currentFileSize, int minFileLength, int maxFileLength) {
         boolean isValidMaxFileLength = currentFileSize + files.length - deletedFileId.size() <= maxFileLength;
         boolean isValidMinFileLength = currentFileSize + files.length - deletedFileId.size() >= minFileLength;
-        if (isValidMaxFileLength) {
+        if (!isValidMaxFileLength) {
             throw new IllegalFileDataException("파일은 " + maxFileLength + "개까지 등록 가능합니다.");
-        } else if (isValidMinFileLength) {
+        } else if (!isValidMinFileLength) {
             throw new IllegalFileDataException("파일을 최대 " + minFileLength + "이상 등록하세요.");
         } else {
             throw new RuntimeException();
