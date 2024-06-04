@@ -33,11 +33,12 @@
         </v-carousel>
         <v-card-title class="content">{{ galleryBoard.content }}</v-card-title>
         <FileList :fileList="fileList"/>
-        <CommentList :commentList="commentList" @submit="addComment" :isDeleted="galleryBoard.isDeleted == 1"/>
+        <CommentList :commentList="commentList" @submit="addComment" :isDeleted="galleryBoard.isDeleted === 1"/>
         <v-card-actions style="justify-content: center">
           <v-btn class="custom-btn" @click="goToList">목록</v-btn>
-          <v-btn class="custom-btn" v-if="galleryBoard.isDeleted != 1" @click="goToModify" v-show="isMyBoard">수정</v-btn>
-          <v-btn class="custom-btn" v-if="galleryBoard.isDeleted != 1" @click="deleteBoard" v-show="isMyBoard">삭제
+          <v-btn class="custom-btn" v-if="galleryBoard.isDeleted !== 1" @click="goToModify" v-show="isMyBoard">수정
+          </v-btn>
+          <v-btn class="custom-btn" v-if="galleryBoard.isDeleted !== 1" @click="deleteBoard" v-show="isMyBoard">삭제
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -87,7 +88,6 @@ export default {
       commentList.value = res.commentList;
       fileList.value = res.fileList;
     }
-
 
 
     /**
@@ -145,6 +145,9 @@ export default {
      */
     const deleteBoard = async () => {
       try {
+        if (!confirm("삭제 하시겠습니까?")) {
+          return;
+        }
         await fetchDeleteGalleryBoard(boardId);
         goToList();
       } catch (error) {

@@ -35,7 +35,7 @@
           </div>
           <v-btn class="d-block mb-4" @click="addFileInput">추가</v-btn>
           <div class=" d-flex justify-center align-center">
-            <v-btn class="custom-btn" type="button">취소</v-btn>
+            <v-btn class="custom-btn" @click="goToList" type="button">취소</v-btn>
             <v-btn class="custom-btn" type="submit">등록</v-btn>
           </div>
         </v-form>
@@ -134,7 +134,9 @@ export default {
      * 게시물 수정
      */
     const modifyBoard = async () => {
-      console.log(deleteFileIdList.value);
+      if (!confirm("수정 하시겠습니까?")){
+        return;
+      }
       try {
         addFileList.value = addFileList.value.filter(file => file != null);
         freeBoardValidator(freeBoard.value, constraint);

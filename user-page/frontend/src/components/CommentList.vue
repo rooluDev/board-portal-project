@@ -71,7 +71,7 @@ export default {
      * 댓글추가
      */
     const addComment = () => {
-      if (accessToken.value) {
+      if (accessToken.value && confirm("등록 하시겠습니까?")) {
         emit('submit', content.value);
         content.value = '';
       } else {
@@ -80,8 +80,10 @@ export default {
     }
 
     const deleteComment = async (commentId, index) => {
-      await fetchDeleteComment(commentId);
-      props.commentList.splice(index, 1);
+      if (confirm("삭제 하시겠습니까?")){
+        await fetchDeleteComment(commentId);
+        props.commentList.splice(index, 1);
+      }
     }
 
     return {

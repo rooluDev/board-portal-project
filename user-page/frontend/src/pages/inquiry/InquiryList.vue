@@ -44,8 +44,8 @@
                 <span class="link" @click="goToView(board.boardId,board.isSecret)">{{
                     truncateText(board.title, 60)
                   }}</span>
-                <span v-if="board.answerId">(답변완료)</span>
-                <span v-else>(미답변)</span>
+                <span v-if="board.answerId"> (답변완료)</span>
+                <span v-else> (미답변)</span>
                 <span class="new" v-if="isNew(board.createdAt, 7)">new</span>
                 <span v-if="board.isSecret === '1'">🔒</span>
               </div>

@@ -31,7 +31,7 @@
                     <span class="new" style="color: red" v-if="isNew(board.createdAt,12)">new</span>
                   </v-card-title>
                   <v-card-text @click="goToView(board.boardId)">
-                    {{truncateText(board.content,470) }}
+                    {{ truncateText(board.content, 470) }}
                   </v-card-text>
                 </v-col>
               </v-row>
@@ -151,12 +151,14 @@ export default {
           query: queryObject.value
         })
       } else {
-        router.push({
-          name: 'Login',
-          query: {
-            ret: `/boards/gallery/write${parseToQueryString(queryObject.value, Board.GALLERY_BOARD)}`,
-          }
-        })
+        if (confirm('로그인 하시겠습니까?')) {
+          router.push({
+            name: 'Login',
+            query: {
+              ret: `/boards/gallery/write${parseToQueryString(queryObject.value, Board.GALLERY_BOARD)}`,
+            }
+          })
+        }
       }
     }
 
@@ -182,11 +184,13 @@ export default {
   justify-content: center;
   margin: 50px 100px 10px;
 }
+
 .custom-btn {
   margin-left: 95px;
   background-color: black;
   color: white;
 }
+
 .link {
   cursor: pointer;
   text-decoration: none;
@@ -195,6 +199,7 @@ export default {
 .link:hover {
   text-decoration: underline;
 }
+
 .new {
   margin-left: 20px;
 }

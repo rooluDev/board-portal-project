@@ -53,6 +53,7 @@ export default {
       try {
         inquiryBoardValidator(inquiryBoardForm.value, constraint);
         await fetchAddInquiryBoard(inquiryBoardForm.value);
+        alert("등록 되었습니다.");
         await router.push({
           name: 'Inquiry-List'
         })

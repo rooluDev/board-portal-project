@@ -43,7 +43,7 @@ import FileList from "@/components/FileList.vue";
 import CommentList from "@/components/CommentList.vue";
 import {computed, onMounted, ref, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
-import {fetchCheckFreeAuthor, fetchDeleteFreeBoard, fetchGetFreeBoard, fetchAddFreeView} from "@/api/freeBoardService";
+import {fetchAddFreeView, fetchCheckFreeAuthor, fetchDeleteFreeBoard, fetchGetFreeBoard} from "@/api/freeBoardService";
 import {fetchAddComment} from "@/api/commentService";
 import {useStore} from "vuex";
 import {parseStringByFormat} from "@/utils/searchConditionUtils";
@@ -102,8 +102,7 @@ export default {
      */
     const addComment = async (content) => {
       try {
-        const res = await fetchAddComment(content, boardId, Board.FREE_BOARD);
-        commentList.value = res;
+        commentList.value = await fetchAddComment(content, boardId, Board.FREE_BOARD);
       } catch (error) {
         await router.push({
           name: 'Error'
@@ -115,6 +114,9 @@ export default {
      * 게시물 삭제
      */
     const deleteBoard = async () => {
+      if (!confirm("삭제 하시겠습니까?")){
+        return;
+      }
       try {
         await fetchDeleteFreeBoard(boardId);
         goToList();
