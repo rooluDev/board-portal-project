@@ -1,6 +1,9 @@
 # 📋 게시판 포탈 사이트
 
-## 📝 프로젝트 설명
+## 📝 프로젝트 개요
+이 프로젝트는 게시판 포털 사이트를 구축하는 것을 목표로 합니다. 
+게시판의 종류로는 자유 게시판, 문의 게시판, 갤러리 게시판과 공지사항 총 4개의 게시판으로 구성되어 있습니다.
+사용자 페이지는 SPA로 SpringBoot와 Vue.js를 통해 제작했고 관리자 페이지는 MPA로 SpringBoot와 Thymeleaf로 제작했습니다.
 
 
 ## 🔗 게시판 페이지 링크
@@ -53,25 +56,19 @@ https://github.com/rooluDev/board-portal-project/assets/152958052/cd23df82-18aa-
   
 ## 🛠 기술 스택
 ### 🔧 관리자 페이지(MPA)
-  * **Front-end**
-    * ![Thymeleaf](https://img.shields.io/badge/thymeleaf-005F0F?style=for-the-badge&logo=thymeleaf&logoColor=white)
-
-  * **Back-end**
-    * ![Spring Boot](https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
-    * ![MyBatis](https://img.shields.io/badge/MyBatis-000000?style=for-the-badge&logo=MyBatis&logoColor=white)
+![Thymeleaf](https://img.shields.io/badge/thymeleaf-005F0F?style=for-the-badge&logo=thymeleaf&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
+![MyBatis](https://img.shields.io/badge/MyBatis-000000?style=for-the-badge&logo=MyBatis&logoColor=white)
 
 ### 🌐 사용자 페이지(SPA)
-  * **Front-end**
-    * ![Vue.js](https://img.shields.io/badge/vue.js-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white)
-    * ![Vuetify](https://img.shields.io/badge/vuetify-1867C0?style=for-the-badge&logo=vuetify&logoColor=white)
-
-  * **Back-end**
-    * ![Spring Boot](https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
-    * ![MyBatis](https://img.shields.io/badge/MyBatis-000000?style=for-the-badge&logo=MyBatis&logoColor=white)
+![Vue.js](https://img.shields.io/badge/vue.js-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white)
+![Vuetify](https://img.shields.io/badge/vuetify-1867C0?style=for-the-badge&logo=vuetify&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
+![MyBatis](https://img.shields.io/badge/MyBatis-000000?style=for-the-badge&logo=MyBatis&logoColor=white)
 
 ### 🗄 DB
-  * ![MySQL](https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![MySQL](https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 
 ### ☁ 인프라
-  * ![Amazon EC2](https://img.shields.io/badge/amazonec2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white)
-  * ![Nginx](https://img.shields.io/badge/nginx-009639?style=for-the-badge&logo=nginx&logoColor=white)
+![Amazon EC2](https://img.shields.io/badge/amazonec2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white)
+![Nginx](https://img.shields.io/badge/nginx-009639?style=for-the-badge&logo=nginx&logoColor=white)
