@@ -16,20 +16,22 @@ public class WebMvcProdConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/upload/free/**")
-                .addResourceLocations("file:///Users/user/upload/free/");
+                .addResourceLocations("file:///home/ubuntu/upload/free/");
 
         registry.addResourceHandler("/upload/gallery/**")
-                .addResourceLocations("file:///Users/user/upload/gallery/");
+                .addResourceLocations("file:///home/ubuntu/upload/gallery/");
 
         registry.addResourceHandler("/upload/thumbnail/**")
-                .addResourceLocations("file:///Users/user/upload/thumbnail/");
+                .addResourceLocations("file:///home/ubuntu/upload/thumbnail/");
     }
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("*")
-                .allowedMethods("GET", "POST", "DELETE", "PATCH", "PUT")
-                .maxAge(3000);
+                .allowedOrigins("[URI]")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
+                .allowedHeaders("*")
+                .allowCredentials(true)
+                .maxAge(3600);
     }
 }
