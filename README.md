@@ -60,7 +60,58 @@
 
 
 ## 💡 주요 기능
-+ **
++ Multipart Form data를 이용한 자유게시판 작성
+ <details>
+  <summary>코드 보기</summary>
+  
+Controller
+ ```
+  @PostMapping("/board/free")
+    public ResponseEntity addBoard(@Valid @ModelAttribute FreeBoardDto freeBoardDto,
+                                   @RequestPart(name = "file", required = false) MultipartFile[] fileList,
+                                   HttpServletRequest request) {
+
+        ...
+
+        return ResponseEntity.ok().build();
+
+ ```
+DB Service
+```
+    /**
+     * 자유게시물 추가
+     *
+     * @param freeBoardDto ( category_id, author_type, author_id, title, content )
+     */
+    Long addBoard(FreeBoardDto freeBoardDto);
+```
+Storage Service
+```
+    /**
+     * Multipart File List DB저장 및 물리적 파일 저장
+     *
+     * @param fileList 저장할 파일 리스트
+     * @param boardId 게시판 번호
+     * @param boardType 게시판 타입
+     * @param thumbnail 썸네일 저장 할지
+     */
+    void storageFileList(MultipartFile[] fileList, Long boardId, String boardType, boolean thumbnail);
+```
+
+Mapper
+```
+    /**
+     * INSERT tb_free_board
+     *
+     * @param freeBoardDto ( category_id, author_type, author_id, title, content )
+     */
+    void insertBoard(FreeBoardDto freeBoardDto);
+```
+
+[Controller 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/controller/FreeBoardController.java#L99-L130)
+
+[Storage Service 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/service/FileStorageServiceImpl.java#L25-L34)
+ </details>
 
 ## 🗂 ERD
 ![ERD](https://github.com/rooluDev/board-portal-project/assets/152958052/a2754673-1a6c-4915-85d6-b30e3e180a89)
