@@ -59,60 +59,198 @@
     ![공지사항 수정 및 삭제](https://github.com/rooluDev/board-portal-project/assets/152958052/c4a1d2ba-f7a4-4ac6-9a87-b1f91062c72e)
 
 
-## 💡 주요 기능
-+ Multipart Form data를 이용한 자유게시판 작성
- <details>
-  <summary>코드 보기</summary>
+## 💡 주요 기능 (클릭해서 코드 보기)
++ 자유게시판 작성
+  <details>
+   <summary>코드 보기</summary>
   
-Controller
- ```
-  @PostMapping("/board/free")
-    public ResponseEntity addBoard(@Valid @ModelAttribute FreeBoardDto freeBoardDto,
-                                   @RequestPart(name = "file", required = false) MultipartFile[] fileList,
-                                   HttpServletRequest request) {
+    Controller
+     ```
+      @PostMapping("/board/free")
+        public ResponseEntity addBoard(@Valid @ModelAttribute FreeBoardDto freeBoardDto,
+                                       @RequestPart(name = "file", required = false) MultipartFile[] fileList,
+                                       HttpServletRequest request) {
+    
+            ...
+    
+            return ResponseEntity.ok().build();
+    
+     ```
+    DB Service
+    ```
+        /**
+         * 자유게시물 추가
+         *
+         * @param freeBoardDto ( category_id, author_type, author_id, title, content )
+         */
+        Long addBoard(FreeBoardDto freeBoardDto);
+    ```
+    Storage Service
+    ```
+        /**
+         * Multipart File List DB저장 및 물리적 파일 저장
+         *
+         * @param fileList 저장할 파일 리스트
+         * @param boardId 게시판 번호
+         * @param boardType 게시판 타입
+         * @param thumbnail 썸네일 저장 할지
+         */
+        void storageFileList(MultipartFile[] fileList, Long boardId, String boardType, boolean thumbnail);
+    ```
+    
+    Mapper
+    ```
+        /**
+         * INSERT tb_free_board
+         *
+         * @param freeBoardDto ( category_id, author_type, author_id, title, content )
+         */
+        void insertBoard(FreeBoardDto freeBoardDto);
+    ```
+    
+    [Controller 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/controller/FreeBoardController.java#L99-L130)
+    
+    [Storage Service 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/service/FileStorageServiceImpl.java#L25-L34)
+  </details>
 
-        ...
-
-        return ResponseEntity.ok().build();
-
- ```
-DB Service
-```
++ 자유 게시판 수정
+  <details>
+  <summary>코드 보기</summary>
+   
+   Controller
+   ```
     /**
-     * 자유게시물 추가
-     *
-     * @param freeBoardDto ( category_id, author_type, author_id, title, content )
-     */
-    Long addBoard(FreeBoardDto freeBoardDto);
-```
-Storage Service
-```
+      * 자유게시판 수정
+      *
+      * @param boardId          PathVariable ( pk )
+      * @param freeBoardDto     수정할 데이터
+      * @param fileList         추가할 파일
+      * @param deleteFileIdList 삭제할 파일의 pk 리스트
+      * @param request          HttpServletRequest
+      * @return null
+      */
+     @PutMapping("/board/free/{boardId}")
+     public ResponseEntity modifyBoard(@PathVariable(name = "boardId") Long boardId,
+                                       @Valid @ModelAttribute FreeBoardDto freeBoardDto,
+                                       @RequestParam(name = "deleteFileIdList") List<Long> deleteFileIdList,
+                                       @RequestPart(name = "file", required = false) MultipartFile[] fileList,
+                                       HttpServletRequest request) {
+ 
+         
+         ...
+
+         return ResponseEntity.ok().build();
+    ```
+    DB Service
+    ```
     /**
-     * Multipart File List DB저장 및 물리적 파일 저장
+     * 게시물 수정
      *
-     * @param fileList 저장할 파일 리스트
-     * @param boardId 게시판 번호
-     * @param boardType 게시판 타입
-     * @param thumbnail 썸네일 저장 할지
+     * @param freeBoardDto ( categoryId, title, content, boardId )
      */
-    void storageFileList(MultipartFile[] fileList, Long boardId, String boardType, boolean thumbnail);
-```
-
-Mapper
-```
+    void modifyBoard(FreeBoardDto freeBoardDto);
+    ```
+    Storage Service
+    ```
     /**
-     * INSERT tb_free_board
+     * 썸네일 DB저장 및 물리적 파일 저장
      *
-     * @param freeBoardDto ( category_id, author_type, author_id, title, content )
+     * @param fileDto 썸네일로 저장할 FileDto
      */
-    void insertBoard(FreeBoardDto freeBoardDto);
-```
+    void storageThumbnail(FileDto fileDto);
 
-[Controller 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/controller/FreeBoardController.java#L99-L130)
+    /**
+     * 파일 리스트 삭제
+     *
+     * @param deleteFileIdList 삭제할 파일들의 pk 리스트
+     * @return 썸네일로 만든 파일 대상이 삭제가 되었는지
+     */
+    boolean deleteFileList(List<Long> deleteFileIdList);
+    ```
+    Mapper
+    ```
+    /**
+     * UPDATE tb_free_board
+     *
+     * @param freeBoardDto ( categoryId, title, content, boardId )
+     */
+    void updateBoard(FreeBoardDto freeBoardDto);
+    ```
+    [Controller 전체코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/controller/FreeBoardController.java#L132-L171)
 
-[Storage Service 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/service/FileStorageServiceImpl.java#L25-L34)
- </details>
+    [Storage Servie 전체코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/service/FileStorageServiceImpl.java#L36-L54)
+  </details>
 
++ 물리적 파일 저장소 변경에 대한 유연성 확보
+   <details>
+    <summary>코드 보기</summary>
+     물리적 파일의 저장 위치 변경에 대응하기 위하여 (local storage, cloud storage, NAS 등...) 물리적 파일을 저장하는 StorageService Interface와 metadata를 저장하는 FileService Interface를 분리하고 
+     위 두 인터페이스를 의존성을 주입하여 작동하는 FileStorageService를 작성해 유연성을 확보하였다.
+   
+    Metadata 저장소
+    ```
+   /**
+   * File Service Interface
+   */
+   public interface FileService {
+   
+       /**
+        * File 등록
+        *
+        * @param fileList DB에 저장할 File List
+        * @param boardId  boardId ( pk )
+        * @return 저장된 FileList
+        */
+       List<FileDto> addFileList(List<FileDto> fileList, Long boardId);
+
+       ...
+    ```
+
+    물리적 파일 저장소
+    ```
+   /**
+    * Storage Service
+    */
+   public interface StorageService {
+   
+       /**
+        * Multipart File 리스트 물리적 파일 생성
+        *
+        * @param multipartFiles 저장할 파일
+        * @param boardType 보드 타입
+        * @return 저장된 파일들 FileDto 리스트
+        */
+       List<FileDto> storageFileList(MultipartFile[] multipartFiles, String boardType);
+   
+       /**
+        * FileDto로 썸네일 물리적 생성
+        *
+        * @param fileDto 생성할 원본 파일
+        * @return 생성된 Thumbnail의 객체
+        */
+       ThumbnailDto storageThumbnailFromFile(FileDto fileDto);
+   }
+   ```
+
+   FileStorageService impl
+   ```
+   /**
+    * FileStorageService Impl
+    */
+   @Service
+   @RequiredArgsConstructor
+   @Primary
+   public class FileStorageServiceImpl implements FileStorageService {
+   
+       private final StorageService storageService;
+       private final FileService fileService;
+       private final ThumbnailService thumbnailService;
+
+   ...
+   ```
+
+  [FileStorage Service 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/service/FileStorageServiceImpl.java)
+  </details>
 ## 🗂 ERD
 ![ERD](https://github.com/rooluDev/board-portal-project/assets/152958052/a2754673-1a6c-4915-85d6-b30e3e180a89)
 
