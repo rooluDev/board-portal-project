@@ -251,6 +251,38 @@
 
   [FileStorage Service 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/service/FileStorageServiceImpl.java)
   </details>
+
++ 파일 생성 및 수정시 썸네일 삭제 및 생성
+  <details>
+   <summary>코드보기</summary>
+   썸네일이 필요한 게시판(갤러리)과 썸네일이 필요 없는 게시판(자유 게시판) 둘 다 사용하는 File Storage Service에서 썸네일의 생성 유무를 직접 주입해서 둘 다 사용 가능한 메소드를 생성했다.
+
+   삭제 메소드
+   ```
+   /**
+     * 파일 리스트 삭제
+     *
+     * @param deleteFileIdList 삭제할 파일들의 pk 리스트
+     * @return 썸네일로 만든 파일 대상이 삭제가 되었는지
+     */
+    boolean deleteFileList(List<Long> deleteFileIdList);
+   ```
+   
+   생성 메소드
+   ```
+   /**
+     * Multipart File List DB저장 및 물리적 파일 저장
+     *
+     * @param fileList 저장할 파일 리스트
+     * @param boardId 게시판 번호
+     * @param boardType 게시판 타입
+     * @param thumbnail 썸네일 저장 할지
+     */
+    void storageFileList(MultipartFile[] fileList, Long boardId, String boardType, boolean thumbnail);
+   ```
+
+   [FileStorageServiceImpl 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/service/FileStorageServiceImpl.java)
+  </details>
 ## 🗂 ERD
 ![ERD](https://github.com/rooluDev/board-portal-project/assets/152958052/a2754673-1a6c-4915-85d6-b30e3e180a89)
 
