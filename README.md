@@ -5,7 +5,9 @@
 
 게시판의 종류로는 자유 게시판, 문의 게시판, 갤러리 게시판과 공지사항 총 4개의 게시판으로 구성되어 있습니다.
 
-사용자 페이지는 SPA로 SpringBoot와 Vue.js를 통해 제작했고 관리자 페이지는 MPA로 SpringBoot와 Thymeleaf로 제작했습니다.
+사용자 페이지는 SPA(Single Page Application)로 SpringBoot와 Vue.js를 통해 제작했으며. 반면, 관리자 페이지는 MPA(Multi Page Application)로 SpringBoot와 Thymeleaf를 통해 제작했습니다.
+
+## 게시판 구조
 
 
 ## 🔗 게시판 페이지 링크
@@ -19,50 +21,33 @@
 > **사용자 아이디:** user  
 > **사용자 비밀번호:** 1234
 
-## 📚 [API 문서 링크](https://documenter.getpostman.com/view/32925626/2sA3JRXyGT)
+## 📚 API 문서 링크
 
 + Postman으로 작성한 REST API 문서입니다.
+![스크린샷 2024-07-03 오전 12 57 34](https://github.com/rooluDev/board-portal-project/assets/152958052/71e90744-543d-415b-a027-94109042d4da)
+
+[더 보러가기](https://documenter.getpostman.com/view/32925626/2sA3JRXyGT)
 
 ## 📺 화면
-+ ## 사용자 페이지
-  + **메인 페이지 및 게시판 페이지**
+  + **메인 페이지 및 로그인**
   
-    ![사용자 메인 및 게시판](https://github.com/rooluDev/board-portal-project/assets/152958052/2912c0c6-168c-4caf-84e0-39a475a9935b)
-  + **자유 게시판 작성**
+  + **게시판 작성**
   
-    ![자유 게시판 작성](https://github.com/rooluDev/board-portal-project/assets/152958052/8aa9b76e-705a-41e4-8e95-8223ab60b4cb)
-  + **자유 게시판 보기**
+  + **게시판 보기**
   
-    ![자유 게시판 보기](https://github.com/rooluDev/board-portal-project/assets/152958052/728748f3-da72-4698-b8a6-0d1aa887db6b)
-  + **자유 게시판 수정**
+  + **게시판 수정**
   
-    ![자유 게시판 수정](https://github.com/rooluDev/board-portal-project/assets/152958052/99bb67c2-e9f9-45d1-90df-64c944ea087a)
-  + **자유 게시판 삭제**
+  + **게시판 삭제**
   
-    ![자유 게시판 삭제](https://github.com/rooluDev/board-portal-project/assets/152958052/93f822e7-c842-4b49-ab0a-c37375cc0f35)
   + **댓글 등록 및 삭제**
+
+  + **파일 다운로드**
   
-    ![댓글 등록 및 삭제](https://github.com/rooluDev/board-portal-project/assets/152958052/f27fcce8-a762-4c8a-8463-de0b89c45a97)
 
-+ ## 관리자 페이지
-  + **로그인 및 게시판 페이지**
-
-    ![관리자 로그인 및](https://github.com/rooluDev/board-portal-project/assets/152958052/12419a4a-ef7c-43d2-a193-5c167f3c35f9)
-  + **공지사항 작성**
-  
-    ![공지사항 작성](https://github.com/rooluDev/board-portal-project/assets/152958052/46ee4660-62b4-4725-94ef-101b03fd4fd2)
-  + **문의 게시판 보기 및 답변**
-
-    ![문의 게시판 답변](https://github.com/rooluDev/board-portal-project/assets/152958052/eccb71f4-af5d-4dcf-b510-11ab65e39060)  
-  + **공지사항 수정 및 삭제**
-
-    ![공지사항 수정 및 삭제](https://github.com/rooluDev/board-portal-project/assets/152958052/c4a1d2ba-f7a4-4ac6-9a87-b1f91062c72e)
-
-
-## 💡 주요 기능 (클릭해서 코드 보기)
+## 💡 주요 기능
 + 자유게시판 작성
   <details>
-   <summary>코드 보기</summary>
+   <summary>코드 보기(펼치기/접기)</summary>
   
     Controller
      ```
@@ -98,7 +83,7 @@
         void storageFileList(MultipartFile[] fileList, Long boardId, String boardType, boolean thumbnail);
     ```
     
-    Mapper
+    Repository
     ```
         /**
          * INSERT tb_free_board
@@ -115,7 +100,7 @@
 
 + 자유 게시판 수정
   <details>
-  <summary>코드 보기</summary>
+  <summary>코드 보기(펼치기/접기)</summary>
    
    Controller
    ```
@@ -183,7 +168,7 @@
 
 + 물리적 파일 저장소 변경에 대한 유연성 확보
    <details>
-    <summary>코드 보기</summary>
+    <summary>코드 보기(펼치기/접기)</summary>
      물리적 파일의 저장 위치 변경에 대응하기 위하여 (local storage, cloud storage, NAS 등...) 물리적 파일을 저장하는 StorageService Interface와 metadata를 저장하는 FileService Interface를 분리하고 
      위 두 인터페이스를 의존성을 주입하여 작동하는 FileStorageService를 작성해 유연성을 확보하였다.
    
@@ -254,7 +239,7 @@
 
 + 파일 생성 및 수정시 썸네일 삭제 및 생성
   <details>
-   <summary>코드보기</summary>
+   <summary>코드 보기(펼치기/접기)</summary>
    썸네일이 필요한 게시판(갤러리)과 썸네일이 필요 없는 게시판(자유 게시판) 둘 다 사용하는 File Storage Service에서 썸네일의 생성 유무를 직접 주입해서 둘 다 사용 가능한 메소드를 생성했다.
 
    삭제 메소드
