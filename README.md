@@ -7,7 +7,14 @@
 
 사용자 페이지는 SPA(Single Page Application)로 SpringBoot와 Vue.js를 통해 제작했으며. 반면, 관리자 페이지는 MPA(Multi Page Application)로 SpringBoot와 Thymeleaf를 통해 제작했습니다.
 
-## 게시판 구조
+## 💻 게시판 구조
++ **관리자 페이지**
+
+  ![스크린샷 2024-07-03 오전 1 48 40](https://github.com/rooluDev/board-portal-project/assets/152958052/de163dde-e054-45a2-ab1a-9c24c66579ad)
+
++ **사용자 페이지**
+
+  ![스크린샷 2024-07-03 오전 1 44 44](https://github.com/rooluDev/board-portal-project/assets/152958052/3be17fef-4c92-4e07-8611-d81a5cb7541a)
 
 
 ## 🔗 게시판 페이지 링크
@@ -21,12 +28,14 @@
 > **사용자 아이디:** user  
 > **사용자 비밀번호:** 1234
 
-## 📚 API 문서 링크
+## 📚 API 문서
 
 + Postman으로 작성한 REST API 문서입니다.
+
+
 ![스크린샷 2024-07-03 오전 12 57 34](https://github.com/rooluDev/board-portal-project/assets/152958052/71e90744-543d-415b-a027-94109042d4da)
 
-[더 보러가기](https://documenter.getpostman.com/view/32925626/2sA3JRXyGT)
+  [더 보러가기](https://documenter.getpostman.com/view/32925626/2sA3JRXyGT)
 
 ## 📺 화면
   + **메인 페이지 및 로그인**
