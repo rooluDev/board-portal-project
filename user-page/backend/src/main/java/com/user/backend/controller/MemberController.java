@@ -38,6 +38,9 @@ public class MemberController {
 
         // 로그인 확인
         String memberId = jwtService.getMemberIdFromToken(request);
+        if (memberId == null) {
+            return ResponseEntity.ok(null);
+        }
 
         // 로그인 정보 가져오기
         MemberDto memberDto = memberService.findById(memberId).orElseThrow(() -> new MemberNotFoundException(ErrorCode.MEMBER_NOT_FOUND));
@@ -75,8 +78,8 @@ public class MemberController {
      */
     @PostMapping("/member")
     public ResponseEntity join(@Valid @RequestBody MemberDto memberDto) {
-        // TODO : 회원가입 유효성 검증
-        if(!memberDto.getPassword().equals(memberDto.getPasswordCheck())){
+
+        if (!memberDto.getPassword().equals(memberDto.getPasswordCheck())) {
             throw new JoinFailException(ErrorCode.SERVER_ERROR);
         }
 
