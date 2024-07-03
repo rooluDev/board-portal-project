@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
      * MemberIdExistedException Handler
      *
      * @param e MemberIdExistedException
-     * @return ID_DUPLICATE(HttpStatus.CONFLICT, "A009", "아이디 중복")
+     * @return ID_DUPLICATE(HttpStatus.CONFLICT, " A009 ", " 아이디 중복 ")
      */
     @ExceptionHandler(MemberIdExistedException.class)
     public ResponseEntity handleMemberIdExistedException(MemberIdExistedException e) {
@@ -37,12 +37,13 @@ public class GlobalExceptionHandler {
      * NotLoggedInException Handler
      *
      * @param e BoardNotFoundException
-     * @return NOT_LOGGED_IN(HttpStatus.FORBIDDEN, "A005", "로그인이 필요한 서비스")
+     * @return NOT_LOGGED_IN(HttpStatus.FORBIDDEN, " A005 ", " 로그인이 필요한 서비스 ")
      */
     @ExceptionHandler(NotLoggedInException.class)
     public ResponseEntity handleNotLoggedInException(NotLoggedInException e) {
 
         log.error(e.getErrorCode().getMessage());
+        log.error("startTrace: {}", e.getStackTrace());
 
         return ErrorResponseEntity.toResponseEntity(e.getErrorCode());
     }
@@ -51,7 +52,7 @@ public class GlobalExceptionHandler {
      * BoardNotFoundException Handler
      *
      * @param e BoardNotFoundException
-     * @return BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "A001", "게시물이 존재하지 않음")
+     * @return BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, " A001 ", " 게시물이 존재하지 않음 ")
      */
     @ExceptionHandler(BoardNotFoundException.class)
     public ResponseEntity handleBoardNotFoundException(BoardNotFoundException e) {
@@ -65,7 +66,7 @@ public class GlobalExceptionHandler {
      * MemberNotFoundException Hanlder
      *
      * @param e MemberNotFoundException
-     * @return MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "A003", "회원이 존재하지 않음")
+     * @return MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, " A003 ", " 회원이 존재하지 않음 ")
      */
     @ExceptionHandler(MemberNotFoundException.class)
     public ResponseEntity handleMemberNotFoundException(MemberNotFoundException e) {
@@ -79,7 +80,7 @@ public class GlobalExceptionHandler {
      * FileNotFoundException Handler
      *
      * @param e FileNotFoundException
-     * @return FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "A002", "파일이 존재하지 않음")
+     * @return FILE_NOT_FOUND(HttpStatus.NOT_FOUND, " A002 ", " 파일이 존재하지 않음 ")
      */
     @ExceptionHandler(FileNotFoundException.class)
     public ResponseEntity handleFileNotFoundException(FileNotFoundException e) {
@@ -93,7 +94,7 @@ public class GlobalExceptionHandler {
      * ThumbnailNotFoundException Handler
      *
      * @param e ThumbnailNotFoundException
-     * @return THUMBNAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "A004", "썸네일 존재하지 않음")
+     * @return THUMBNAIL_NOT_FOUND(HttpStatus.NOT_FOUND, " A004 ", " 썸네일 존재하지 않음 ")
      */
     @ExceptionHandler(ThumbnailNotFoundException.class)
     public ResponseEntity handleThumbnailNotFoundException(ThumbnailNotFoundException e) {
@@ -107,7 +108,7 @@ public class GlobalExceptionHandler {
      * DownloadFailException Handler
      *
      * @param e DownloadFailException
-     * @return DOWNLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "A010", "다운로드 실패")
+     * @return DOWNLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, " A010 ", " 다운로드 실패 ")
      */
     @ExceptionHandler(DownloadFailException.class)
     public ResponseEntity handleDownloadFailException(DownloadFailException e) {
@@ -121,7 +122,7 @@ public class GlobalExceptionHandler {
      * IllegalFileDataException
      *
      * @param e IllegalFileDataException
-     * @return ILLEGAL_FILE_DATA(HttpStatus.UNPROCESSABLE_ENTITY, "A008", "파일의 데이터 에러")
+     * @return ILLEGAL_FILE_DATA(HttpStatus.UNPROCESSABLE_ENTITY, " A008 ", " 파일의 데이터 에러 ")
      */
     @ExceptionHandler(IllegalFileDataException.class)
     public ResponseEntity handleIllegalFileDataException(IllegalFileDataException e) {
@@ -134,7 +135,7 @@ public class GlobalExceptionHandler {
      * StorageFailException
      *
      * @param e StorageFailException
-     * @return STORAGE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "A011", "파일 저장 실패")
+     * @return STORAGE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, " A011 ", " 파일 저장 실패 ")
      */
     @ExceptionHandler(StorageFailException.class)
     public ResponseEntity handleStorageFailException(StorageFailException e) {
@@ -155,32 +156,50 @@ public class GlobalExceptionHandler {
 
         log.error(methodArgumentNotValidException.getBindingResult().toString());
 
-        return ErrorResponseEntity.toResponseEntity(ErrorCode.ILLEGAL_FILE_DATA);
+        return ErrorResponseEntity.toResponseEntity(ErrorCode.ILLEGAL_BOARD_DATA);
     }
 
+    /**
+     * NotMyBoardException
+     *
+     * @param e NotMyBoardException
+     * @return HttpStatus.UNPROCESSABLE_ENTITY
+     */
     @ExceptionHandler(NotMyBoardException.class)
-    public ResponseEntity handleNotMyBoardException(NotMyBoardException e){
+    public ResponseEntity handleNotMyBoardException(NotMyBoardException e) {
 
         log.error(e.getErrorCode().getMessage());
 
         return ErrorResponseEntity.toResponseEntity(e.getErrorCode());
     }
 
+    /**
+     * SQLException
+     *
+     * @param e SQLException
+     * @return ErrorCode.SERVER_ERROR
+     */
+    @ExceptionHandler(SQLException.class)
+    public ResponseEntity handleSQLException(SQLException e) {
 
-//    @ExceptionHandler(SQLException.class)
-//    public ResponseEntity handleSQLException() {
-//
-//        log.error("SQL Exception");
-//
-//        return ErrorResponseEntity.toResponseEntity(ErrorCode.SERVER_ERROR);
-//    }
-//
-//
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity handleException(Exception exception) {
-//
-//        log.error("Exception");
-//
-//        return ErrorResponseEntity.toResponseEntity(ErrorCode.SERVER_ERROR);
-//    }
+        log.error(e.getStackTrace().toString());
+        log.error(e.getMessage());
+
+        return ErrorResponseEntity.toResponseEntity(ErrorCode.SERVER_ERROR);
+    }
+
+    /**
+     * Exception
+     *
+     * @param e Exception
+     * @return ErrorCode.SERVER_ERROR
+     */
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity handleException(Exception e) {
+
+        log.error(e.getStackTrace().toString());
+        log.error(e.getMessage());
+
+        return ErrorResponseEntity.toResponseEntity(ErrorCode.SERVER_ERROR);
+    }
 }
