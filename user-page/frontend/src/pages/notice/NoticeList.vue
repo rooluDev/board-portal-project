@@ -20,7 +20,8 @@
           </tr>
           </thead>
           <tbody>
-          <tr v-for="fixedBoard in fixedNoticeBoardList" :key="fixedBoard.boardId" style="background-color: rgba(211, 211, 211, 1)">
+          <tr v-for="fixedBoard in fixedNoticeBoardList" :key="fixedBoard.boardId"
+              style="background-color: rgba(211, 211, 211, 1)">
             <td></td>
             <td class="text-center">
               <span class="link" @click="goToView(fixedBoard.boardId)">
@@ -87,7 +88,8 @@ export default {
 
     const noticeBoardList = ref([]);
     const fixedNoticeBoardList = ref([]);
-    const categoryList = ref([]);
+    const categoryList = ref([{categoryId: -1, categoryName: '전체 분류'}]);
+    const loaded = ref(false);
     const totalPageNum = ref(0);
 
     // 검색조건 초기 설정 및 검색조건 유지를 위한 쿼리스트링을 통한 설정
@@ -119,17 +121,16 @@ export default {
      * @param searchConditionParam 검색조건
      */
     const getNoticeBoardList = async (searchConditionParam) => {
-      try {
-        const res = await fetchGetNoticeBoardList(searchConditionParam);
-        categoryList.value = res.categoryList;
-        searchCondition.value = res.searchCondition;
-        noticeBoardList.value = res.noticeBoardList;
-        fixedNoticeBoardList.value = res.fixedNoticeBoardList;
-        totalPageNum.value = res.totalPageNum;
-      } catch (error) {
-        await router.push({
-          name: 'Error'
+      const res = await fetchGetNoticeBoardList(searchConditionParam);
+      searchCondition.value = res.searchCondition;
+      noticeBoardList.value = res.noticeBoardList;
+      fixedNoticeBoardList.value = res.fixedNoticeBoardList;
+      totalPageNum.value = res.totalPageNum;
+      if (!loaded.value){
+        res.categoryList.forEach(category => {
+          categoryList.value.push(category);
         })
+        loaded.value = true;
       }
     }
 

@@ -19,7 +19,7 @@
         <v-col cols="2" v-if="$props.category">
           <v-select
               label="카테고리 선택"
-              :items="addedDefaultCategoryList"
+              :items="$props.categoryList"
               item-title="categoryName"
               item-value="categoryId"
               v-model="$props.searchCondition.category"
@@ -92,7 +92,7 @@
 </template>
 
 <script>
-import {computed, getCurrentInstance, ref, watch} from 'vue';
+import {computed, getCurrentInstance, watch} from 'vue';
 import {useStore} from "vuex";
 
 export default {
@@ -123,17 +123,7 @@ export default {
     const {emit} = getCurrentInstance();
     const store = useStore();
     const accessToken = computed(() => store.getters.getAccessToken);
-    const addedDefaultCategoryList = ref([{categoryId: -1, categoryName: '전체 분류'}]);
 
-    const addDefaultCategory = () => {
-      props.categoryList.forEach((category) => {
-        addedDefaultCategoryList.value.push(category);
-      })
-    }
-
-    watch(() => props.categoryList, () => {
-      addDefaultCategory();
-    })
 
     watch(() => props.searchCondition.pageSize, () => {
       props.searchCondition.pageNum = 1;
@@ -151,13 +141,11 @@ export default {
     })
 
     const getNewBoardList = () => {
-      console.log(props.searchCondition);
       emit('search', props.searchCondition);
     }
 
     return {
       accessToken,
-      addedDefaultCategoryList,
       getNewBoardList
     }
   }

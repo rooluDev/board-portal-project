@@ -81,7 +81,9 @@ export default {
 
     const freeBoardList = ref([]);
     const totalPageNum = ref(0);
-    const categoryList = ref([]);
+    const categoryList = ref([{categoryId: -1, categoryName: '전체 분류'}]);
+
+    const loaded = ref(false);
 
     const searchCondition = ref({
       startDate: route.query.startDate || format(subMonths(new Date(), 1), 'yyyy-MM-dd'),
@@ -112,15 +114,19 @@ export default {
      */
     const getFreeBoardList = async (searchConditionParam) => {
       const res = await fetchGetFreeBoardList(searchConditionParam);
-      categoryList.value = res.categoryList;
       totalPageNum.value = res.totalPageNum;
       freeBoardList.value = res.freeBoardList;
       searchCondition.value = res.searchCondition;
-      console.log(freeBoardList.value);
+      if (!loaded.value){
+        res.categoryList.forEach(category => {
+          categoryList.value.push(category);
+        })
+        loaded.value = true;
+      }
     }
 
-    onMounted(() => {
-      getFreeBoardList(searchCondition.value);
+    onMounted(async () => {
+      await getFreeBoardList(searchCondition.value);
     })
 
     const goToView = (boardId) => {

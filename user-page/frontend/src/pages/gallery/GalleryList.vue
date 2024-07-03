@@ -70,8 +70,10 @@ export default {
 
     const galleryBoardList = ref([]);
     const totalPageNum = ref(0);
-    const categoryList = ref([]);
+    const categoryList = ref([{categoryId: -1, categoryName: '전체 분류'}]);
     const imageUrls = ref({});
+
+    const loaded = ref(false);
 
     const searchCondition = ref({
       startDate: route.query.startDate || format(subMonths(new Date(), 1), 'yyyy-MM-dd'),
@@ -115,16 +117,15 @@ export default {
      * @param searchConditionParam 검색조건
      */
     const getGalleryBoardList = async (searchConditionParam) => {
-      try {
-        const res = await fetchGetGalleryBoardList(searchConditionParam);
-        categoryList.value = res.categoryList;
-        totalPageNum.value = res.totalPageNum;
-        searchCondition.value = res.searchCondition;
-        galleryBoardList.value = res.galleryBoardList;
-      } catch (error) {
-        await router.push({
-          name: 'Error'
+      const res = await fetchGetGalleryBoardList(searchConditionParam);
+      totalPageNum.value = res.totalPageNum;
+      searchCondition.value = res.searchCondition;
+      galleryBoardList.value = res.galleryBoardList;
+      if (!loaded.value){
+        res.categoryList.forEach(category => {
+          categoryList.value.push(category);
         })
+        loaded.value = true;
       }
     }
 
