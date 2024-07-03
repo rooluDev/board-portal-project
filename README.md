@@ -40,18 +40,39 @@
 ## 📺 화면
   + **메인 페이지 및 로그인**
   
+
+https://github.com/rooluDev/board-portal-project/assets/152958052/a7594704-185f-46af-a8ab-c3975048afe6
+
+  + **게시물 검색**
+
+
+https://github.com/rooluDev/board-portal-project/assets/152958052/d1e4bd23-f7bd-4f99-948e-d6230cfc6082
+
+
   + **게시판 작성**
   
-  + **게시판 보기**
-  
+
+https://github.com/rooluDev/board-portal-project/assets/152958052/d6bdab38-46f8-4d8b-aa4b-09945b361388
+
+
   + **게시판 수정**
+
+https://github.com/rooluDev/board-portal-project/assets/152958052/a27fb564-752d-4474-ae85-1f373fdb7843
+
+
   
-  + **게시판 삭제**
-  
-  + **댓글 등록 및 삭제**
+  + **댓글 등록**
+
+
+https://github.com/rooluDev/board-portal-project/assets/152958052/8b9cae92-1f60-4d93-84f9-7eb3df5dc3bf
+
 
   + **파일 다운로드**
   
+
+https://github.com/rooluDev/board-portal-project/assets/152958052/513d4a70-ab98-4436-8060-178c9e7edbed
+
+
 
 ## 💡 주요 기능
 + 자유게시판 작성
