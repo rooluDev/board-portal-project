@@ -30,14 +30,13 @@
 > **사용자 아이디:** user  
 > **사용자 비밀번호:** 1234
 
-## 📚 API 문서
+## 📚 API 문서 [(더 보러가기)](https://documenter.getpostman.com/view/32925626/2sA3JRXyGT)
 
 + Postman으로 작성한 REST API 문서입니다.
 
 
 ![스크린샷 2024-07-03 오전 12 57 34](https://github.com/rooluDev/board-portal-project/assets/152958052/71e90744-543d-415b-a027-94109042d4da)
 
-  [더 보러가기](https://documenter.getpostman.com/view/32925626/2sA3JRXyGT)
 
 ## 📺 화면
   + **메인 페이지 및 로그인**
