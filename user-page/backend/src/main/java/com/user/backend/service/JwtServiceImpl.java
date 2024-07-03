@@ -4,6 +4,7 @@ import com.user.backend.common.exception.custom.NotLoggedInException;
 import com.user.backend.common.exception.response.ErrorCode;
 import com.user.backend.dto.MemberDto;
 import com.user.backend.jwt.JwtProvider;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,8 @@ public class JwtServiceImpl implements JwtService {
             return jwtProvider.getMemberIdFromJwt(accessToken);
         } catch (MalformedJwtException | IllegalArgumentException e) {
             throw new NotLoggedInException(ErrorCode.NOT_LOGGED_IN);
+        } catch (ExpiredJwtException e){
+            return null;
         }
     }
 
