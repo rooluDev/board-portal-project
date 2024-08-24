@@ -114,7 +114,7 @@
         LEFT JOIN
             tb_category ctg on fb.category_id = ctg.category_id
         LEFT JOIN
-            tb_file f on f.board_id = fb.board_id
+            tb_file f on f.board_id = fb.board_id AND f.board_type = 'free'
         GROUP BY
             fb.board_id, fb.title, fb.views, fb.created_at, fb.author_type, ctg.category_name
         ORDER BY
