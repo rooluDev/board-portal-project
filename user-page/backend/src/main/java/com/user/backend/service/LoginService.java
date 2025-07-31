@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface LoginService {
 
     /**
-     * 로그인 진행 후 JWT 반환
+     * 로그인 진행 후 Member 데이터
      *
      * @param memberId ID
      * @param password PW
