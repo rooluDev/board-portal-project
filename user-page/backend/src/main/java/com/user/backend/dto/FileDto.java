@@ -1,8 +1,6 @@
 package com.user.backend.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.sql.Timestamp;
 
@@ -12,6 +10,8 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class FileDto {
     private Long fileId;
     private String boardType;
