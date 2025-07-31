@@ -1,10 +1,10 @@
-package com.user.backend.service;
+package com.user.backend.service.mybatis;
 
 import com.user.backend.dto.InquiryBoardDto;
 import com.user.backend.dto.SearchConditionDto;
 import com.user.backend.mapper.InquiryBoardMapper;
+import com.user.backend.service.InquiryBoardService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,10 +13,9 @@ import java.util.Optional;
 /**
  * Inquiry Board Service 구현체
  */
-@Service
-@Primary
+@Service("inquiryBoardMybatis")
 @RequiredArgsConstructor
-public class InquiryBoardServiceImpl implements InquiryBoardService{
+public class InquiryBoardServiceImpl implements InquiryBoardService {
 
     private final InquiryBoardMapper inquiryBoardMapper;
 

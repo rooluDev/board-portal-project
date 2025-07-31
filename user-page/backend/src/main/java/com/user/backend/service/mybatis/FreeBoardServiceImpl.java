@@ -1,10 +1,10 @@
-package com.user.backend.service;
+package com.user.backend.service.mybatis;
 
 import com.user.backend.dto.FreeBoardDto;
 import com.user.backend.dto.SearchConditionDto;
 import com.user.backend.mapper.FreeBoardMapper;
+import com.user.backend.service.FreeBoardService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,8 +13,7 @@ import java.util.Optional;
 /**
  * Free Board Service 구현체
  */
-@Service
-@Primary
+@Service("freeBoardMybatis")
 @RequiredArgsConstructor
 public class FreeBoardServiceImpl implements FreeBoardService {
 

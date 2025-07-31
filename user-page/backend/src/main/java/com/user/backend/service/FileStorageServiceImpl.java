@@ -3,7 +3,7 @@ package com.user.backend.service;
 
 import com.user.backend.dto.FileDto;
 import com.user.backend.dto.ThumbnailDto;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,7 +14,6 @@ import java.util.List;
  * FileStorageService Impl
  */
 @Service
-@RequiredArgsConstructor
 @Primary
 public class FileStorageServiceImpl implements FileStorageService {
 
@@ -22,10 +21,19 @@ public class FileStorageServiceImpl implements FileStorageService {
     private final FileService fileService;
     private final ThumbnailService thumbnailService;
 
+    public FileStorageServiceImpl(StorageService storageService,
+                                  @Qualifier("fileJpa") FileService fileService,
+                                  @Qualifier("thumbnailJpa") ThumbnailService thumbnailService) {
+        this.storageService = storageService;
+        this.fileService = fileService;
+        this.thumbnailService = thumbnailService;
+    }
+
     @Override
     public void storageFileList(MultipartFile[] fileList, Long boardId, String boardType, boolean thumbnail) {
         List<FileDto> fileDtoList = storageService.storageFileList(fileList, boardType);
-        fileService.addFileList(fileDtoList, boardId);
+        fileDtoList = fileService.addFileList(fileDtoList, boardId);
+
         if (thumbnail) {
             ThumbnailDto thumbnailDto = storageService.storageThumbnailFromFile(fileDtoList.get(0));
             thumbnailDto.setFileId(fileDtoList.get(0).getFileId());

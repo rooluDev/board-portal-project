@@ -1,10 +1,10 @@
-package com.user.backend.service;
+package com.user.backend.service.mybatis;
 
 import com.user.backend.dto.NoticeBoardDto;
 import com.user.backend.dto.SearchConditionDto;
 import com.user.backend.mapper.NoticeBoardMapper;
+import com.user.backend.service.NoticeBoardService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,8 +13,7 @@ import java.util.Optional;
 /**
  * Notice Board Service 구현체
  */
-@Service
-@Primary
+@Service("noticeBoardMybatis")
 @RequiredArgsConstructor
 public class NoticeBoardServiceImpl implements NoticeBoardService {
 

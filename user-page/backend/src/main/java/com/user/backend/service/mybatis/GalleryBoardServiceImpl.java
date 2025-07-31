@@ -1,10 +1,10 @@
-package com.user.backend.service;
+package com.user.backend.service.mybatis;
 
 import com.user.backend.dto.GalleryBoardDto;
 import com.user.backend.dto.SearchConditionDto;
 import com.user.backend.mapper.GalleryBoardMapper;
+import com.user.backend.service.GalleryBoardService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,10 +13,9 @@ import java.util.Optional;
 /**
  * Gallery Board Service Impl
  */
-@Service
-@Primary
+@Service("galleryBoardMybatis")
 @RequiredArgsConstructor
-public class GalleryBoardServiceImpl implements GalleryBoardService{
+public class GalleryBoardServiceImpl implements GalleryBoardService {
 
     private final GalleryBoardMapper galleryBoardMapper;
 

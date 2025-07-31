@@ -1,10 +1,9 @@
-package com.user.backend.service;
+package com.user.backend.service.mybatis;
 
 import com.user.backend.dto.MemberDto;
 import com.user.backend.mapper.MemberMapper;
+import com.user.backend.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -12,10 +11,8 @@ import java.util.Optional;
 /**
  * MemberService Impl
  */
-@Service
-@Primary
+@Service("memberMybatis")
 @RequiredArgsConstructor
-@Slf4j
 public class MemberServiceImpl implements MemberService {
 
     private final MemberMapper memberMapper;

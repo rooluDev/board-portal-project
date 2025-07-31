@@ -1,10 +1,9 @@
-package com.user.backend.service;
+package com.user.backend.service.mybatis;
 
 import com.user.backend.dto.FileDto;
 import com.user.backend.mapper.FileMapper;
+import com.user.backend.service.FileService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,10 +13,8 @@ import java.util.Optional;
 /**
  * File Service 구현체
  */
-@Primary
-@Service
+@Service("fileMybatis")
 @RequiredArgsConstructor
-@Slf4j
 public class FileServiceImpl implements FileService {
 
     private final FileMapper fileMapper;

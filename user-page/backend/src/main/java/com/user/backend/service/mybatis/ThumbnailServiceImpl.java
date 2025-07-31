@@ -1,9 +1,9 @@
-package com.user.backend.service;
+package com.user.backend.service.mybatis;
 
 import com.user.backend.dto.ThumbnailDto;
 import com.user.backend.mapper.ThumbnailMapper;
+import com.user.backend.service.ThumbnailService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -11,10 +11,9 @@ import java.util.Optional;
 /**
  * ThumbnailService 구현체
  */
-@Service
-@Primary
+@Service("thumbnailMybatis")
 @RequiredArgsConstructor
-public class ThumbnailServiceImpl implements ThumbnailService{
+public class ThumbnailServiceImpl implements ThumbnailService {
 
     private final ThumbnailMapper thumbnailMapper;
 

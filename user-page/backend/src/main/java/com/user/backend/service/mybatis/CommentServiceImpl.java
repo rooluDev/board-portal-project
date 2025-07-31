@@ -1,19 +1,17 @@
-package com.user.backend.service;
+package com.user.backend.service.mybatis;
 
 import com.user.backend.dto.CommentDto;
 import com.user.backend.mapper.CommentMapper;
+import com.user.backend.service.CommentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Comment Service 구현체
  */
-@Service
-@Primary
+@Service("commentMybatis")
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
 
