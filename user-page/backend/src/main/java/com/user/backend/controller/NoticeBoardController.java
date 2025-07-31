@@ -11,6 +11,7 @@ import com.user.backend.dto.SearchConditionDto;
 import com.user.backend.service.CategoryService;
 import com.user.backend.service.NoticeBoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,12 +23,17 @@ import java.util.Map;
  * Notice Board Controller
  */
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api")
 public class NoticeBoardController {
 
     private final NoticeBoardService noticeBoardService;
     private final CategoryService categoryService;
+
+    public NoticeBoardController(@Qualifier("noticeBoardJpa") NoticeBoardService noticeBoardService,
+                                 @Qualifier("categoryJpa") CategoryService categoryService) {
+        this.noticeBoardService = noticeBoardService;
+        this.categoryService = categoryService;
+    }
 
     /**
      * 검색조건에 따른 공지사항 게시판 데이터 GET

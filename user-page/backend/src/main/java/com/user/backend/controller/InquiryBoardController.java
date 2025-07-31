@@ -14,6 +14,7 @@ import com.user.backend.service.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,13 +26,20 @@ import java.util.Map;
  * Inquiry Board Controller
  */
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api")
 public class InquiryBoardController {
 
-    private final InquiryBoardService inquiryBoardService;
     private final AnswerService answerService;
+    private final InquiryBoardService inquiryBoardService;
     private final JwtService jwtService;
+
+    public InquiryBoardController(@Qualifier("answerJpa") AnswerService answerService,
+                                  @Qualifier("inquiryBoardJpa") InquiryBoardService inquiryBoardService,
+                                  JwtService jwtService) {
+        this.answerService = answerService;
+        this.inquiryBoardService = inquiryBoardService;
+        this.jwtService = jwtService;
+    }
 
     /**
      * 문의리게시판 리스트 페이지에 필요한 데이터 반환

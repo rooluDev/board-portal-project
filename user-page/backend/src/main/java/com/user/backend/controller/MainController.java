@@ -6,6 +6,7 @@ import com.user.backend.service.GalleryBoardService;
 import com.user.backend.service.InquiryBoardService;
 import com.user.backend.service.NoticeBoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +20,6 @@ import java.util.Map;
  * Main Controller
  */
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api")
 public class MainController {
 
@@ -27,6 +27,16 @@ public class MainController {
     private final GalleryBoardService galleryBoardService;
     private final FreeBoardService freeBoardService;
     private final InquiryBoardService inquiryBoardService;
+
+    public MainController(@Qualifier("noticeBoardJpa") NoticeBoardService noticeBoardService,
+                          @Qualifier("galleryBoardJpa") GalleryBoardService galleryBoardService,
+                          @Qualifier("freeBoardJpa") FreeBoardService freeBoardService,
+                          @Qualifier("inquiryBoardJpa") InquiryBoardService inquiryBoardService) {
+        this.noticeBoardService = noticeBoardService;
+        this.galleryBoardService = galleryBoardService;
+        this.freeBoardService = freeBoardService;
+        this.inquiryBoardService = inquiryBoardService;
+    }
 
     /**
      * 공지사항, 자유게시판, 문의게시판 최근 6개, 갤러리게시판 최근 3개의 데이터 GET

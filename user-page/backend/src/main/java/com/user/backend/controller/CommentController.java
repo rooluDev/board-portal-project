@@ -7,6 +7,7 @@ import com.user.backend.service.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,11 +18,15 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api")
-@RequiredArgsConstructor
 public class CommentController {
 
     private final CommentService commentService;
     private final JwtService jwtService;
+
+    public CommentController(@Qualifier("commentJpa") CommentService commentService, JwtService jwtService) {
+        this.commentService = commentService;
+        this.jwtService = jwtService;
+    }
 
     /**
      * 댓글 등록

@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,7 +29,6 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api")
 public class GalleryBoardController {
 
@@ -40,6 +40,22 @@ public class GalleryBoardController {
     private final FileStorageService fileStorageService;
     private final MultipartFileValidator<GalleryBoardFileConstraint> multipartFileValidator;
 
+    public GalleryBoardController(@Qualifier("galleryBoardJpa") GalleryBoardService galleryBoardService,
+                                  @Qualifier("categoryJpa") CategoryService categoryService,
+                                  @Qualifier("fileJpa") FileService fileService,
+                                  @Qualifier("commentJpa") CommentService commentService,
+                                  JwtService jwtService,
+                                  FileStorageService fileStorageService,
+                                  MultipartFileValidator<GalleryBoardFileConstraint> multipartFileValidator) {
+
+        this.galleryBoardService = galleryBoardService;
+        this.categoryService = categoryService;
+        this.fileService = fileService;
+        this.jwtService = jwtService;
+        this.commentService = commentService;
+        this.fileStorageService = fileStorageService;
+        this.multipartFileValidator = multipartFileValidator;
+    }
 
     /**
      * 갤러리게시판 리스트 페이지에 필요한 데이터 반환

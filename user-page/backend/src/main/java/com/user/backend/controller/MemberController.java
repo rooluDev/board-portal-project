@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,12 +21,17 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/api")
-@RequiredArgsConstructor
 @Slf4j
 public class MemberController {
 
     private final MemberService memberService;
     private final JwtService jwtService;
+
+    public MemberController(@Qualifier("memberJpa") MemberService memberService,
+                            JwtService jwtService) {
+        this.memberService = memberService;
+        this.jwtService = jwtService;
+    }
 
     /**
      * JWT와 일치하는 Member 가져오기

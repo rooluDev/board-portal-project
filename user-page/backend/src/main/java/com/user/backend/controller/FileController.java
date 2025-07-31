@@ -8,6 +8,7 @@ import com.user.backend.dto.FileDto;
 import com.user.backend.service.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -31,7 +32,6 @@ import java.nio.file.Paths;
  * File Controller
  */
 @RestController
-@RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api")
 public class FileController {
@@ -39,6 +39,10 @@ public class FileController {
     @Value("#{storage['path']}")
     private String path;
     private final FileService fileService;
+
+    public FileController(@Qualifier("fileJpa") FileService fileService) {
+        this.fileService = fileService;
+    }
 
     /**
      * 파일 다운로드 리소스 반환
@@ -70,7 +74,6 @@ public class FileController {
             throw new DownloadFailException(ErrorCode.DOWNLOAD_FAIL);
         }
     }
-
 
 
     /**

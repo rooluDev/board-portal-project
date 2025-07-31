@@ -7,6 +7,7 @@ import com.user.backend.common.utils.StringUtils;
 import com.user.backend.dto.ThumbnailDto;
 import com.user.backend.service.ThumbnailService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -23,12 +24,15 @@ import java.net.MalformedURLException;
  */
 @RestController
 @RequestMapping("/api")
-@RequiredArgsConstructor
 public class ThumbnailController {
 
     @Value("#{storage['path']}")
     private String path;
     private final ThumbnailService thumbnailService;
+
+    public ThumbnailController(@Qualifier("thumbnailJpa") ThumbnailService thumbnailService) {
+        this.thumbnailService = thumbnailService;
+    }
 
     /**
      * 썸네일 이미지 Resource GET

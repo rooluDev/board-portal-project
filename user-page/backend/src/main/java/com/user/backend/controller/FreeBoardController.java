@@ -1,7 +1,6 @@
 package com.user.backend.controller;
 
 import com.user.backend.common.exception.custom.BoardNotFoundException;
-import com.user.backend.common.exception.custom.IllegalFileDataException;
 import com.user.backend.common.exception.custom.NotLoggedInException;
 import com.user.backend.common.exception.custom.NotMyBoardException;
 import com.user.backend.common.exception.response.ErrorCode;
@@ -15,6 +14,7 @@ import com.user.backend.service.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,7 +27,6 @@ import java.util.Map;
  * Free Board Controller
  */
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api")
 public class FreeBoardController {
 
@@ -38,6 +37,22 @@ public class FreeBoardController {
     private final JwtService jwtService;
     private final FileStorageService fileStorageService;
     private final MultipartFileValidator<FreeBoardFileConstraint> multipartFileValidator;
+
+    public FreeBoardController(@Qualifier("freeBoardJpa") FreeBoardService freeBoardService,
+                               @Qualifier("categoryJpa") CategoryService categoryService,
+                               @Qualifier("fileJpa") FileService fileService,
+                               @Qualifier("commentJpa") CommentService commentService,
+                               FileStorageService fileStorageService,
+                               JwtService jwtService,
+                               MultipartFileValidator<FreeBoardFileConstraint> multipartFileValidator) {
+        this.freeBoardService = freeBoardService;
+        this.categoryService = categoryService;
+        this.fileService = fileService;
+        this.commentService = commentService;
+        this.jwtService = jwtService;
+        this.fileStorageService = fileStorageService;
+        this.multipartFileValidator = multipartFileValidator;
+    }
 
     /**
      * 자유게시판 리스트 페이지에 필요한 데이터 반환
