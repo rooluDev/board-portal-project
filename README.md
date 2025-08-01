@@ -299,6 +299,38 @@ https://github.com/rooluDev/board-portal-project/assets/152958052/513d4a70-ab98-
 
    [FileStorageServiceImpl 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/service/FileStorageServiceImpl.java)
   </details>
+
+
++ JPA 동적쿼리 작성
+  <details>
+   <summary>코드 보기(펼치기/접기)</summary>
+   JPA의 Specification과 CriteriaBuilder를 활용하여 조건별 Predicate를 동적으로 생성하고, 검색 조건이 없는 경우에는 해당 조건을 무시하도록 구현.
+
+   자유 게시판 Specification Class
+   ```
+   /**
+     * 검색조건을 통한 쿼리 생성
+     *
+     * @param searchConditionDto 검색 조건
+     * @return 쿼리
+     */
+    public static Specification<FreeBoard> findBySearchCondition(SearchConditionDto searchConditionDto) {
+     ...
+   ```
+   
+   FreeBoardRepository
+   ```
+   default Page<FreeBoard> findBySearchCondition(SearchConditionDto searchConditionDto) {
+        Specification<FreeBoard> specification = FreeBoardSpecification.findBySearchCondition(searchConditionDto);
+        Sort.Direction direction = Sort.Direction.fromString(searchConditionDto.getOrderDirection());
+        String orderValue = searchConditionDto.getOrderValue() != null ? searchConditionDto.getOrderValue() : "createdAt";
+        Pageable pageable = PageRequest.of(searchConditionDto.getPageNum() - 1, searchConditionDto.getPageSize(), direction, orderValue);
+        return findAll(specification, pageable);
+    }
+   ```
+
+   [FreeBoardSpecification 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/specification/FreeBoardSpecification.java)
+  </details>
 ## 🗂 ERD
 ![ERD](https://github.com/rooluDev/board-portal-project/assets/152958052/a2754673-1a6c-4915-85d6-b30e3e180a89)
 
