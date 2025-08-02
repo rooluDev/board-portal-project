@@ -124,9 +124,9 @@ https://github.com/rooluDev/board-portal-project/assets/152958052/513d4a70-ab98-
         void insertBoard(FreeBoardDto freeBoardDto);
     ```
     
-    [Controller 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/controller/FreeBoardController.java#L99-L130)
+    [Controller 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/controller/FreeBoardController.java#L114-L145)
     
-    [Storage Service 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/service/FileStorageServiceImpl.java#L25-L34)
+    [Storage Service 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/service/LocalStorageService.java#L34-L68)
   </details>
 
 + 자유 게시판 수정
@@ -192,9 +192,9 @@ https://github.com/rooluDev/board-portal-project/assets/152958052/513d4a70-ab98-
      */
     void updateBoard(FreeBoardDto freeBoardDto);
     ```
-    [Controller 전체코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/controller/FreeBoardController.java#L132-L171)
+    [Controller 전체코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/controller/FreeBoardController.java#L147-L186)
 
-    [Storage Servie 전체코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/service/FileStorageServiceImpl.java#L36-L54)
+    [Storage Servie 전체코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/service/LocalStorageService.java#L34-L68)
   </details>
 
 + 물리적 파일 저장소 변경에 대한 유연성 확보
