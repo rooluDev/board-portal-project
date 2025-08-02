@@ -348,7 +348,7 @@ https://github.com/rooluDev/board-portal-project/assets/152958052/513d4a70-ab98-
 ### 🌐 사용자 페이지(SPA)
 ![Vue.js](https://img.shields.io/badge/vue.js-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white)
 ![Spring Boot](https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
-![MyBatis](https://img.shields.io/badge/MyBatis-000000?style=for-the-badge&logo=MyBatis&logoColor=white)
+![JPA](https://img.shields.io/badge/JPA-000000?style=for-the-badge&logoColor=white)
 
 ### 🗄 DB
 ![MySQL](https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
