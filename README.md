@@ -361,6 +361,8 @@ JPA의 **Specification**과 **CriteriaBuilder**를 활용하여 조건별로 `Pr
   
      [FreeBoardSpecification 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/specification/FreeBoardSpecification.java)
   </details>
+
+
 ## 🗂 ERD
 ![ERD](https://github.com/rooluDev/board-portal-project/assets/152958052/a2754673-1a6c-4915-85d6-b30e3e180a89)
 
