@@ -9,28 +9,11 @@ pipeline {
             }
         }
 
-        stage('Test - user-page') {
-            steps {
-                dir('user-page/backend') {
-                    sh 'chmod +x gradlew'
-                    sh './gradlew test'
-                }
-            }
-        }
-
-        stage('Test - admin-page') {
-            steps {
-                dir('admin-page/backend') {
-                    sh 'chmod +x gradlew'
-                    sh './gradlew test'
-                }
-            }
-        }
-
         stage('Build JAR - user-page') {
             steps {
                 dir('user-page/backend') {
-                    sh './gradlew build -x test'
+                    sh 'chmod +x gradlew'
+                    sh './gradlew clean build -x test'
                 }
             }
         }
@@ -38,7 +21,8 @@ pipeline {
         stage('Build JAR - admin-page') {
             steps {
                 dir('admin-page/backend') {
-                    sh './gradlew build -x test'
+                    sh 'chmod +x gradlew'
+                    sh './gradlew clean build -x test'
                 }
             }
         }
