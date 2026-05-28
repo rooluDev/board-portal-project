@@ -67,7 +67,7 @@ pipeline {
                 sh '''
                     docker-compose -p potal \
                         --env-file /var/jenkins_home/.env.potal \
-                        up -d --no-deps user-page admin-page
+                        up -d --no-deps --force-recreate user-page admin-page
                 '''
             }
         }
