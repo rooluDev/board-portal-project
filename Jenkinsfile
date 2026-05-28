@@ -9,6 +9,20 @@ pipeline {
             }
         }
 
+        stage('Build Frontend - user-page') {
+            steps {
+                // node:18-alpine 컨테이너에서 Vue 앱 빌드
+                // $WORKSPACE는 Jenkins 환경변수 — 호스트 경로와 1:1 매핑됨
+                sh '''
+                    docker run --rm \
+                      -v "$WORKSPACE/user-page/frontend:/app" \
+                      -w /app \
+                      node:18-alpine \
+                      sh -c "npm ci && npm run build"
+                '''
+            }
+        }
+
         stage('Build JAR - user-page') {
             steps {
                 dir('user-page/backend') {
@@ -40,7 +54,13 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                // 프로젝트명 'potal' 고정, 앱 컨테이너만 재시작 (MySQL 제외)
+                // ① 프론트엔드 빌드 결과물을 Nginx가 서빙하는 디렉터리로 복사
+                sh '''
+                    mkdir -p /var/jenkins_home/frontend-dist
+                    cp -r user-page/frontend/build/. /var/jenkins_home/frontend-dist/
+                '''
+
+                // ② 프로젝트명 'potal' 고정, 앱 컨테이너만 재시작 (MySQL 제외)
                 sh '''
                     docker-compose -p potal \
                         --env-file /var/jenkins_home/.env.potal \
