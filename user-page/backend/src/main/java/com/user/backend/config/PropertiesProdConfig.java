@@ -1,10 +1,13 @@
 package com.user.backend.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
+
+import java.util.Properties;
 
 /**
  * Properties Prod Config
@@ -13,24 +16,29 @@ import org.springframework.core.io.ClassPathResource;
 @Profile("prod")
 public class PropertiesProdConfig {
 
+    /**
+     * JWT 설정: @Value로 환경변수를 직접 주입하여 Properties 구성
+     * (PropertiesFactoryBean은 ${...} 환경변수를 해석하지 않으므로 직접 주입)
+     */
     @Bean(name = "jwt")
-    public PropertiesFactoryBean jwtPropertiesBean() {
-        PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
-        ClassPathResource classPathResource = new ClassPathResource("properties/jwt.properties");
-
-        propertiesFactoryBean.setLocation(classPathResource);
-
-        return propertiesFactoryBean;
+    public Properties jwtProperties(@Value("${JWT_SECRET}") String jwtSecret) {
+        Properties props = new Properties();
+        props.setProperty("secret", jwtSecret);
+        props.setProperty("headerKey", "Authorization");
+        return props;
     }
 
+    /**
+     * 스토리지 설정: S3 버킷/리전을 환경변수에서 주입
+     */
     @Bean(name = "storage")
-    public PropertiesFactoryBean storagePropertiesBean() {
-        PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
-        ClassPathResource classPathResource = new ClassPathResource("properties/storage-prod.properties");
-
-        propertiesFactoryBean.setLocation(classPathResource);
-
-        return propertiesFactoryBean;
+    public Properties storageProperties(
+            @Value("${S3_BUCKET}") String s3Bucket,
+            @Value("${S3_REGION}") String s3Region) {
+        Properties props = new Properties();
+        props.setProperty("bucket", s3Bucket);
+        props.setProperty("region", s3Region);
+        return props;
     }
 
     @Bean(name = "constraint")
