@@ -54,10 +54,13 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                // ① 프론트엔드 빌드 결과물을 Nginx가 서빙하는 디렉터리로 복사
+                // ① 프론트엔드 빌드 결과물을 Nginx 서빙 경로로 복사
+                // Jenkins 컨테이너는 /home/ubuntu에 접근 불가 → Alpine 컨테이너로 호스트 경로 마운트해 복사
                 sh '''
-                    mkdir -p /var/jenkins_home/frontend-dist
-                    cp -r user-page/frontend/build/. /var/jenkins_home/frontend-dist/
+                    docker run --rm \
+                      -v "$WORKSPACE/user-page/frontend/build:/src" \
+                      -v /home/ubuntu/user/frontend:/dst \
+                      alpine sh -c "cp -r /src/. /dst/"
                 '''
 
                 // ② 프로젝트명 'potal' 고정, 앱 컨테이너만 재시작 (MySQL 제외)

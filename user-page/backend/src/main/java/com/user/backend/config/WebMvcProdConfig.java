@@ -17,8 +17,8 @@ public class WebMvcProdConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins(
-                        "https://xn--4k0b136a8obo7hdvo59brzcrug.site",
-                        "https://www.xn--4k0b136a8obo7hdvo59brzcrug.site"
+                        "https://xn--4k0bj36a8obp7hdvo59brzcrug.site",
+                        "https://www.xn--4k0bj36a8obp7hdvo59brzcrug.site"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
                 .allowedHeaders("*")
