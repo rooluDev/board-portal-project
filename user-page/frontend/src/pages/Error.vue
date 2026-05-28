@@ -24,7 +24,6 @@ import { useRouter } from "vue-router";
 export default {
   setup() {
     const router = useRouter();
-
     const goToMain = () => {
       router.push({
         name: 'Main'

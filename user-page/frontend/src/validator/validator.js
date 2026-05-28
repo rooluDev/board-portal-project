@@ -13,7 +13,7 @@ export const isValidFileSize = (fileSize, maxSize) => {
 }
 
 export const freeBoardValidator = (freeBoard, constraint) => {
-    if (freeBoard.categoryId == -1) {
+    if (freeBoard.categoryId === -1) {
         throw new Error("카테고리를 선택하세요.");
     }
     textValidator(freeBoard.title, constraint.title.minLength, constraint.title.maxLength, "제목");
@@ -22,7 +22,7 @@ export const freeBoardValidator = (freeBoard, constraint) => {
 
 
 export const galleryBoardValidator = (galleryBoard, constraint) => {
-    if (galleryBoard.categoryId == -1) {
+    if (galleryBoard.categoryId === -1) {
         throw new Error("카테고리를 선택하세요.");
     }
     textValidator(galleryBoard.title, constraint.title.minLength, constraint.title.maxLength, "제목");

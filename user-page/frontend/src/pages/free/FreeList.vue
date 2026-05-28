@@ -69,7 +69,7 @@ import {parseStringByFormat} from "@/utils/searchConditionUtils";
 import {fetchGetFreeBoardList} from "@/api/freeBoardService";
 import {isNew} from "@/utils/dateUtils";
 import {parseToQueryString, truncateText} from "@/utils/stringUtils";
-import {format, subMonths} from "date-fns";
+import {format, subYears} from "date-fns";
 import {useStore} from "vuex";
 
 export default {
@@ -86,7 +86,7 @@ export default {
     const loaded = ref(false);
 
     const searchCondition = ref({
-      startDate: route.query.startDate || format(subMonths(new Date(), 1), 'yyyy-MM-dd'),
+      startDate: route.query.startDate || format(subYears(new Date(), 1), 'yyyy-MM-dd'),
       endDate: route.query.endDate || format(new Date(), 'yyyy-MM-dd'),
       category: route.query.category || -1,
       searchText: route.query.searchText || '',

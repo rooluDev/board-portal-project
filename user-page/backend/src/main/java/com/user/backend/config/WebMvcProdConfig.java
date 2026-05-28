@@ -14,21 +14,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebMvcProdConfig implements WebMvcConfigurer {
 
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/upload/free/**")
-                .addResourceLocations("file:///home/ubuntu/upload/free/");
-
-        registry.addResourceHandler("/upload/gallery/**")
-                .addResourceLocations("file:///home/ubuntu/upload/gallery/");
-
-        registry.addResourceHandler("/upload/thumbnail/**")
-                .addResourceLocations("file:///home/ubuntu/upload/thumbnail/");
-    }
-
-    @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("[URI]")
+                .allowedOrigins(
+                        "https://xn--4k0bj36a8obp7hdvo59brzcrug.site",
+                        "https://www.xn--4k0bj36a8obp7hdvo59brzcrug.site"
+                )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
                 .allowedHeaders("*")
                 .allowCredentials(true)

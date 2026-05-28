@@ -113,6 +113,10 @@ export default {
      * 게시물 추가
      */
     const writeBoard = async () => {
+      if (!confirm("등록 하시겠습니까?")){
+        return;
+      }
+
       try {
         galleryBoardForm.value.fileList = galleryBoardForm.value.fileList.filter(file => file != null);
 

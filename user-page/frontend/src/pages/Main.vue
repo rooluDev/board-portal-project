@@ -202,6 +202,7 @@ export default {
           name: 'Error'
         })
       }
+      console.log(freeBoardList.value);
     }
 
     /**

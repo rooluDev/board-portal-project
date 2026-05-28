@@ -79,7 +79,7 @@ import {useRoute} from "vue-router";
 import {parseStringByFormat} from "@/utils/searchConditionUtils";
 import {isNew} from "@/utils/dateUtils";
 import {truncateText} from "@/utils/stringUtils";
-import {format, subMonths} from "date-fns";
+import {format, subYears} from "date-fns";
 
 export default {
   components: {Navbar, SearchForm, Pagination},
@@ -94,7 +94,7 @@ export default {
 
     // 검색조건 초기 설정 및 검색조건 유지를 위한 쿼리스트링을 통한 설정
     const searchCondition = ref({
-      startDate: route.query.startDate || format(subMonths(new Date(), 1), 'yyyy-MM-dd'),
+      startDate: route.query.startDate || format(subYears(new Date(), 1), 'yyyy-MM-dd'),
       endDate: route.query.endDate || format(new Date(), 'yyyy-MM-dd'),
       category: route.query.category || -1,
       searchText: route.query.searchText || '',

@@ -75,6 +75,7 @@ export default {
     const modifyBoard = async () => {
       try {
         inquiryBoardValidator(inquiryBoard.value, constraint);
+        console.log(inquiryBoard.value.isSecret);
         await fetchModifyInquiryBoard(inquiryBoard.value);
         alert("수정 되었습니다.");
         goToList();

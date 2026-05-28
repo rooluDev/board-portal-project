@@ -75,7 +75,7 @@ import {fetchCheckInquiryAuthor, fetchGetInquiryBoardList} from "@/api/inquiryBo
 import {parseStringByFormat} from "@/utils/searchConditionUtils";
 import {parseToQueryString, truncateText} from "@/utils/stringUtils";
 import {isNew} from "@/utils/dateUtils";
-import {format, subMonths} from "date-fns";
+import {format, subYears} from "date-fns";
 import {Board} from "@/type/boardType";
 
 export default {
@@ -88,7 +88,7 @@ export default {
     const inquiryBoardList = ref([]);
     const totalPageNum = ref(0);
     const searchCondition = ref({
-      startDate: route.query.startDate || format(subMonths(new Date(), 1), 'yyyy-MM-dd'),
+      startDate: route.query.startDate || format(subYears(new Date(), 1), 'yyyy-MM-dd'),
       endDate: route.query.endDate || format(new Date(), 'yyyy-MM-dd'),
       searchText: route.query.searchText || '',
       pageSize: route.query.pageSize || 10,

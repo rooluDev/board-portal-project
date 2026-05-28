@@ -85,11 +85,11 @@
             a.answer_id
         FROM
             tb_inquiry_board ib
-                LEFT JOIN
+        LEFT JOIN
             tb_answer a on ib.board_id = a.board_id
         ORDER BY
-            ib.created_at DESC
-            LIMIT 6;
+            ib.created_at
+        DESC LIMIT 6;
     </select>
 
     <select id="selectBoardByIdAndMemberId" parameterType="map" resultType="com.user.backend.dto.InquiryBoardDto">

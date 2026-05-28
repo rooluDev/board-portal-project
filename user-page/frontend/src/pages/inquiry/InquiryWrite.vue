@@ -50,6 +50,9 @@ export default {
      * 문의 게시판 작성
      */
     const writeBoard = async () => {
+      if (!confirm("등록 하시겠습니까?")){
+        return;
+      }
       try {
         inquiryBoardValidator(inquiryBoardForm.value, constraint);
         await fetchAddInquiryBoard(inquiryBoardForm.value);

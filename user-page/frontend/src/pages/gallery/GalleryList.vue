@@ -58,7 +58,7 @@ import {parseStringByFormat} from "@/utils/searchConditionUtils";
 import {isNew} from "@/utils/dateUtils";
 import {fetchGetGalleryBoardList} from "@/api/galleryBoardService";
 import {fetchGetThumbnailResource} from "@/api/imgaeService";
-import {format, subMonths} from "date-fns";
+import {format, subYears} from "date-fns";
 import {parseToQueryString, truncateText} from "@/utils/stringUtils";
 
 export default {
@@ -76,7 +76,7 @@ export default {
     const loaded = ref(false);
 
     const searchCondition = ref({
-      startDate: route.query.startDate || format(subMonths(new Date(), 1), 'yyyy-MM-dd'),
+      startDate: route.query.startDate || format(subYears(new Date(), 1), 'yyyy-MM-dd'),
       endDate: route.query.endDate || format(new Date(), 'yyyy-MM-dd'),
       category: route.query.category || -1,
       searchText: route.query.searchText || '',
@@ -101,6 +101,7 @@ export default {
      * 썸네일 이미지 가져오기
      */
     const getThumbnailResource = async () => {
+      console.log(galleryBoardList.value)
       for (const board of galleryBoardList.value) {
         try {
           const imageBlob = await fetchGetThumbnailResource(board.thumbnailId);
@@ -121,6 +122,7 @@ export default {
       totalPageNum.value = res.totalPageNum;
       searchCondition.value = res.searchCondition;
       galleryBoardList.value = res.galleryBoardList;
+      await getThumbnailResource();
       if (!loaded.value){
         res.categoryList.forEach(category => {
           categoryList.value.push(category);
@@ -131,7 +133,6 @@ export default {
 
     onMounted(async () => {
       await getGalleryBoardList(searchCondition.value);
-      await getThumbnailResource();
     })
 
 
