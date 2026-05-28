@@ -101,12 +101,15 @@ export default {
      * 썸네일 이미지 가져오기
      */
     const getThumbnailResource = async () => {
-      console.log(galleryBoardList.value)
       for (const board of galleryBoardList.value) {
-        try {
-          const imageBlob = await fetchGetThumbnailResource(board.thumbnailId);
-          imageUrls.value[board.boardId] = URL.createObjectURL(imageBlob);
-        } catch (error) {
+        if (board.thumbnailId) {
+          try {
+            const imageBlob = await fetchGetThumbnailResource(board.thumbnailId);
+            imageUrls.value[board.boardId] = URL.createObjectURL(imageBlob);
+          } catch (error) {
+            imageUrls.value[board.boardId] = null;
+          }
+        } else {
           imageUrls.value[board.boardId] = null;
         }
       }

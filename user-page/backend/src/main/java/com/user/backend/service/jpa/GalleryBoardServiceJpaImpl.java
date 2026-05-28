@@ -1,11 +1,14 @@
 package com.user.backend.service.jpa;
 
+import com.user.backend.common.type.Author;
 import com.user.backend.dto.GalleryBoardDto;
 import com.user.backend.dto.SearchConditionDto;
 import com.user.backend.entity.Category;
 import com.user.backend.entity.GalleryBoard;
+import com.user.backend.repository.AdminRepository;
 import com.user.backend.repository.CategoryRepository;
 import com.user.backend.repository.GalleryBoardRepository;
+import com.user.backend.repository.MemberRepository;
 import com.user.backend.service.GalleryBoardService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -27,6 +30,8 @@ public class GalleryBoardServiceJpaImpl implements GalleryBoardService {
 
     private final GalleryBoardRepository galleryBoardRepository;
     private final CategoryRepository categoryRepository;
+    private final AdminRepository adminRepository;
+    private final MemberRepository memberRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -38,7 +43,18 @@ public class GalleryBoardServiceJpaImpl implements GalleryBoardService {
     public List<GalleryBoardDto> getBoardListByCondition(SearchConditionDto searchConditionDto) {
         return galleryBoardRepository.findBySearchCondition(searchConditionDto)
                 .stream()
-                .map(galleryBoard -> modelMapper.map(galleryBoard, GalleryBoardDto.class))
+                .map(galleryBoard -> {
+                    GalleryBoardDto dto = modelMapper.map(galleryBoard, GalleryBoardDto.class);
+                    // GalleryBoard 엔티티에 없는 등록자 이름을 별도로 조회해서 세팅
+                    if (Author.ADMIN.getAuthorType().equals(galleryBoard.getAuthorType())) {
+                        adminRepository.findById(galleryBoard.getAuthorId())
+                                .ifPresent(admin -> dto.setAdminName(admin.getAdminName()));
+                    } else if (Author.MEMBER.getAuthorType().equals(galleryBoard.getAuthorType())) {
+                        memberRepository.findById(galleryBoard.getAuthorId())
+                                .ifPresent(member -> dto.setMemberName(member.getMemberName()));
+                    }
+                    return dto;
+                })
                 .toList();
     }
 

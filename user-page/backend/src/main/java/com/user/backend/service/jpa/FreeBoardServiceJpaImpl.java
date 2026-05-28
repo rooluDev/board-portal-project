@@ -1,11 +1,14 @@
 package com.user.backend.service.jpa;
 
+import com.user.backend.common.type.Author;
 import com.user.backend.dto.FreeBoardDto;
 import com.user.backend.dto.SearchConditionDto;
 import com.user.backend.entity.Category;
 import com.user.backend.entity.FreeBoard;
+import com.user.backend.repository.AdminRepository;
 import com.user.backend.repository.CategoryRepository;
 import com.user.backend.repository.FreeBoardRepository;
+import com.user.backend.repository.MemberRepository;
 import com.user.backend.service.FreeBoardService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -27,6 +30,8 @@ public class FreeBoardServiceJpaImpl implements FreeBoardService {
 
     private final FreeBoardRepository freeBoardRepository;
     private final CategoryRepository categoryRepository;
+    private final AdminRepository adminRepository;
+    private final MemberRepository memberRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -38,7 +43,18 @@ public class FreeBoardServiceJpaImpl implements FreeBoardService {
     public List<FreeBoardDto> getBoardListByCondition(SearchConditionDto searchConditionDto) {
         return freeBoardRepository.findBySearchCondition(searchConditionDto)
                 .stream()
-                .map(freeBoard -> modelMapper.map(freeBoard, FreeBoardDto.class))
+                .map(freeBoard -> {
+                    FreeBoardDto dto = modelMapper.map(freeBoard, FreeBoardDto.class);
+                    // FreeBoard 엔티티에 없는 등록자 이름을 별도로 조회해서 세팅
+                    if (Author.ADMIN.getAuthorType().equals(freeBoard.getAuthorType())) {
+                        adminRepository.findById(freeBoard.getAuthorId())
+                                .ifPresent(admin -> dto.setAdminName(admin.getAdminName()));
+                    } else if (Author.MEMBER.getAuthorType().equals(freeBoard.getAuthorType())) {
+                        memberRepository.findById(freeBoard.getAuthorId())
+                                .ifPresent(member -> dto.setMemberName(member.getMemberName()));
+                    }
+                    return dto;
+                })
                 .toList();
     }
 
