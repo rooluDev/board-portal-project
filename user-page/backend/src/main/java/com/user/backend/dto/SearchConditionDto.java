@@ -1,5 +1,6 @@
 package com.user.backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -39,10 +40,11 @@ public class SearchConditionDto {
     }
 
     /**
-     * Timestamp 사용자 정의 getter 생성
+     * Timestamp 사용자 정의 getter 생성 (DB 쿼리 전용, JSON 직렬화 제외)
      *
      * @return timestamp
      */
+    @JsonIgnore
     public Timestamp getStartDateTimestamp() {
         LocalDate localStateDate = LocalDate.parse(this.startDate);
         LocalDateTime startDate = localStateDate.atTime(LocalTime.MIN);
@@ -50,10 +52,11 @@ public class SearchConditionDto {
     }
 
     /**
-     * Timestamp 사용자 정의 getter 생성
+     * Timestamp 사용자 정의 getter 생성 (DB 쿼리 전용, JSON 직렬화 제외)
      *
      * @return timestamp
      */
+    @JsonIgnore
     public Timestamp getEndDateTimestamp() {
         LocalDate localEndDate = LocalDate.parse(this.endDate);
         LocalDateTime endDate = localEndDate.atTime(LocalTime.MAX);

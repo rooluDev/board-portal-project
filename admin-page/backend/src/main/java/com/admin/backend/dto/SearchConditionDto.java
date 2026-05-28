@@ -33,7 +33,7 @@ public class SearchConditionDto {
      * ModelAttribute를 통해 주입 받기 떄문에 기본 생성자를 통해 param이 없을 때 정책상의 기본 값 설정
      */
     public SearchConditionDto(){
-        this.startDate = LocalDate.now().minusMonths(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        this.startDate = LocalDate.now().minusYears(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         this.endDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         this.category = -1L;
         this.searchText = "";
