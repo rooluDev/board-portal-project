@@ -1,13 +1,52 @@
 # 📋 게시판 포탈 사이트
 
 ## 📝 프로젝트 개요
-이 프로젝트는 **다양한 게시판을 통합적으로 관리할 수 있는 포털 사이트**를 구축하는 것을 목표로 합니다.
+이 프로젝트는 **다양한 게시판을 통합적으로 관리할 수 있는 포털 사이트**를 구축하는 것을 목표로 합니다.  
+단순 기능 구현에 그치지 않고, **AWS EC2 환경에 Docker + Nginx로 직접 배포하고 Jenkins CI/CD 파이프라인을 구축**하여 실제 운영 환경까지 경험하는 것을 목표로 했습니다.
 
 - **게시판 종류**: 자유 게시판, 문의 게시판, 갤러리 게시판, 공지사항
 - **아키텍처 구성**:
   - **사용자 페이지**: SPA(Single Page Application) 구조, **Spring Boot + Vue.js** 기반
   - **관리자 페이지**: MPA(Multi Page Application) 구조, **Spring Boot + Thymeleaf** 기반
-- **서버 분리**: 사용자 페이지와 관리자 페이지를 각각 다른 서버에서 운영하여 보안성과 관리 효율성을 강화했습니다.
+- **서버 분리**: 사용자 페이지와 관리자 페이지를 각각 독립된 Docker 컨테이너로 분리하여 운영하며, 인증 방식도 JWT와 Session으로 역할에 맞게 구분했습니다.
+- **ORM 비교**: 동일한 서비스 인터페이스에 JPA와 MyBatis 구현체를 각각 작성하여 두 ORM의 동작 방식과 쿼리 성능을 직접 비교할 수 있도록 설계했습니다.
+
+## 💻 프로젝트 아키텍처
+
+```mermaid
+graph TB
+    DEV["👨‍💻 Developer"]
+    GH["GitHub"]
+    JK["Jenkins"]
+
+    DEV -->|git push| GH
+    GH -->|Webhook| JK
+
+    JK -->|"① Vue.js build (node:18-alpine)"| JK
+    JK -->|"② Gradle build"| JK
+    JK -->|"③ Docker image build & deploy"| EC2
+
+    subgraph EC2["☁️ AWS EC2"]
+        NGX["Nginx (리버스 프록시)"]
+
+        subgraph DOCKER["🐳 Docker Compose"]
+            UP["user-page :8081\nSpring Boot + Vue.js (SPA)\nJWT 인증"]
+            AP["admin-page :8082\nSpring Boot + Thymeleaf (MPA)\nSession 인증"]
+            DB[("MySQL :3306")]
+        end
+
+        NGX -->|"김승현포털사이트.site"| UP
+        NGX -->|"admin.김승현포털사이트.site"| AP
+        UP <--> DB
+        AP <--> DB
+    end
+
+    S3[("☁️ AWS S3\n파일 저장소")]
+    UP <-->|"파일 업로드 / 다운로드 (prod)"| S3
+
+    USER["👤 사용자"] -->|HTTPS| NGX
+    ADMIN["🔑 관리자"] -->|HTTPS| NGX
+```
 
 ## 💻 게시판 구조
 + **관리자 페이지**
@@ -70,133 +109,7 @@ https://github.com/rooluDev/board-portal-project/assets/152958052/513d4a70-ab98-
 
 ## 💡 주요 기능
 
-### 1️⃣ 자유 게시판 작성
-
-자유 게시판에서는 텍스트 게시글뿐만 아니라 첨부파일을 포함한 게시글을 작성할 수 있습니다.  
-클라이언트에서 `multipart/form-data` 형식으로 게시글 정보와 첨부파일을 함께 업로드하면,  
-서버에서 이를 파싱하여 **DB 저장(게시글 메타데이터)**과 **물리적 파일 저장(파일 서버)**을 분리하여 처리합니다.  
-이 과정을 통해 파일 업로드와 게시글 작성이 하나의 트랜잭션처럼 동작하도록 구성했습니다.
-
-  <details>
-   <summary>코드 보기(펼치기/접기)</summary>
-  
-    Controller
-     ```
-      @PostMapping("/board/free")
-        public ResponseEntity addBoard(@Valid @ModelAttribute FreeBoardDto freeBoardDto,
-                                       @RequestPart(name = "file", required = false) MultipartFile[] fileList,
-                                       HttpServletRequest request) {
-    
-            ...
-    
-            return ResponseEntity.ok().build();
-    
-     ```
-    DB Service
-    ```
-        /**
-         * 자유게시물 추가
-         *
-         * @param freeBoardDto ( category_id, author_type, author_id, title, content )
-         */
-        Long addBoard(FreeBoardDto freeBoardDto);
-    ```
-    Storage Service
-    ```
-        /**
-         * Multipart File List DB저장 및 물리적 파일 저장
-         *
-         * @param fileList 저장할 파일 리스트
-         * @param boardId 게시판 번호
-         * @param boardType 게시판 타입
-         * @param thumbnail 썸네일 저장 할지
-         */
-        void storageFileList(MultipartFile[] fileList, Long boardId, String boardType, boolean thumbnail);
-    ```
-    
-    [Controller 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/controller/FreeBoardController.java#L114-L145)
-    
-    [Storage Service 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/service/LocalStorageService.java#L34-L68)
-  </details>
-
-### 2️⃣ 자유 게시판 수정
-
-자유 게시판 수정 기능은 기존 게시물의 제목과 내용을 수정하고, 첨부파일을 추가하거나 기존 파일을 삭제할 수 있도록 구현되었습니다.  
-수정 요청 시 **게시글 데이터 업데이트, 파일 삭제, 새 파일 업로드**가 순차적으로 진행되며,  
-썸네일이 필요한 경우 자동으로 재생성되도록 설계되었습니다.  
-이를 통해 게시물과 첨부파일이 항상 최신 상태로 유지되도록 구성했습니다.
-
-
-  <details>
-    <summary>코드 보기(펼치기/접기)</summary>
-   
-     Controller
-     ```
-      /**
-        * 자유게시판 수정
-        *
-        * @param boardId          PathVariable ( pk )
-        * @param freeBoardDto     수정할 데이터
-        * @param fileList         추가할 파일
-        * @param deleteFileIdList 삭제할 파일의 pk 리스트
-        * @param request          HttpServletRequest
-        * @return null
-        */
-       @PutMapping("/board/free/{boardId}")
-       public ResponseEntity modifyBoard(@PathVariable(name = "boardId") Long boardId,
-                                         @Valid @ModelAttribute FreeBoardDto freeBoardDto,
-                                         @RequestParam(name = "deleteFileIdList") List<Long> deleteFileIdList,
-                                         @RequestPart(name = "file", required = false) MultipartFile[] fileList,
-                                         HttpServletRequest request) {
-   
-           
-           ...
-  
-           return ResponseEntity.ok().build();
-      ```
-      
-      DB Service
-      ```
-      /**
-       * 게시물 수정
-       *
-       * @param freeBoardDto ( categoryId, title, content, boardId )
-       */
-      void modifyBoard(FreeBoardDto freeBoardDto);
-      ```
-      
-      Storage Service
-      ```
-      /**
-       * 썸네일 DB저장 및 물리적 파일 저장
-       *
-       * @param fileDto 썸네일로 저장할 FileDto
-       */
-      void storageThumbnail(FileDto fileDto);
-  
-      /**
-       * 파일 리스트 삭제
-       *
-       * @param deleteFileIdList 삭제할 파일들의 pk 리스트
-       * @return 썸네일로 만든 파일 대상이 삭제가 되었는지
-       */
-      boolean deleteFileList(List<Long> deleteFileIdList);
-      ```
-      Mapper
-      ```
-      /**
-       * UPDATE tb_free_board
-       *
-       * @param freeBoardDto ( categoryId, title, content, boardId )
-       */
-      void updateBoard(FreeBoardDto freeBoardDto);
-      ```
-      [Controller 전체코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/controller/FreeBoardController.java#L147-L186)
-  
-      [Storage Servie 전체코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/service/LocalStorageService.java#L34-L68)
-   </details>
-
-### 3️⃣ 파일 저장소 유연성 확보
+### 1️⃣ 파일 저장소 유연성 확보
 
 이 기능은 **파일의 물리적 저장 위치(local storage, NAS, cloud storage 등)**가 변경되더라도  
 애플리케이션 로직을 수정하지 않고 쉽게 대응할 수 있도록 설계되었습니다.  
@@ -277,48 +190,7 @@ https://github.com/rooluDev/board-portal-project/assets/152958052/513d4a70-ab98-
   
    </details>
 
-### 4️⃣ 파일 생성 및 수정시 썸네일 삭제 및 생성
-
-이 기능은 **썸네일이 필요한 게시판(갤러리)**과 **썸네일이 필요 없는 게시판(자유 게시판)**을 모두 지원하기 위해 설계되었습니다.  
-파일을 생성하거나 수정할 때 **썸네일 생성 여부를 메소드 파라미터로 제어**할 수 있도록 구성하여,  
-하나의 공통 `FileStorageService` 메소드로 두 유형의 게시판을 모두 지원할 수 있습니다.  
-
-또한 **파일 삭제 시 해당 파일이 썸네일 대상이었는지를 판단하여 썸네일도 함께 제거**하도록 처리하여,  
-불필요한 썸네일 파일이 서버에 남지 않도록 했습니다.
-
-  <details>
-     <summary>코드 보기(펼치기/접기)</summary>
-     썸네일이 필요한 게시판(갤러리)과 썸네일이 필요 없는 게시판(자유 게시판) 둘 다 사용하는 File Storage Service에서 썸네일의 생성 유무를 직접 주입해서 둘 다 사용 가능한 메소드를 생성했다.
-  
-     삭제 메소드
-     ```
-     /**
-       * 파일 리스트 삭제
-       *
-       * @param deleteFileIdList 삭제할 파일들의 pk 리스트
-       * @return 썸네일로 만든 파일 대상이 삭제가 되었는지
-       */
-      boolean deleteFileList(List<Long> deleteFileIdList);
-     ```
-     
-     생성 메소드
-     ```
-     /**
-       * Multipart File List DB저장 및 물리적 파일 저장
-       *
-       * @param fileList 저장할 파일 리스트
-       * @param boardId 게시판 번호
-       * @param boardType 게시판 타입
-       * @param thumbnail 썸네일 저장 할지
-       */
-      void storageFileList(MultipartFile[] fileList, Long boardId, String boardType, boolean thumbnail);
-     ```
-  
-     [FileStorageServiceImpl 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/service/FileStorageServiceImpl.java)
-  </details>
-
-
-### 5️⃣ JPA 동적쿼리 작성
+### 2️⃣ JPA 동적쿼리 작성
 
 이 기능은 **검색 조건이 다양하게 조합될 수 있는 게시판 검색 기능**을 효율적으로 처리하기 위해 구현되었습니다.  
 JPA의 **Specification**과 **CriteriaBuilder**를 활용하여 조건별로 `Predicate`를 동적으로 생성하고,  
@@ -354,6 +226,420 @@ JPA의 **Specification**과 **CriteriaBuilder**를 활용하여 조건별로 `Pr
      [FreeBoardSpecification 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/specification/FreeBoardSpecification.java)
   </details>
 
+### 3️⃣ CI/CD 파이프라인 자동화
+
+코드를 `git push`하면 Jenkins가 이를 감지하여 **빌드부터 배포까지 전 과정을 자동으로 처리**하도록 구성했습니다.  
+Vue.js 프론트엔드 빌드, Spring Boot JAR 빌드, Docker 이미지 생성, 컨테이너 재기동이 하나의 파이프라인으로 연결되며,  
+**MySQL 컨테이너는 재시작하지 않고 앱 컨테이너만 교체**하도록 `--no-deps` 옵션을 적용해 서비스 중단 시간을 최소화했습니다.  
+또한 Jenkins 컨테이너가 호스트 파일 시스템에 직접 접근할 수 없는 환경 제약을 해결하기 위해,  
+**Alpine 컨테이너를 일회성으로 실행해 빌드 결과물을 Nginx 서빙 경로로 복사**하는 방식을 사용했습니다.
+
+  <details>
+   <summary>코드 보기(펼치기/접기)</summary>
+
+   Jenkinsfile
+   ```
+   pipeline {
+       agent any
+   
+       stages {
+   
+           stage('Checkout') {
+               steps {
+                   checkout scm
+               }
+           }
+   
+           stage('Build Frontend - user-page') {
+               steps {
+                   // node:18-alpine 컨테이너에서 Vue 앱 빌드
+                   // $WORKSPACE는 Jenkins 환경변수 — 호스트 경로와 1:1 매핑됨
+                   sh '''
+                       docker run --rm \
+                         -v "$WORKSPACE/user-page/frontend:/app" \
+                         -w /app \
+                         node:18-alpine \
+                         sh -c "npm ci && npm run build"
+                   '''
+               }
+           }
+   
+           stage('Build JAR - user-page') {
+               steps {
+                   dir('user-page/backend') {
+                       sh 'chmod +x gradlew'
+                       sh './gradlew clean build -x test'
+                   }
+               }
+           }
+   
+           stage('Build JAR - admin-page') {
+               steps {
+                   dir('admin-page/backend') {
+                       sh 'chmod +x gradlew'
+                       sh './gradlew clean build -x test'
+                   }
+               }
+           }
+   
+           stage('Docker Build') {
+               steps {
+                   dir('user-page/backend') {
+                       sh 'docker build -t user-page:latest .'
+                   }
+                   dir('admin-page/backend') {
+                       sh 'docker build -t admin-page:latest .'
+                   }
+               }
+           }
+   
+           stage('Deploy') {
+               steps {
+                   // ① 프론트엔드 빌드 결과물을 Nginx 서빙 경로로 복사
+                   // Jenkins 컨테이너는 /home/ubuntu에 접근 불가 → Alpine 컨테이너로 호스트 경로 마운트해 복사
+                   sh '''
+                       docker run --rm \
+                         -v "$WORKSPACE/user-page/frontend/build:/src" \
+                         -v /home/ubuntu/user/frontend:/dst \
+                         alpine sh -c "cp -r /src/. /dst/"
+                   '''
+   
+                   // ② 프로젝트명 'potal' 고정, 앱 컨테이너만 재시작 (MySQL 제외)
+                   sh '''
+                       docker-compose -p potal \
+                           --env-file /var/jenkins_home/.env.potal \
+                           up -d --no-deps --force-recreate user-page admin-page
+                   '''
+               }
+           }
+       }
+   }
+   ```
+
+   Dockerfile
+   ```
+   FROM eclipse-temurin:17-jre-alpine
+   WORKDIR /app
+   
+   ARG JAR_FILE=build/libs/*.jar
+   COPY ${JAR_FILE} app.jar
+   
+   ENTRYPOINT ["java", "-jar", "app.jar"]
+   ```
+
+   [Jenkinsfile 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/Jenkinsfile)
+  </details>
+
+### 4️⃣ JPA/MyBatis 이중 구현체 전환 구조
+
+동일한 서비스 인터페이스에 대해 **JPA 구현체와 MyBatis 구현체를 각각 작성**하여,  
+`@Qualifier`로 어느 쪽을 사용할지 선택할 수 있도록 설계했습니다.  
+이 구조를 통해 두 ORM의 동작 방식과 성능을 같은 비즈니스 로직 위에서 비교할 수 있으며,  
+특정 기능에서 더 적합한 방식으로 쉽게 전환이 가능합니다.  
+현재 Controller는 JPA 구현체를 사용하고 있으며, MyBatis 구현체로 교체 시 Controller 생성자의 `@Qualifier` 값만 변경하면 됩니다.
+
+  <details>
+   <summary>코드 보기(펼치기/접기)</summary>
+
+   Service Interface
+   ```
+   /**
+    * Free Board Service Interface
+    */
+   public interface FreeBoardService {
+   
+       List<FreeBoardDto> getBoardListByCondition(SearchConditionDto searchConditionDto);
+   
+       Long addBoard(FreeBoardDto freeBoardDto);
+   
+       Optional<FreeBoardDto> getBoardById(Long boardId);
+   
+       void deleteBoard(Long boardId);
+       ...
+   }
+   ```
+
+   JPA 구현체
+   ```
+   @Service("freeBoardJpa")
+   @RequiredArgsConstructor
+   @Transactional
+   public class FreeBoardServiceJpaImpl implements FreeBoardService {
+
+       private final FreeBoardRepository freeBoardRepository;
+       ...
+   }
+   ```
+
+   MyBatis 구현체
+   ```
+   @Service("freeBoardMybatis")
+   @RequiredArgsConstructor
+   public class FreeBoardServiceImpl implements FreeBoardService {
+
+       private final FreeBoardMapper freeBoardMapper;
+       ...
+   }
+   ```
+
+   Controller — @Qualifier로 구현체 선택
+   ```
+   public FreeBoardController(@Qualifier("freeBoardJpa") FreeBoardService freeBoardService,
+                              @Qualifier("categoryJpa") CategoryService categoryService,
+                              @Qualifier("fileJpa") FileService fileService,
+                              @Qualifier("commentJpa") CommentService commentService,
+                              ...) {
+       this.freeBoardService = freeBoardService;
+       ...
+   }
+   ```
+
+   [FreeBoardServiceJpaImpl 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/service/jpa/FreeBoardServiceJpaImpl.java)
+
+   [FreeBoardServiceImpl (MyBatis) 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/service/mybatis/FreeBoardServiceImpl.java)
+  </details>
+
+### 5️⃣ Spring Security 없이 JWT 인증 직접 구현
+
+Spring Security를 사용하지 않고 **JWT 발급·파싱·검증 흐름을 직접 구현**했습니다.  
+`JwtProvider`가 토큰 생성(HS256 서명, 만료 시간 설정)과 파싱(memberId 추출)을 담당하고,  
+`JwtService`가 Controller 계층에서 사용할 수 있도록 요청 헤더 추출부터 예외 처리까지 래핑합니다.  
+시크릿 키는 Base64 인코딩된 환경 변수로 주입받아 `InitializingBean`의 `afterPropertiesSet()`에서  
+디코딩 후 HMAC 서명 키로 초기화합니다.
+
+  <details>
+   <summary>코드 보기(펼치기/접기)</summary>
+
+   JwtProvider — 토큰 생성 및 파싱
+   ```
+   @Component
+   public class JwtProvider implements InitializingBean {
+   
+       @Value("#{jwt['secret']}")
+       private String secretKey;
+   
+       @Value("#{jwt['headerKey']}")
+       private String headerKey;
+   
+       private Key key;
+   
+       @Override
+       public void afterPropertiesSet() {
+           byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+           this.key = Keys.hmacShaKeyFor(keyBytes);
+       }
+   
+       public String createAccessToken(String memberId, String memberName) {
+           Claims claims = Jwts.claims().setSubject(memberId);
+           claims.put("memberName", memberName);
+           Date now = new Date();
+           return Jwts.builder()
+                   .setClaims(claims)
+                   .setIssuedAt(now)
+                   .signWith(key, SignatureAlgorithm.HS256)
+                   .setExpiration(new Date(now.getTime() + 999999999))
+                   .compact();
+       }
+   
+       public String getMemberIdFromJwt(String accessToken) {
+           return Jwts.parserBuilder()
+                   .setSigningKey(key)
+                   .build()
+                   .parseClaimsJws(accessToken)
+                   .getBody()
+                   .getSubject();
+       }
+   }
+   ```
+
+   JwtServiceImpl — 헤더 추출 및 예외 처리
+   ```
+   @Service
+   @Primary
+   public class JwtServiceImpl implements JwtService {
+   
+       private final JwtProvider jwtProvider;
+   
+       @Override
+       public String getMemberIdFromToken(HttpServletRequest request) {
+           try {
+               String accessToken = jwtProvider.getHeaderFromToken(request);
+               return jwtProvider.getMemberIdFromJwt(accessToken);
+           } catch (MalformedJwtException | IllegalArgumentException e) {
+               throw new NotLoggedInException(ErrorCode.NOT_LOGGED_IN);
+           } catch (ExpiredJwtException e) {
+               return null;
+           }
+       }
+   
+       @Override
+       public String createToken(MemberDto memberDto) {
+           return jwtProvider.createAccessToken(memberDto.getMemberId(), memberDto.getMemberName());
+       }
+   }
+   ```
+
+   [JwtProvider 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/jwt/JwtProvider.java)
+
+   [JwtServiceImpl 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/service/JwtServiceImpl.java)
+  </details>
+
+### 6️⃣ @Profile 기반 AWS S3 스토리지 자동 전환
+
+운영 환경에서는 파일을 **AWS S3에 저장**하고, 개발 환경에서는 **로컬 파일 시스템에 저장**하도록  
+`@Profile` 어노테이션을 활용해 자동으로 구현체가 전환되도록 구성했습니다.  
+S3 업로드 시 파일명은 UUID로 생성하고 `{boardType}/{uuid}.{ext}` 구조로 키를 구성하여 게시판 타입별로 파일을 분리합니다.  
+썸네일은 S3에서 원본 파일을 읽어 메모리에서 Thumbnailator로 리사이즈한 뒤 `thumbnail/{uuid}.{ext}` 키로 다시 업로드합니다.  
+`S3Client`는 `@PostConstruct`에서 환경 변수로 주입된 region 값을 기반으로 초기화됩니다.
+
+  <details>
+   <summary>코드 보기(펼치기/접기)</summary>
+
+   S3StorageService — prod 프로파일 전용
+   ```
+   @Service
+   @Profile("prod")
+   public class S3StorageService implements StorageService {
+   
+       @Value("#{storage['bucket']}")
+       private String bucket;
+   
+       @Value("#{storage['region']}")
+       private String region;
+   
+       private S3Client s3Client;
+   
+       @PostConstruct
+       public void init() {
+           s3Client = S3Client.builder()
+                   .region(Region.of(region))
+                   .build();
+       }
+   
+       @Override
+       public List<FileDto> storageFileList(MultipartFile[] multipartFiles, String boardType) {
+           for (MultipartFile multipartFile : multipartFiles) {
+               String physicalName = UUID.randomUUID().toString();
+               String extension = MultipartFileUtils.extractExtension(multipartFile);
+               String s3Key = boardType + "/" + physicalName + "." + extension;
+   
+               s3Client.putObject(
+                       PutObjectRequest.builder()
+                               .bucket(bucket)
+                               .key(s3Key)
+                               .contentType(multipartFile.getContentType())
+                               .contentLength(multipartFile.getSize())
+                               .build(),
+                       RequestBody.fromInputStream(multipartFile.getInputStream(), multipartFile.getSize())
+               );
+               ...
+           }
+       }
+   
+       @Override
+       public ThumbnailDto storageThumbnailFromFile(FileDto fileDto) {
+           // S3에서 원본 다운로드 → 메모리에서 300x300 리사이즈 → S3에 썸네일 업로드
+           String sourceKey = fileDto.getBoardType() + "/" + fileDto.getPhysicalName() + "." + fileDto.getExtension();
+           byte[] originalBytes = s3Client.getObjectAsBytes(...).asByteArray();
+   
+           ByteArrayOutputStream thumbnailOutput = new ByteArrayOutputStream();
+           Thumbnails.of(new ByteArrayInputStream(originalBytes))
+                   .size(300, 300)
+                   .outputFormat(fileDto.getExtension())
+                   .toOutputStream(thumbnailOutput);
+   
+           String thumbnailKey = "thumbnail/" + physicalName + "." + fileDto.getExtension();
+           s3Client.putObject(..., RequestBody.fromBytes(thumbnailBytes));
+           ...
+       }
+   }
+   ```
+
+   [S3StorageService 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/service/S3StorageService.java)
+  </details>
+
+### 7️⃣ SPA/MPA 서버 분리 설계
+
+사용자 페이지와 관리자 페이지를 **별도 서버로 분리**하여 운영합니다.  
+두 서버는 각각 독립된 Docker 컨테이너로 실행되며, Nginx가 도메인에 따라 요청을 각 서버로 라우팅합니다.  
+인증 방식도 역할에 맞게 분리했습니다. **사용자 페이지는 JWT 기반 Stateless 인증**을 사용하고,  
+**관리자 페이지는 HttpSession 기반 인증**을 사용합니다.  
+또한 운영 환경에서 사용자 페이지 API는 CORS를 허용된 도메인으로만 제한하여,  
+관리자 서버 URL로의 직접 API 접근을 원천 차단합니다.
+
+  <details>
+   <summary>코드 보기(펼치기/접기)</summary>
+
+   docker-compose.yml — 서버 분리
+   ```
+   services:
+     user-page:
+       image: user-page:latest
+       container_name: potal-user-page
+       ports:
+         - "8081:8081"
+       environment:
+         SPRING_PROFILES_ACTIVE: prod
+         JWT_SECRET: ${JWT_SECRET}   # 사용자 페이지만 JWT 사용
+       depends_on:
+         mysql:
+           condition: service_healthy
+   
+     admin-page:
+       image: admin-page:latest
+       container_name: potal-admin-page
+       ports:
+         - "8082:8082"
+       environment:
+         SPRING_PROFILES_ACTIVE: prod
+                                       # 관리자 페이지는 JWT_SECRET 없음 — Session 기반
+       depends_on:
+         mysql:
+           condition: service_healthy
+   ```
+
+   사용자 페이지 — CORS 도메인 제한 (prod)
+   ```
+   @Configuration
+   @Profile("prod")
+   public class WebMvcProdConfig implements WebMvcConfigurer {
+   
+       @Override
+       public void addCorsMappings(CorsRegistry registry) {
+           registry.addMapping("/**")
+                   .allowedOrigins(
+                           "https://xn--4k0bj36a8obp7hdvo59brzcrug.site",
+                           "https://www.xn--4k0bj36a8obp7hdvo59brzcrug.site"
+                   )
+                   .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
+                   .allowCredentials(true)
+                   .maxAge(3600);
+       }
+   }
+   ```
+
+   관리자 페이지 — 세션 인터셉터
+   ```
+   // InterceptorHandler.java
+   // 보호된 페이지 접근 시 세션 유무 확인, 없으면 /login 으로 리다이렉트
+   public class InterceptorHandler implements HandlerInterceptor {
+       @Override
+       public boolean preHandle(HttpServletRequest request, ...) {
+           Object session = request.getSession().getAttribute("ADMIN_SESSION_ID");
+           if (session == null) {
+               response.sendRedirect("/login");
+               return false;
+           }
+           return true;
+       }
+   }
+   ```
+
+   [WebMvcProdConfig 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/user-page/backend/src/main/java/com/user/backend/config/WebMvcProdConfig.java)
+
+   [InterceptorHandler 전체 코드](https://github.com/rooluDev/board-portal-project/blob/main/admin-page/backend/src/main/java/com/admin/backend/common/interceptor/InterceptorHandler.java)
+  </details>
+
 
 ## 🗂 ERD
 ![ERD](https://github.com/rooluDev/board-portal-project/assets/152958052/a2754673-1a6c-4915-85d6-b30e3e180a89)
@@ -373,10 +659,14 @@ JPA의 **Specification**과 **CriteriaBuilder**를 활용하여 조건별로 `Pr
 ![Vue.js](https://img.shields.io/badge/vue.js-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white)
 ![Spring Boot](https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
 ![JPA](https://img.shields.io/badge/JPA-000000?style=for-the-badge&logoColor=white)
+![MyBatis](https://img.shields.io/badge/MyBatis-000000?style=for-the-badge&logo=MyBatis&logoColor=white)
 
 ### 🗄 DB
 ![MySQL](https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 
 ### ☁ 인프라
 ![Amazon EC2](https://img.shields.io/badge/amazonec2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white)
+![Amazon S3](https://img.shields.io/badge/amazons3-569A31?style=for-the-badge&logo=amazons3&logoColor=white)
 ![Nginx](https://img.shields.io/badge/nginx-009639?style=for-the-badge&logo=nginx&logoColor=white)
+![Docker](https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Jenkins](https://img.shields.io/badge/jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white)
