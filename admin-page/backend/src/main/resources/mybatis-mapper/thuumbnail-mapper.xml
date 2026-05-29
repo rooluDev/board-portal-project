@@ -6,9 +6,9 @@
 
     <insert id="insertThumbnail" parameterType="com.admin.backend.dto.ThumbnailDto">
         INSERT INTO
-            tb_thumbnail (file_id, original_name, physical_name, file_path, extension, size)
+            tb_thumbnail (file_id, original_name, physical_name, file_path, extension, size, created_at)
         VALUES
-            (#{fileId},#{originalName},#{physicalName},#{filePath},#{extension},#{size})
+            (#{fileId},#{originalName},#{physicalName},#{filePath},#{extension},#{size},NOW())
     </insert>
 
     <delete id="deleteThumbnailByFileId" parameterType="Long">

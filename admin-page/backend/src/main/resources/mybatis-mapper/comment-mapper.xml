@@ -40,9 +40,9 @@
 
     <insert id="insertComment" parameterType="com.admin.backend.dto.CommentDto" useGeneratedKeys="true" keyProperty="commentId">
         INSERT INTO
-            tb_comment (content, board_type, board_id, author_type, author_id)
+            tb_comment (content, board_type, board_id, author_type, author_id, created_at)
         VALUES
-            (#{content},#{boardType},#{boardId},#{authorType},#{authorId})
+            (#{content},#{boardType},#{boardId},#{authorType},#{authorId},NOW())
     </insert>
 
 </mapper>

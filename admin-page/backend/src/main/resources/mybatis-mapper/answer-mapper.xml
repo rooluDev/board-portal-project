@@ -15,9 +15,9 @@
 
     <insert id="insertAnswer" parameterType="com.admin.backend.dto.AnswerDto">
         INSERT INTO
-            tb_answer (board_id, author_id, content)
+            tb_answer (board_id, author_id, content, created_at)
         VALUES
-            (#{boardId}, #{authorId}, #{content})
+            (#{boardId}, #{authorId}, #{content}, NOW())
     </insert>
 
     <delete id="deleteByBoardId" parameterType="long">
