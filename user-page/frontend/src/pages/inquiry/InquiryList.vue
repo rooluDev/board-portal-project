@@ -91,10 +91,10 @@ export default {
       startDate: route.query.startDate || format(subYears(new Date(), 1), 'yyyy-MM-dd'),
       endDate: route.query.endDate || format(new Date(), 'yyyy-MM-dd'),
       searchText: route.query.searchText || '',
-      pageSize: route.query.pageSize || 10,
+      pageSize: Number(route.query.pageSize) || 10,
       orderValue: route.query.orderValue || 'createdAt',
       orderDirection: route.query.orderDirection || 'desc',
-      pageNum: route.query.pageNum || 1,
+      pageNum: Number(route.query.pageNum) || 1,
       my: route.query.my === 'true'
     })
 

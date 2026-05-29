@@ -88,12 +88,12 @@ export default {
     const searchCondition = ref({
       startDate: route.query.startDate || format(subYears(new Date(), 1), 'yyyy-MM-dd'),
       endDate: route.query.endDate || format(new Date(), 'yyyy-MM-dd'),
-      category: route.query.category || -1,
+      category: route.query.category !== undefined ? Number(route.query.category) : -1,
       searchText: route.query.searchText || '',
-      pageSize: route.query.pageSize || 10,
+      pageSize: Number(route.query.pageSize) || 10,
       orderValue: route.query.orderValue || 'createdAt',
       orderDirection: route.query.orderDirection || 'desc',
-      pageNum: route.query.pageNum || 1
+      pageNum: Number(route.query.pageNum) || 1
     });
 
     const queryObject = computed(() => ({
