@@ -99,9 +99,9 @@
 
     <insert id="insertBoard" parameterType="com.admin.backend.dto.GalleryBoardDto" useGeneratedKeys="true" keyProperty="boardId">
         INSERT INTO
-            tb_gallery_board (category_id, author_type, author_id, title, content)
+            tb_gallery_board (category_id, author_type, author_id, title, content, created_at)
         VALUES
-            (#{categoryId}, #{authorType}, #{authorId}, #{title}, #{content})
+            (#{categoryId}, #{authorType}, #{authorId}, #{title}, #{content}, NOW())
     </insert>
 
     <update id="updateBoardByIdForDelete" parameterType="long">

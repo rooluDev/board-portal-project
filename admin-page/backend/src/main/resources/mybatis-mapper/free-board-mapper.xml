@@ -96,9 +96,9 @@
 
     <insert id="insertBoard" parameterType="com.admin.backend.dto.FreeBoardDto" useGeneratedKeys="true" keyProperty="boardId">
         INSERT INTO
-            tb_free_board (category_id, author_type, author_id, title, content)
+            tb_free_board (category_id, author_type, author_id, title, content, created_at)
         VALUES
-            (#{categoryId},#{authorType},#{authorId},#{title},#{content})
+            (#{categoryId},#{authorType},#{authorId},#{title},#{content},NOW())
     </insert>
 
     <update id="updateBoardByIdForDelete" parameterType="long">
