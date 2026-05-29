@@ -17,6 +17,8 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import com.user.backend.common.exception.custom.DownloadFailException;
+import com.user.backend.common.exception.response.ErrorCode;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -128,5 +130,20 @@ public class S3StorageService implements StorageService {
         );
 
         return thumbnailDto;
+    }
+
+    @Override
+    public byte[] downloadThumbnail(ThumbnailDto thumbnailDto) {
+        String key = "thumbnail/" + thumbnailDto.getPhysicalName() + "." + thumbnailDto.getExtension();
+        try {
+            return s3Client.getObjectAsBytes(
+                    GetObjectRequest.builder()
+                            .bucket(bucket)
+                            .key(key)
+                            .build()
+            ).asByteArray();
+        } catch (Exception e) {
+            throw new DownloadFailException(ErrorCode.DOWNLOAD_FAIL);
+        }
     }
 }

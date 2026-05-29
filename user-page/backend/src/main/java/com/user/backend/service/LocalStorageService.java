@@ -1,5 +1,6 @@
 package com.user.backend.service;
 
+import com.user.backend.common.exception.custom.DownloadFailException;
 import com.user.backend.common.exception.custom.StorageFailException;
 import com.user.backend.common.exception.response.ErrorCode;
 import com.user.backend.common.utils.MultipartFileUtils;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -99,6 +101,16 @@ public class LocalStorageService implements StorageService {
                     .toFile(filePath.toFile());
         } catch (IOException e) {
             throw new StorageFailException(ErrorCode.STORAGE_FAIL);
+        }
+    }
+
+    @Override
+    public byte[] downloadThumbnail(ThumbnailDto thumbnailDto) {
+        try {
+            String filePath = path + StringUtils.parseToPath(thumbnailDto);
+            return Files.readAllBytes(Paths.get(filePath));
+        } catch (IOException e) {
+            throw new DownloadFailException(ErrorCode.DOWNLOAD_FAIL);
         }
     }
 }

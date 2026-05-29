@@ -1,23 +1,18 @@
 package com.user.backend.controller;
 
-import com.user.backend.common.exception.custom.DownloadFailException;
 import com.user.backend.common.exception.custom.ThumbnailNotFoundException;
 import com.user.backend.common.exception.response.ErrorCode;
-import com.user.backend.common.utils.StringUtils;
 import com.user.backend.dto.ThumbnailDto;
+import com.user.backend.service.StorageService;
 import com.user.backend.service.ThumbnailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.net.MalformedURLException;
 
 /**
  * Thumbnail Controller
@@ -26,37 +21,35 @@ import java.net.MalformedURLException;
 @RequestMapping("/api")
 public class ThumbnailController {
 
-    @Value("#{storage['path']}")
-    private String path;
     private final ThumbnailService thumbnailService;
+    private final StorageService storageService;
 
-    public ThumbnailController(@Qualifier("thumbnailJpa") ThumbnailService thumbnailService) {
+    public ThumbnailController(@Qualifier("thumbnailJpa") ThumbnailService thumbnailService,
+                               StorageService storageService) {
         this.thumbnailService = thumbnailService;
+        this.storageService = storageService;
     }
 
     /**
-     * 썸네일 이미지 Resource GET
+     * 썸네일 이미지 바이트 GET (로컬/S3 프로파일 공통)
      *
      * @param thumbnailId PathVariable
-     * @return Thumbnail Image Resource
+     * @return Thumbnail Image Bytes
      */
     @GetMapping("/thumbnail/{thumbnailId}")
-    public ResponseEntity<Resource> getImage(@PathVariable(name = "thumbnailId") Long thumbnailId) {
+    public ResponseEntity<byte[]> getImage(@PathVariable(name = "thumbnailId") Long thumbnailId) {
 
-        // DB에서 썸네일 데이터 가져오기
         ThumbnailDto thumbnailDto = thumbnailService.getThumbnailById(thumbnailId)
                 .orElseThrow(() -> new ThumbnailNotFoundException(ErrorCode.THUMBNAIL_NOT_FOUND));
 
-        // Path 설정
-        String uri = path + StringUtils.parseToPath(thumbnailDto);
+        byte[] imageBytes = storageService.downloadThumbnail(thumbnailDto);
 
-        try {
-            // 리소스 생성
-            Resource resource = new UrlResource("file://" + uri);
-            return ResponseEntity.ok(resource);
-        } catch (MalformedURLException e) {
-            throw new DownloadFailException(ErrorCode.DOWNLOAD_FAIL);
-        }
+        MediaType mediaType = thumbnailDto.getExtension().equalsIgnoreCase("png")
+                ? MediaType.IMAGE_PNG
+                : MediaType.IMAGE_JPEG;
 
+        return ResponseEntity.ok()
+                .contentType(mediaType)
+                .body(imageBytes);
     }
 }

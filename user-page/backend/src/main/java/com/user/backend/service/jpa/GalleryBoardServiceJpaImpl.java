@@ -1,14 +1,18 @@
 package com.user.backend.service.jpa;
 
 import com.user.backend.common.type.Author;
+import com.user.backend.common.type.Board;
 import com.user.backend.dto.GalleryBoardDto;
 import com.user.backend.dto.SearchConditionDto;
 import com.user.backend.entity.Category;
 import com.user.backend.entity.GalleryBoard;
+import com.user.backend.entity.Thumbnail;
 import com.user.backend.repository.AdminRepository;
 import com.user.backend.repository.CategoryRepository;
+import com.user.backend.repository.FileRepository;
 import com.user.backend.repository.GalleryBoardRepository;
 import com.user.backend.repository.MemberRepository;
+import com.user.backend.repository.ThumbnailRepository;
 import com.user.backend.service.GalleryBoardService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -32,6 +36,8 @@ public class GalleryBoardServiceJpaImpl implements GalleryBoardService {
     private final CategoryRepository categoryRepository;
     private final AdminRepository adminRepository;
     private final MemberRepository memberRepository;
+    private final FileRepository fileRepository;
+    private final ThumbnailRepository thumbnailRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -53,6 +59,8 @@ public class GalleryBoardServiceJpaImpl implements GalleryBoardService {
                         memberRepository.findById(galleryBoard.getAuthorId())
                                 .ifPresent(member -> dto.setMemberName(member.getMemberName()));
                     }
+                    // GalleryBoard 엔티티에 없는 thumbnailId 조회
+                    setThumbnailId(dto, galleryBoard.getBoardId());
                     return dto;
                 })
                 .toList();
@@ -107,8 +115,27 @@ public class GalleryBoardServiceJpaImpl implements GalleryBoardService {
     public List<GalleryBoardDto> getBoardListForMain() {
         return galleryBoardRepository.findTop3ByIsDeletedFalseOrderByCreatedAtDesc()
                 .stream()
-                .map(galleryBoard -> modelMapper.map(galleryBoard, GalleryBoardDto.class))
+                .map(galleryBoard -> {
+                    GalleryBoardDto dto = modelMapper.map(galleryBoard, GalleryBoardDto.class);
+                    setThumbnailId(dto, galleryBoard.getBoardId());
+                    return dto;
+                })
                 .toList();
+    }
+
+    /**
+     * 게시물의 첫 번째 파일에 연결된 thumbnailId를 DTO에 세팅
+     */
+    private void setThumbnailId(GalleryBoardDto dto, Long boardId) {
+        fileRepository.findByBoardTypeAndBoardId(Board.GALLERY_BOARD.getBoardType(), boardId)
+                .stream()
+                .findFirst()
+                .ifPresent(file -> {
+                    thumbnailRepository.findByFileFileId(file.getFileId())
+                            .stream()
+                            .findFirst()
+                            .ifPresent(thumbnail -> dto.setThumbnailId(thumbnail.getThumbnailId()));
+                });
     }
 
     @Override

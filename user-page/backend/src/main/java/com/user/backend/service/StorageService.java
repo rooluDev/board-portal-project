@@ -27,4 +27,12 @@ public interface StorageService {
      * @return 생성된 Thumbnail의 객체
      */
     ThumbnailDto storageThumbnailFromFile(FileDto fileDto);
+
+    /**
+     * 썸네일 파일 바이트 다운로드
+     *
+     * @param thumbnailDto 다운로드할 썸네일
+     * @return 파일 바이트 배열
+     */
+    byte[] downloadThumbnail(ThumbnailDto thumbnailDto);
 }
