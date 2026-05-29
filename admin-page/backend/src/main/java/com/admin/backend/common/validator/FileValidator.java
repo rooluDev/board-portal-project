@@ -55,8 +55,6 @@ public interface FileValidator<T> {
     default void validateFileSize(MultipartFile file, DataSize maxSize) {
         if (file.getSize() > maxSize.toBytes()) {
             throw new IllegalFileDataException(file.getOriginalFilename() + "의 크기를 확인하세요.");
-        } else{
-            throw new RuntimeException();
         }
     }
 
@@ -72,8 +70,6 @@ public interface FileValidator<T> {
             throw new IllegalFileDataException("파일을 최대 " + minFileLength + "이상 등록하세요.");
         } else if (files.length > maxFileLength) {
             throw new IllegalFileDataException("파일은 " + maxFileLength + "개까지 등록 가능합니다.");
-        } else {
-            throw new RuntimeException();
         }
     }
 
@@ -93,8 +89,6 @@ public interface FileValidator<T> {
             throw new IllegalFileDataException("파일은 " + maxFileLength + "개까지 등록 가능합니다.");
         } else if (!isValidMinFileLength) {
             throw new IllegalFileDataException("파일을 최대 " + minFileLength + "이상 등록하세요.");
-        } else {
-            throw new RuntimeException();
         }
     }
 }
