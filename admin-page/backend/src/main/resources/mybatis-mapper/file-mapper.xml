@@ -6,9 +6,9 @@
 
     <insert id="insertFile" parameterType="com.admin.backend.dto.FileDto" useGeneratedKeys="true" keyProperty="fileId">
         INSERT INTO
-            tb_file (board_type, board_id, original_name, physical_name, file_path, extension, size)
+            tb_file (board_type, board_id, original_name, physical_name, file_path, extension, size, created_at)
         VALUES
-            (#{boardType},#{boardId},#{originalName},#{physicalName},#{filePath},#{extension},#{size})
+            (#{boardType},#{boardId},#{originalName},#{physicalName},#{filePath},#{extension},#{size},NOW())
     </insert>
 
     <select id="selectFileListByBoardId" parameterType="map" resultType="com.admin.backend.dto.FileDto">
