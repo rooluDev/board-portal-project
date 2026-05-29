@@ -13,6 +13,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Profile("prod")
 public class WebMvcProdConfig implements WebMvcConfigurer {
 
+    /**
+     * CORS 설정: 운영 환경에서 허용된 오리진만 허용
+     *
+     * @param registry CorsRegistry
+     */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")

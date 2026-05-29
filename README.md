@@ -20,23 +20,15 @@
 
 
 ## 🔗 게시판 페이지 링크
-+ **[관리자 페이지](http://3.35.111.101:8082/login) (MPA 버전)**
++ **[관리자 페이지](https://admin.김승현포털사이트.site/login) (MPA 버전)**
  
 > **관리자 아이디:** admin  
-> **관리자 비밀번호:** 1234
+> **관리자 비밀번호:** admin
  
-+ **[사용자 페이지](http://3.35.111.101/) (SPA 버전)**
++ **[사용자 페이지](https://김승현포털사이트.site) (SPA 버전)**
 
 > **사용자 아이디:** user  
 > **사용자 비밀번호:** 1234
-
-## 📚 API 문서
-
-### REST API는 Postman으로 작성되었으며, 전체 문서는 [여기에서 확인 가능](https://documenter.getpostman.com/view/32925626/2sA3JRXyGT)합니다.
-
-![Postman API 문서](https://github.com/rooluDev/board-portal-project/assets/152958052/71e90744-543d-415b-a027-94109042d4da)
-
----
 
 
 ## 📺 화면

@@ -52,6 +52,13 @@ public class FileController {
     }
 
 
+    /**
+     * 파일을 OutputStream으로 전송 (버퍼를 이용한 스트리밍 다운로드)
+     *
+     * @param file         다운로드할 파일 객체
+     * @param outputStream 클라이언트로 전송할 OutputStream
+     * @throws IOException 파일 읽기 또는 스트림 쓰기 실패 시 발생
+     */
     private void download(File file, OutputStream outputStream) throws IOException {
         // try-with-resource 파일 다운로드
         try (FileInputStream fis = new FileInputStream(file);

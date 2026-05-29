@@ -13,6 +13,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Profile("dev")
 public class WebMvcDevConfig implements WebMvcConfigurer {
 
+    /**
+     * 로컬 업로드 파일(자유게시판, 갤러리, 썸네일)에 대한 정적 리소스 핸들러 등록
+     *
+     * @param registry ResourceHandlerRegistry
+     */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/upload/free/**")
@@ -25,6 +30,11 @@ public class WebMvcDevConfig implements WebMvcConfigurer {
                 .addResourceLocations("file:///Users/user/upload/thumbnail/");
     }
 
+    /**
+     * CORS 설정: 개발 환경에서 모든 오리진 허용
+     *
+     * @param registry CorsRegistry
+     */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")

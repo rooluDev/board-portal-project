@@ -22,6 +22,10 @@ public interface InquiryBoardRepository extends JpaRepository<InquiryBoard, Long
 
     /**
      * 동적 검색 조건에 맞는 총 게시물 수 조회
+     *
+     * @param searchConditionDto 검색조건
+     * @param memberId           나의 문의 내역 조회 시 사용할 회원 ID (null이면 전체 조회)
+     * @return 검색조건에 맞는 문의 게시물 총 개수
      */
     default long findTotalRowCountByCondition(SearchConditionDto searchConditionDto, String memberId) {
         return count(InquiryBoardSpecification.findBySearchCondition(searchConditionDto, memberId));
@@ -29,6 +33,10 @@ public interface InquiryBoardRepository extends JpaRepository<InquiryBoard, Long
 
     /**
      * 동적 검색 조건에 맞는 게시물 목록 조회 (페이징 및 정렬)
+     *
+     * @param cond     검색조건
+     * @param memberId 나의 문의 내역 조회 시 사용할 회원 ID (null이면 전체 조회)
+     * @return 검색조건과 페이지네이션에 맞는 문의 게시물 Page
      */
     default Page<InquiryBoard> findByCondition(SearchConditionDto cond, String memberId) {
         Sort.Direction dir = Sort.Direction.fromString(cond.getOrderDirection());
@@ -37,7 +45,19 @@ public interface InquiryBoardRepository extends JpaRepository<InquiryBoard, Long
         return findAll(InquiryBoardSpecification.findBySearchCondition(cond, memberId), pageable);
     }
 
+    /**
+     * 메인 페이지용 최신 문의 게시물 6건 조회
+     *
+     * @return 최신 문의 게시물 6건
+     */
     List<InquiryBoard> findTop6ByOrderByCreatedAtDesc();
 
+    /**
+     * 게시물 ID와 작성자 회원 ID가 일치하는 게시물 조회 (작성자 확인용)
+     *
+     * @param boardId  게시물 ID (pk)
+     * @param authorId 작성자 회원 ID
+     * @return boardId와 authorId가 일치하는 게시물 Optional
+     */
     Optional<InquiryBoard> findByBoardIdAndAuthorMemberId(Long boardId, String authorId);
 }

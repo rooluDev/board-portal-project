@@ -21,6 +21,12 @@ public class ErrorResponseEntity {
     private String code;
     private String message;
 
+    /**
+     * ErrorCode를 기반으로 ResponseEntity 생성
+     *
+     * @param e 응답에 사용할 ErrorCode
+     * @return ErrorResponseEntity를 담은 ResponseEntity
+     */
     public static ResponseEntity<ErrorResponseEntity> toResponseEntity(ErrorCode e) {
         return ResponseEntity
                 .status(e.getHttpStatus())

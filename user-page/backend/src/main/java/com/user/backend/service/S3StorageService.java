@@ -26,6 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * S3 기반 파일 저장 서비스 (prod 프로파일 전용)
+ */
 @Service
 @Profile("prod")
 public class S3StorageService implements StorageService {
@@ -38,6 +41,9 @@ public class S3StorageService implements StorageService {
 
     private S3Client s3Client;
 
+    /**
+     * S3Client 초기화 (빈 생성 후 프로퍼티 주입이 완료된 뒤 실행)
+     */
     @PostConstruct
     public void init() {
         s3Client = S3Client.builder()
@@ -45,6 +51,14 @@ public class S3StorageService implements StorageService {
                 .build();
     }
 
+    /**
+     * Multipart 파일 리스트를 S3에 업로드하고 FileDto 리스트 반환
+     *
+     * @param multipartFiles 저장할 멀티파트 파일 배열
+     * @param boardType      게시판 타입 (S3 키 경로 구분)
+     * @return 업로드된 파일들의 FileDto 리스트
+     * @throws StorageFailException 파일 업로드 실패 시
+     */
     @Override
     public List<FileDto> storageFileList(MultipartFile[] multipartFiles, String boardType) {
         List<FileDto> savedFileList = new ArrayList<>();
@@ -84,6 +98,13 @@ public class S3StorageService implements StorageService {
         return savedFileList;
     }
 
+    /**
+     * S3에 저장된 원본 파일을 읽어 썸네일을 생성하고 S3에 업로드 후 ThumbnailDto 반환
+     *
+     * @param fileDto 썸네일 원본이 되는 파일 정보
+     * @return 생성된 썸네일의 ThumbnailDto
+     * @throws StorageFailException 썸네일 생성 또는 업로드 실패 시
+     */
     @Override
     public ThumbnailDto storageThumbnailFromFile(FileDto fileDto) {
         String physicalName = UUID.randomUUID().toString();
@@ -132,6 +153,13 @@ public class S3StorageService implements StorageService {
         return thumbnailDto;
     }
 
+    /**
+     * S3에서 썸네일 파일을 다운로드하여 바이트 배열로 반환
+     *
+     * @param thumbnailDto 다운로드할 썸네일 정보
+     * @return 썸네일 파일의 바이트 배열
+     * @throws DownloadFailException 다운로드 실패 시
+     */
     @Override
     public byte[] downloadThumbnail(ThumbnailDto thumbnailDto) {
         String key = "thumbnail/" + thumbnailDto.getPhysicalName() + "." + thumbnailDto.getExtension();
@@ -147,6 +175,13 @@ public class S3StorageService implements StorageService {
         }
     }
 
+    /**
+     * S3에서 일반 파일을 다운로드하여 바이트 배열로 반환
+     *
+     * @param fileDto 다운로드할 파일 정보
+     * @return 파일의 바이트 배열
+     * @throws DownloadFailException 다운로드 실패 시
+     */
     @Override
     public byte[] downloadFile(FileDto fileDto) {
         // filePath = "/gallery" → S3 key = "gallery/{uuid}.jpg"

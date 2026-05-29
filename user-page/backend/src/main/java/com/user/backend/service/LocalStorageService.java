@@ -33,6 +33,14 @@ public class LocalStorageService implements StorageService {
     @Value("#{storage['path']}")
     private String path;
 
+    /**
+     * Multipart 파일 리스트를 로컬 스토리지에 저장하고 FileDto 리스트 반환
+     *
+     * @param multipartFiles 저장할 멀티파트 파일 배열
+     * @param boardType      게시판 타입 (파일 저장 경로 구분)
+     * @return 저장된 파일들의 FileDto 리스트
+     * @throws StorageFailException 파일 저장 실패 시
+     */
     @Override
     public List<FileDto> storageFileList(MultipartFile[] multipartFiles, String boardType) throws StorageFailException {
         // 저장 된 파일 Dto 정보 저장될 리스트
@@ -69,6 +77,12 @@ public class LocalStorageService implements StorageService {
         return savedFileList;
     }
 
+    /**
+     * FileDto에 해당하는 원본 파일을 읽어 로컬 스토리지에 썸네일을 생성하고 ThumbnailDto 반환
+     *
+     * @param fileDto 썸네일 원본이 되는 파일 정보
+     * @return 생성된 썸네일의 ThumbnailDto
+     */
     @Override
     public ThumbnailDto storageThumbnailFromFile(FileDto fileDto) {
         // 썸네일 Dto 생성
@@ -94,6 +108,13 @@ public class LocalStorageService implements StorageService {
 
     }
 
+    /**
+     * 원본 파일로부터 썸네일 이미지 파일을 생성하여 지정된 경로에 저장
+     *
+     * @param file     원본 이미지 파일
+     * @param filePath 썸네일을 저장할 경로
+     * @throws StorageFailException 썸네일 생성 실패 시
+     */
     private void createThumbNail(File file, Path filePath) {
         try {
             Thumbnails.of(file)
@@ -104,6 +125,13 @@ public class LocalStorageService implements StorageService {
         }
     }
 
+    /**
+     * 로컬 스토리지에서 썸네일 파일을 읽어 바이트 배열로 반환
+     *
+     * @param thumbnailDto 다운로드할 썸네일 정보
+     * @return 썸네일 파일의 바이트 배열
+     * @throws DownloadFailException 파일 읽기 실패 시
+     */
     @Override
     public byte[] downloadThumbnail(ThumbnailDto thumbnailDto) {
         try {
@@ -114,6 +142,13 @@ public class LocalStorageService implements StorageService {
         }
     }
 
+    /**
+     * 로컬 스토리지에서 일반 파일을 읽어 바이트 배열로 반환
+     *
+     * @param fileDto 다운로드할 파일 정보
+     * @return 파일의 바이트 배열
+     * @throws DownloadFailException 파일 읽기 실패 시
+     */
     @Override
     public byte[] downloadFile(FileDto fileDto) {
         try {

@@ -21,6 +21,13 @@ public class LoginServiceJpaImpl implements LoginService {
     private final MemberRepository memberRepository;
     private final ModelMapper modelMapper;
 
+    /**
+     * 로그인 진행 후 Member 데이터 반환
+     *
+     * @param memberId 회원 ID
+     * @param password 비밀번호
+     * @return ID와 PW가 일치하는 MemberDto Optional
+     */
     @Override
     public Optional<MemberDto> login(String memberId, String password) {
 

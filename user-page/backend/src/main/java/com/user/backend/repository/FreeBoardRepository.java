@@ -21,11 +21,23 @@ import java.util.Optional;
 @Repository
 public interface FreeBoardRepository extends JpaRepository<FreeBoard, Long> , JpaSpecificationExecutor<FreeBoard> {
 
+    /**
+     * 동적 검색 조건에 맞는 자유게시물 총 개수 조회
+     *
+     * @param searchConditionDto 검색조건
+     * @return 검색조건에 맞는 자유게시물 총 개수
+     */
     default long findTotalRowCountByCondition(SearchConditionDto searchConditionDto) {
         Specification<FreeBoard> specification = FreeBoardSpecification.findBySearchCondition(searchConditionDto);
         return count(specification);
     }
 
+    /**
+     * 동적 검색 조건에 맞는 자유게시물 목록 조회 (페이징 및 정렬)
+     *
+     * @param searchConditionDto 검색조건
+     * @return 검색조건과 페이지네이션에 맞는 자유게시물 Page
+     */
     default Page<FreeBoard> findBySearchCondition(SearchConditionDto searchConditionDto) {
         Specification<FreeBoard> specification = FreeBoardSpecification.findBySearchCondition(searchConditionDto);
         Sort.Direction direction = Sort.Direction.fromString(searchConditionDto.getOrderDirection());
@@ -37,11 +49,17 @@ public interface FreeBoardRepository extends JpaRepository<FreeBoard, Long> , Jp
 
     /**
      * 삭제되지 않은 최신 게시물 상위 6건 조회
+     *
+     * @return 삭제되지 않은 최신 자유게시물 6건
      */
     List<FreeBoard> findTop6ByIsDeletedFalseOrderByCreatedAtDesc();
 
     /**
      * 게시물 ID와 작성자 ID가 일치하는 게시물 조회
+     *
+     * @param boardId  게시물 ID (pk)
+     * @param authorId 작성자 ID
+     * @return boardId와 authorId가 일치하는 게시물 Optional
      */
     Optional<FreeBoard> findByBoardIdAndAuthorId(Long boardId, String authorId);
 

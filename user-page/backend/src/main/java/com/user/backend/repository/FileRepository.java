@@ -14,11 +14,19 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
     /**
      * 특정 게시판(boardType, boardId)에 등록된 파일 전체 조회
+     *
+     * @param boardType 게시판 타입
+     * @param boardId   게시물 ID
+     * @return 해당 게시물에 등록된 파일 리스트
      */
     List<File> findByBoardTypeAndBoardId(String boardType, Long boardId);
 
     /**
      * 특정 게시판(boardType, boardId)에 등록된 파일 개수 조회
+     *
+     * @param boardType 게시판 타입
+     * @param boardId   게시물 ID
+     * @return 해당 게시물에 등록된 파일 개수
      */
     long countByBoardTypeAndBoardId(String boardType, Long boardId);
 

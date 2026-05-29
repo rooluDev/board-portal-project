@@ -26,6 +26,11 @@ public class ThumbnailServiceJpaImpl implements ThumbnailService {
     private final FileRepository fileRepository;
     private final ModelMapper modelMapper;
 
+    /**
+     * 썸네일 DB 추가
+     *
+     * @param thumbnailDto 추가할 썸네일 정보
+     */
     @Override
     @Transactional
     public void addThumbnail(ThumbnailDto thumbnailDto) {
@@ -35,12 +40,24 @@ public class ThumbnailServiceJpaImpl implements ThumbnailService {
         thumbnailRepository.save(thumbnail);
     }
 
+    /**
+     * fileId에 연결된 썸네일 DB 삭제
+     *
+     * @param fileId 삭제할 썸네일의 파일 ID (tb_file pk)
+     * @return 삭제된 row count
+     */
     @Override
     @Transactional
     public int deleteThumbnailByFileId(Long fileId) {
         return thumbnailRepository.deleteByFileFileId(fileId);
     }
 
+    /**
+     * 썸네일 ID로 썸네일 정보 가져오기
+     *
+     * @param thumbnailId 썸네일 ID (tb_thumbnail pk)
+     * @return 해당 thumbnailId의 ThumbnailDto Optional
+     */
     @Override
     public Optional<ThumbnailDto> getThumbnailById(Long thumbnailId) {
         // ModelMapper 사용 시 Thumbnail.file.fileId vs Thumbnail.file.boardId 매핑 충돌 발생

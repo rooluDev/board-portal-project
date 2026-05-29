@@ -20,6 +20,12 @@ public class JwtServiceImpl implements JwtService {
 
     private final JwtProvider jwtProvider;
 
+    /**
+     * JWT에서 memberId 추출
+     *
+     * @param request HttpServletRequest
+     * @return memberId (만료된 토큰이면 null 반환)
+     */
     @Override
     public String getMemberIdFromToken(HttpServletRequest request) {
         try {
@@ -32,6 +38,12 @@ public class JwtServiceImpl implements JwtService {
         }
     }
 
+    /**
+     * JWT 생성
+     *
+     * @param memberDto JWT에 들어갈 회원 정보
+     * @return 생성된 JWT 문자열
+     */
     @Override
     public String createToken(MemberDto memberDto) {
         return jwtProvider.createAccessToken(memberDto.getMemberId(), memberDto.getMemberName());

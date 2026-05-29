@@ -9,6 +9,9 @@ import org.springframework.core.io.ClassPathResource;
 
 import java.util.Properties;
 
+/**
+ * 개발(dev) 환경용 프로퍼티 설정 클래스
+ */
 @Configuration
 @Profile("dev")
 public class PropertiesDevConfig {
@@ -24,6 +27,12 @@ public class PropertiesDevConfig {
         return props;
     }
 
+    /**
+     * 파일 업로드 제약조건 프로퍼티 빈 등록
+     * constraint.properties 파일을 로드하여 빈으로 등록
+     *
+     * @return constraint.properties를 기반으로 생성된 PropertiesFactoryBean
+     */
     @Bean(name = "constraint")
     public PropertiesFactoryBean constraintPropertiesBean(){
         PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();

@@ -14,6 +14,11 @@ public enum Board {
 
     private String boardType;
 
+    /**
+     * Board 열거형 생성자
+     *
+     * @param boardType DB 및 경로에 사용되는 게시판 타입 문자열
+     */
     Board(String boardType){
         this.boardType = boardType;
     }

@@ -29,6 +29,9 @@ public class JwtProvider implements InitializingBean {
 
     private Key key;
 
+    /**
+     * 빈 프로퍼티 주입 완료 후 BASE64로 인코딩된 secretKey를 디코딩하여 서명 키 초기화
+     */
     @Override
     public void afterPropertiesSet() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);

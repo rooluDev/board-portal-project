@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * AWS S3를 이용한 StorageService 구현체 (prod 프로파일)
+ */
 @Service
 @Profile("prod")
 public class S3StorageService implements StorageService {
@@ -35,6 +38,9 @@ public class S3StorageService implements StorageService {
 
     private S3Client s3Client;
 
+    /**
+     * S3Client 초기화 (빈 생성 후 region 설정으로 S3Client 생성)
+     */
     @PostConstruct
     public void init() {
         s3Client = S3Client.builder()
@@ -42,6 +48,14 @@ public class S3StorageService implements StorageService {
                 .build();
     }
 
+    /**
+     * 파일 리스트를 AWS S3에 업로드하여 물리적으로 저장
+     *
+     * @param multipartFiles 저장할 파일 배열
+     * @param boardType      게시판 타입 (S3 키 경로에 사용)
+     * @return 저장된 파일들의 FileDto 리스트
+     * @throws StorageFailException 파일 업로드 실패 시 발생
+     */
     @Override
     public List<FileDto> storageFileList(MultipartFile[] multipartFiles, String boardType) {
         List<FileDto> savedFileList = new ArrayList<>();
@@ -83,6 +97,13 @@ public class S3StorageService implements StorageService {
         return savedFileList;
     }
 
+    /**
+     * FileDto를 기반으로 S3에서 원본 파일을 내려받아 썸네일을 생성 후 S3에 업로드
+     *
+     * @param fileDto 원본 파일 데이터
+     * @return 생성된 썸네일의 ThumbnailDto
+     * @throws StorageFailException 썸네일 생성 또는 업로드 실패 시 발생
+     */
     @Override
     public ThumbnailDto storageThumbnailFromFile(FileDto fileDto) {
         String physicalName = UUID.randomUUID().toString();

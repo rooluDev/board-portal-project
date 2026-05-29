@@ -6,6 +6,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+/**
+ * 파일 물리적 저장소 서비스 인터페이스
+ */
 public interface StorageService {
 
     /**

@@ -38,6 +38,11 @@ public class PropertiesDevConfig {
         return props;
     }
 
+    /**
+     * 파일 제약조건 설정: constraint.properties 파일을 로드하여 빈으로 등록
+     *
+     * @return constraint.properties 를 담은 PropertiesFactoryBean
+     */
     @Bean(name = "constraint")
     public PropertiesFactoryBean constraintPropertiesBean() {
         PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();

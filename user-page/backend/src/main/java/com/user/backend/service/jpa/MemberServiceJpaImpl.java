@@ -22,12 +22,23 @@ public class MemberServiceJpaImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final ModelMapper modelMapper;
 
+    /**
+     * memberId로 회원 정보 가져오기
+     *
+     * @param memberId 회원 ID
+     * @return 해당 회원 ID의 MemberDto Optional
+     */
     @Override
     public Optional<MemberDto> findById(String memberId) {
         return memberRepository.findById(memberId)
                 .map(member -> modelMapper.map(member, MemberDto.class));
     }
 
+    /**
+     * 회원 추가 (비밀번호를 MD5 해시로 변환 후 저장)
+     *
+     * @param memberDto 추가할 회원 정보 (memberId, memberName, password)
+     */
     @Override
     @Transactional
     public void addMember(MemberDto memberDto) {

@@ -23,6 +23,14 @@ public class FileStorageServiceImpl implements FileStorageService {
     private final FileService fileService;
     private final ThumbnailService thumbnailService;
 
+    /**
+     * 파일 리스트를 물리적으로 저장한 후 DB에 등록
+     *
+     * @param fileList  저장할 파일 리스트
+     * @param boardId   연결된 게시물의 pk
+     * @param boardType 게시판 타입
+     * @param thumbnail 썸네일을 생성할지 여부
+     */
     @Override
     public void storageFileList(MultipartFile[] fileList, Long boardId, String boardType, boolean thumbnail) {
         List<FileDto> fileDtoList = storageService.storageFileList(fileList, boardType);
@@ -34,6 +42,11 @@ public class FileStorageServiceImpl implements FileStorageService {
         }
     }
 
+    /**
+     * 썸네일을 물리적으로 생성하고 DB에 등록
+     *
+     * @param fileDto 썸네일 원본이 될 파일 데이터
+     */
     @Override
     public void storageThumbnail(FileDto fileDto) {
         ThumbnailDto thumbnailDto = storageService.storageThumbnailFromFile(fileDto);
@@ -41,6 +54,12 @@ public class FileStorageServiceImpl implements FileStorageService {
         thumbnailService.addThumbnail(thumbnailDto);
     }
 
+    /**
+     * 파일 리스트 삭제 (썸네일 포함)
+     *
+     * @param deleteFileIdList 삭제할 파일들의 pk 리스트
+     * @return 썸네일의 원본 파일이 삭제되었는지 여부
+     */
     @Override
     public boolean deleteFileList(List<Long> deleteFileIdList) {
         boolean isThumbnailDeleted = false;
