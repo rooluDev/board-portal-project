@@ -36,7 +36,7 @@ PLACEHOLDER_URLS=(
 
 # 기존 tb_file, tb_thumbnail 갤러리 데이터 초기화
 echo "🗑️  기존 갤러리 파일/썸네일 데이터 초기화 중..."
-docker exec potal-mysql mysql -u root -p"$DB_PASS" --default-character-set=utf8mb4 "$DB_NAME" -e "
+docker exec mysql mysql -u root -p"$DB_PASS" --default-character-set=utf8mb4 "$DB_NAME" -e "
 DELETE FROM tb_thumbnail WHERE file_id IN (SELECT file_id FROM tb_file WHERE board_type='gallery');
 DELETE FROM tb_file WHERE board_type='gallery';
 ALTER TABLE tb_file AUTO_INCREMENT = 1;
@@ -78,17 +78,17 @@ for i in "${!BOARD_IDS[@]}"; do
     --region "$REGION" --content-type "image/jpeg" --quiet
 
   # DB에 tb_file 삽입
-  docker exec potal-mysql mysql -u root -p"$DB_PASS" --default-character-set=utf8mb4 "$DB_NAME" -e "
+  docker exec mysql mysql -u root -p"$DB_PASS" --default-character-set=utf8mb4 "$DB_NAME" -e "
 INSERT INTO tb_file (board_type, board_id, original_name, physical_name, file_path, extension, size, created_at)
 VALUES ('gallery', $BOARD_ID, 'image.jpg', '${PHYSICAL_NAME}', '/gallery', '${EXT}', $FILE_SIZE, NOW());
 "
 
   # 삽입된 file_id 조회
-  INSERTED_FILE_ID=$(docker exec potal-mysql mysql -u root -p"$DB_PASS" --default-character-set=utf8mb4 "$DB_NAME" -sNe \
+  INSERTED_FILE_ID=$(docker exec mysql mysql -u root -p"$DB_PASS" --default-character-set=utf8mb4 "$DB_NAME" -sNe \
     "SELECT file_id FROM tb_file WHERE physical_name='${PHYSICAL_NAME}';")
 
   # DB에 tb_thumbnail 삽입
-  docker exec potal-mysql mysql -u root -p"$DB_PASS" --default-character-set=utf8mb4 "$DB_NAME" -e "
+  docker exec mysql mysql -u root -p"$DB_PASS" --default-character-set=utf8mb4 "$DB_NAME" -e "
 INSERT INTO tb_thumbnail (file_id, original_name, physical_name, file_path, extension, size, created_at)
 VALUES ($INSERTED_FILE_ID, 'image.jpg', '${THUMB_PHYSICAL_NAME}', '/thumbnail', '${EXT}', $FILE_SIZE, NOW());
 "
