@@ -1,12 +1,14 @@
 package com.user.backend.service.jpa;
 
 import com.user.backend.common.type.Author;
+import com.user.backend.common.type.Board;
 import com.user.backend.dto.FreeBoardDto;
 import com.user.backend.dto.SearchConditionDto;
 import com.user.backend.entity.Category;
 import com.user.backend.entity.FreeBoard;
 import com.user.backend.repository.AdminRepository;
 import com.user.backend.repository.CategoryRepository;
+import com.user.backend.repository.CommentRepository;
 import com.user.backend.repository.FreeBoardRepository;
 import com.user.backend.repository.MemberRepository;
 import com.user.backend.service.FreeBoardService;
@@ -32,6 +34,7 @@ public class FreeBoardServiceJpaImpl implements FreeBoardService {
     private final CategoryRepository categoryRepository;
     private final AdminRepository adminRepository;
     private final MemberRepository memberRepository;
+    private final CommentRepository commentRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -45,7 +48,7 @@ public class FreeBoardServiceJpaImpl implements FreeBoardService {
                 .stream()
                 .map(freeBoard -> {
                     FreeBoardDto dto = modelMapper.map(freeBoard, FreeBoardDto.class);
-                    // FreeBoard 엔티티에 없는 등록자 이름을 별도로 조회해서 세팅
+                    // FreeBoard 엔티티에 없는 등록자 이름 조회
                     if (Author.ADMIN.getAuthorType().equals(freeBoard.getAuthorType())) {
                         adminRepository.findById(freeBoard.getAuthorId())
                                 .ifPresent(admin -> dto.setAdminName(admin.getAdminName()));
@@ -53,6 +56,9 @@ public class FreeBoardServiceJpaImpl implements FreeBoardService {
                         memberRepository.findById(freeBoard.getAuthorId())
                                 .ifPresent(member -> dto.setMemberName(member.getMemberName()));
                     }
+                    // FreeBoard 엔티티에 없는 댓글 수 조회
+                    dto.setCommentCount((int) commentRepository.countByBoardTypeAndBoardId(
+                            Board.FREE_BOARD.getBoardType(), freeBoard.getBoardId()));
                     return dto;
                 })
                 .toList();
