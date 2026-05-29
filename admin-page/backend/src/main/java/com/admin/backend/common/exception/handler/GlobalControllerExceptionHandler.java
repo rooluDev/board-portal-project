@@ -3,6 +3,8 @@ package com.admin.backend.common.exception.handler;
 import com.admin.backend.common.exception.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
@@ -91,11 +93,11 @@ public class GlobalControllerExceptionHandler {
     }
 
     /**
-     * NoResourceFoundException Handler (favicon.ico 등 정적 리소스 없음 - 로그 무시)
+     * NoResourceFoundException Handler (favicon.ico 등 정적 리소스 없음 - 404 응답)
      */
     @ExceptionHandler(NoResourceFoundException.class)
-    public String handleNoResourceFoundException(NoResourceFoundException e) {
-        return "redirect:/error";
+    public ResponseEntity<Void> handleNoResourceFoundException(NoResourceFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     /**
