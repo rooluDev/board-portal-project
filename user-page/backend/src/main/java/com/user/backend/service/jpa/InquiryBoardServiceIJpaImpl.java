@@ -4,6 +4,7 @@ import com.user.backend.dto.InquiryBoardDto;
 import com.user.backend.dto.SearchConditionDto;
 import com.user.backend.entity.InquiryBoard;
 import com.user.backend.entity.Member;
+import com.user.backend.repository.AnswerRepository;
 import com.user.backend.repository.InquiryBoardRepository;
 import com.user.backend.repository.MemberRepository;
 import com.user.backend.service.InquiryBoardService;
@@ -26,6 +27,7 @@ public class InquiryBoardServiceIJpaImpl implements InquiryBoardService {
 
     private final InquiryBoardRepository inquiryBoardRepository;
     private final MemberRepository memberRepository;
+    private final AnswerRepository answerRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -37,7 +39,13 @@ public class InquiryBoardServiceIJpaImpl implements InquiryBoardService {
     public List<InquiryBoardDto> getBoardListByCondition(SearchConditionDto searchConditionDto, String memberId) {
         return inquiryBoardRepository.findByCondition(searchConditionDto, memberId)
                 .stream()
-                .map(inquiryBoard -> modelMapper.map(inquiryBoard, InquiryBoardDto.class))
+                .map(inquiryBoard -> {
+                    InquiryBoardDto dto = modelMapper.map(inquiryBoard, InquiryBoardDto.class);
+                    // InquiryBoard 엔티티에 없는 answerId 조회
+                    answerRepository.findByBoardBoardId(inquiryBoard.getBoardId())
+                            .ifPresent(answer -> dto.setAnswerId(String.valueOf(answer.getAnswerId())));
+                    return dto;
+                })
                 .toList();
     }
 
