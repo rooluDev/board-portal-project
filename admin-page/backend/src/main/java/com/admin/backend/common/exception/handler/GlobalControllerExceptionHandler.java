@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 /**
  * Global Controller Exception Handler
@@ -86,6 +87,14 @@ public class GlobalControllerExceptionHandler {
         log.error("Error message: {}", e.getMessage());
         log.error("Error on: ", e);
 
+        return "redirect:/error";
+    }
+
+    /**
+     * NoResourceFoundException Handler (favicon.ico 등 정적 리소스 없음 - 로그 무시)
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    public String handleNoResourceFoundException(NoResourceFoundException e) {
         return "redirect:/error";
     }
 
