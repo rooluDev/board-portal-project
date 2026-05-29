@@ -81,12 +81,21 @@ export default {
 
     /**
      * 페이지 구성에 필요한 문의 게시판 데이터 로드
+     * 비밀글이며 본인이 아닐 경우 목록으로 복귀 (2차 URL 직접 접근 방어)
      */
     const getBoard = async () => {
-      const res = await fetchGetInquiryBoard(boardId);
-      await fetchAddInquiryView(boardId);
-      inquiryBoard.value = res.inquiryBoard;
-      answer.value = res.answer;
+      try {
+        const res = await fetchGetInquiryBoard(boardId);
+        await fetchAddInquiryView(boardId);
+        inquiryBoard.value = res.inquiryBoard;
+        answer.value = res.answer;
+      } catch (error) {
+        alert("비밀글입니다.");
+        await router.push({
+          name: 'Inquiry-List',
+          query: route.query
+        });
+      }
     }
 
     /**

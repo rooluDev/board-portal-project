@@ -98,7 +98,7 @@ public class InquiryBoardController {
         InquiryBoardDto inquiryBoardDto = inquiryBoardService.getBoardById(boardId).orElseThrow(() -> new BoardNotFoundException(ErrorCode.BOARD_NOT_FOUND));
 
         // 비밀글 체크 후 작성자 확인
-        if (inquiryBoardDto.getIsSecret().equals("1")) {
+        if (inquiryBoardDto.getIsSecret().equals("true")) {
             String memberId = jwtService.getMemberIdFromToken(request);
             inquiryBoardService.getBoardByIdAndMemberId(boardId, memberId).orElseThrow(() -> new BoardNotFoundException(ErrorCode.BOARD_NOT_FOUND));
         }

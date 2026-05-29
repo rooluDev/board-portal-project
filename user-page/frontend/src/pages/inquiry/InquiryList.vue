@@ -46,8 +46,8 @@
                   }}</span>
                 <span v-if="board.answerId"> (답변완료)</span>
                 <span v-else> (미답변)</span>
+                <span v-if="board.isSecret === 'true'"> 🔒</span>
                 <span class="new" v-if="isNew(board.createdAt, 7)">new</span>
-                <span v-if="board.isSecret === '1'">🔒</span>
               </div>
             </td>
             <td class="text-center">{{ board.views }}</td>
@@ -139,7 +139,7 @@ export default {
 
     const goToView = async (boardId, secret) => {
       // 비밀글일 경우
-      if (secret == 1) {
+      if (secret === 'true') {
         // 작성자 확인
         try {
           await fetchCheckInquiryAuthor(boardId);
