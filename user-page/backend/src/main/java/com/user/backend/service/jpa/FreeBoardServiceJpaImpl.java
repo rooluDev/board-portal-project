@@ -9,6 +9,7 @@ import com.user.backend.entity.FreeBoard;
 import com.user.backend.repository.AdminRepository;
 import com.user.backend.repository.CategoryRepository;
 import com.user.backend.repository.CommentRepository;
+import com.user.backend.repository.FileRepository;
 import com.user.backend.repository.FreeBoardRepository;
 import com.user.backend.repository.MemberRepository;
 import com.user.backend.service.FreeBoardService;
@@ -35,6 +36,7 @@ public class FreeBoardServiceJpaImpl implements FreeBoardService {
     private final AdminRepository adminRepository;
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
+    private final FileRepository fileRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -59,6 +61,10 @@ public class FreeBoardServiceJpaImpl implements FreeBoardService {
                     // FreeBoard 엔티티에 없는 댓글 수 조회
                     dto.setCommentCount((int) commentRepository.countByBoardTypeAndBoardId(
                             Board.FREE_BOARD.getBoardType(), freeBoard.getBoardId()));
+                    // FreeBoard 엔티티에 없는 첨부파일 여부 조회 (첫 번째 파일 ID)
+                    fileRepository.findByBoardTypeAndBoardId(Board.FREE_BOARD.getBoardType(), freeBoard.getBoardId())
+                            .stream().findFirst()
+                            .ifPresent(file -> dto.setFileId(file.getFileId()));
                     return dto;
                 })
                 .toList();
