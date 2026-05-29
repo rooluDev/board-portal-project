@@ -118,14 +118,14 @@
 
     <insert id="insertBoard" parameterType="com.admin.backend.dto.NoticeBoardDto">
         INSERT INTO
-            tb_notice_board (category_id, author_id, title, content, is_fixed, created_at)
+            tb_notice_board (category_id, author_id, title, content, views, is_fixed, created_at)
         VALUES
         <choose>
             <when test="isFixed == 'on'">
-                (#{categoryId},#{authorId},#{title},#{content},1,NOW())
+                (#{categoryId},#{authorId},#{title},#{content},0,1,NOW())
             </when>
             <otherwise>
-                (#{categoryId},#{authorId},#{title},#{content},0,NOW())
+                (#{categoryId},#{authorId},#{title},#{content},0,0,NOW())
             </otherwise>
         </choose>
     </insert>
