@@ -43,7 +43,19 @@ public class ThumbnailServiceJpaImpl implements ThumbnailService {
 
     @Override
     public Optional<ThumbnailDto> getThumbnailById(Long thumbnailId) {
+        // ModelMapper 사용 시 Thumbnail.file.fileId vs Thumbnail.file.boardId 매핑 충돌 발생
+        // → 수동 매핑으로 교체
         return thumbnailRepository.findById(thumbnailId)
-                .map(thumbnail -> modelMapper.map(thumbnail, ThumbnailDto.class));
+                .map(thumbnail -> ThumbnailDto.builder()
+                        .thumbnailId(thumbnail.getThumbnailId())
+                        .fileId(thumbnail.getFile().getFileId())
+                        .originalName(thumbnail.getOriginalName())
+                        .physicalName(thumbnail.getPhysicalName())
+                        .filePath(thumbnail.getFilePath())
+                        .extension(thumbnail.getExtension())
+                        .size(thumbnail.getSize())
+                        .createdAt(thumbnail.getCreatedAt())
+                        .editedAt(thumbnail.getEditedAt())
+                        .build());
     }
 }
