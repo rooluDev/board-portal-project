@@ -150,7 +150,7 @@
                     {{ truncateText(board.title, 40) + ' (미답변)' }}
                   </span>
                   <span class="ml-2" style="color: red" v-if="isNew(board.createdAt, 7)">new</span>
-                  <span class="ml-2" v-if="board.isSecret === '1'">🔒</span>
+                  <span class="ml-2" v-if="board.isSecret === 'true'">🔒</span>
                 </td>
               </tr>
               </tbody>
@@ -202,7 +202,6 @@ export default {
           name: 'Error'
         })
       }
-      console.log(freeBoardList.value);
     }
 
     /**
@@ -210,10 +209,14 @@ export default {
      */
     const getImageResource = async () => {
       for (const board of galleryBoardList.value) {
-        try {
-          const imageBlob = await fetchGetThumbnailResource(board.thumbnailId);
-          imageUrls.value[board.boardId] = URL.createObjectURL(imageBlob);
-        } catch (error) {
+        if (board.thumbnailId) {
+          try {
+            const imageBlob = await fetchGetThumbnailResource(board.thumbnailId);
+            imageUrls.value[board.boardId] = URL.createObjectURL(imageBlob);
+          } catch (error) {
+            imageUrls.value[board.boardId] = null;
+          }
+        } else {
           imageUrls.value[board.boardId] = null;
         }
       }
@@ -251,7 +254,7 @@ export default {
 
     const goToInquiryView = async (boardId, isSecret) => {
       // 비밀글일 시
-      if (isSecret == 1) {
+      if (isSecret === 'true') {
         // 자신이 쓴 글인지 확인
         try {
           await fetchCheckInquiryAuthor(boardId);

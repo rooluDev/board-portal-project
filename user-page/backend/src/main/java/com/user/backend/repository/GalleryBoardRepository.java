@@ -36,9 +36,9 @@ public interface GalleryBoardRepository extends JpaRepository<GalleryBoard,Long>
 
     /**
      * MyBatis: selectBoardListForMain
-     * 삭제되지 않은 최신 게시물 상위 6건 조회
+     * 삭제되지 않은 최신 게시물 상위 3건 조회
      */
-    List<GalleryBoard> findTop6ByIsDeletedFalseOrderByCreatedAtDesc();
+    List<GalleryBoard> findTop3ByIsDeletedFalseOrderByCreatedAtDesc();
 
     /**
      * MyBatis: selectBoardByIdAndMemberId

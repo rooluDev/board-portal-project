@@ -105,7 +105,7 @@ public class GalleryBoardServiceJpaImpl implements GalleryBoardService {
 
     @Override
     public List<GalleryBoardDto> getBoardListForMain() {
-        return galleryBoardRepository.findTop6ByIsDeletedFalseOrderByCreatedAtDesc()
+        return galleryBoardRepository.findTop3ByIsDeletedFalseOrderByCreatedAtDesc()
                 .stream()
                 .map(galleryBoard -> modelMapper.map(galleryBoard, GalleryBoardDto.class))
                 .toList();
