@@ -46,10 +46,10 @@ public class InquiryBoardSpecification {
                 );
             }
 
-            // 3) 본인 작성 필터
+            // 3) 본인 작성 필터 (author는 @ManyToOne 관계이므로 author.memberId로 접근)
             if (memberId != null && !memberId.isEmpty()) {
                 predicates.add(
-                        criteriaBuilder.equal(root.get("authorId"), memberId)
+                        criteriaBuilder.equal(root.get("author").get("memberId"), memberId)
                 );
             }
 
