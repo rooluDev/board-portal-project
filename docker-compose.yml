@@ -5,11 +5,9 @@ services:
   mysql:
     image: mysql:8.0
     container_name: potal-mysql
-    command: --default-time-zone=+09:00
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
-      TZ: Asia/Seoul
     ports:
       - "3306:3306"
     volumes:
