@@ -1,18 +1,12 @@
 package com.user.backend.controller;
 
-import com.user.backend.common.exception.custom.DownloadFailException;
 import com.user.backend.common.exception.custom.FileNotFoundException;
 import com.user.backend.common.exception.response.ErrorCode;
-import com.user.backend.common.utils.StringUtils;
 import com.user.backend.dto.FileDto;
 import com.user.backend.service.FileService;
-import lombok.RequiredArgsConstructor;
+import com.user.backend.service.StorageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,12 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 /**
  * File Controller
  */
@@ -36,66 +24,55 @@ import java.nio.file.Paths;
 @RequestMapping("/api")
 public class FileController {
 
-    @Value("#{storage['path']}")
-    private String path;
     private final FileService fileService;
+    private final StorageService storageService;
 
-    public FileController(@Qualifier("fileJpa") FileService fileService) {
+    public FileController(@Qualifier("fileJpa") FileService fileService,
+                          StorageService storageService) {
         this.fileService = fileService;
+        this.storageService = storageService;
     }
 
     /**
-     * 파일 다운로드 리소스 반환
+     * 파일 다운로드
      *
-     * @param fileId ( pk )
-     * @return 파일 리소스
-     * @throws Exception
+     * @param fileId PathVariable (pk)
+     * @return 파일 바이트
      */
     @GetMapping("/file/{fileId}/download")
-    public ResponseEntity<Resource> downloadFile(@PathVariable(name = "fileId") Long fileId) {
-        // 파일 정보 가져오기
-        FileDto file = fileService.getFileById(fileId).orElseThrow(() -> new FileNotFoundException(ErrorCode.FILE_NOT_FOUND));
+    public ResponseEntity<byte[]> downloadFile(@PathVariable(name = "fileId") Long fileId) {
+        FileDto fileDto = fileService.getFileById(fileId)
+                .orElseThrow(() -> new FileNotFoundException(ErrorCode.FILE_NOT_FOUND));
 
-        try {
-            // 파일 정보 설정
-            String filePathString = path + StringUtils.parseToPath(file);
+        byte[] fileBytes = storageService.downloadFile(fileDto);
 
-            File filePath = Paths.get(filePathString).toFile();
-
-            Resource resource = new InputStreamResource(Files.newInputStream(filePath.toPath()));
-
-            return ResponseEntity.status(HttpStatus.OK)
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filePath.getName() + "\"")
-                    .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(filePath.length()))
-                    .body(resource);
-
-        } catch (IOException e) {
-            throw new DownloadFailException(ErrorCode.DOWNLOAD_FAIL);
-        }
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + fileDto.getOriginalName() + "\"")
+                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(fileBytes.length))
+                .body(fileBytes);
     }
 
-
     /**
-     * 이미지 파일 리소스 가져오기
+     * 이미지 파일 인라인 표시
      *
-     * @param fileId ( pk )
-     * @return 이미지 파일 리소스
+     * @param fileId PathVariable (pk)
+     * @return 이미지 바이트
      */
     @GetMapping("/file/{fileId}")
-    public ResponseEntity<Resource> getImage(@PathVariable(name = "fileId") Long fileId) {
+    public ResponseEntity<byte[]> getImage(@PathVariable(name = "fileId") Long fileId) {
+        FileDto fileDto = fileService.getFileById(fileId)
+                .orElseThrow(() -> new FileNotFoundException(ErrorCode.FILE_NOT_FOUND));
 
-        // 파일 정보 가져오기
-        FileDto fileDto = fileService.getFileById(fileId).orElseThrow(() -> new FileNotFoundException(ErrorCode.FILE_NOT_FOUND));
+        byte[] imageBytes = storageService.downloadFile(fileDto);
 
-        // 파일 path
-        String fullPath = path + StringUtils.parseToPath(fileDto);
+        MediaType mediaType = "png".equalsIgnoreCase(fileDto.getExtension())
+                ? MediaType.IMAGE_PNG
+                : MediaType.IMAGE_JPEG;
 
-        try {
-            Resource resource = new UrlResource("file://" + fullPath);
-            return ResponseEntity.ok(resource);
-        } catch (MalformedURLException e) {
-            throw new DownloadFailException(ErrorCode.DOWNLOAD_FAIL);
-        }
+        return ResponseEntity.ok()
+                .contentType(mediaType)
+                .body(imageBytes);
     }
 }

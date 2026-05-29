@@ -113,4 +113,14 @@ public class LocalStorageService implements StorageService {
             throw new DownloadFailException(ErrorCode.DOWNLOAD_FAIL);
         }
     }
+
+    @Override
+    public byte[] downloadFile(FileDto fileDto) {
+        try {
+            String filePath = path + StringUtils.parseToPath(fileDto);
+            return Files.readAllBytes(Paths.get(filePath));
+        } catch (IOException e) {
+            throw new DownloadFailException(ErrorCode.DOWNLOAD_FAIL);
+        }
+    }
 }

@@ -35,4 +35,12 @@ public interface StorageService {
      * @return 파일 바이트 배열
      */
     byte[] downloadThumbnail(ThumbnailDto thumbnailDto);
+
+    /**
+     * 일반 파일 바이트 다운로드
+     *
+     * @param fileDto 다운로드할 파일
+     * @return 파일 바이트 배열
+     */
+    byte[] downloadFile(FileDto fileDto);
 }

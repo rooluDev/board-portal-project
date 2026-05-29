@@ -146,4 +146,21 @@ public class S3StorageService implements StorageService {
             throw new DownloadFailException(ErrorCode.DOWNLOAD_FAIL);
         }
     }
+
+    @Override
+    public byte[] downloadFile(FileDto fileDto) {
+        // filePath = "/gallery" → S3 key = "gallery/{uuid}.jpg"
+        String prefix = fileDto.getFilePath().replaceFirst("^/", "");
+        String key = prefix + "/" + fileDto.getPhysicalName() + "." + fileDto.getExtension();
+        try {
+            return s3Client.getObjectAsBytes(
+                    GetObjectRequest.builder()
+                            .bucket(bucket)
+                            .key(key)
+                            .build()
+            ).asByteArray();
+        } catch (Exception e) {
+            throw new DownloadFailException(ErrorCode.DOWNLOAD_FAIL);
+        }
+    }
 }
